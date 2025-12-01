@@ -24,11 +24,12 @@ export const authGuard: CanActivateFn = (route, state) => {
     console.error('Não existe formatação equivalente para o ' + user.role);
   }
 
-  const roles = rolesPermitidos?.map((r) => r.toLowerCase()) ?? ['admin', 'dev'];
+  const roles = rolesPermitidos?.map((r) => r.toLowerCase()) ?? [ 'dev'];
 
   const permitido = roles.includes(userRole);
 
   if (!permitido) {
+    console.error('Usuario não permitido [AUTH GUARD] ');
     router.navigate(['/auth/access']);
     return false;
   }

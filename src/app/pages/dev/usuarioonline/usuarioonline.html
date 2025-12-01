@@ -1,25 +1,62 @@
-<div class=" rounded-2xl p-4 shadow-md w-full">
-  <h2 class="text-lg font-semibold mb-3 flex items-center gap-2">
-    👥 Usuários Online
-    <span *ngIf="carregando" class="text-sm text-gray-400">(atualizando...)</span>
-  </h2>
+<div class="bg-surface-0 dark:bg-surface-950 px-6 py-6 md:px-10 md:py-10 rounded-2xl shadow-sm">
+  <!-- TÍTULO -->
+  <div class="flex flex-col gap-2 pb-4">
+    <div class="font-semibold text-xl text-surface-0 leading-tight flex items-center gap-2">
+      <i class="pi pi-users"></i>
+      Usuários Online
+    </div>
 
-  <div *ngIf="usuarios.length === 0" class="text-gray-500">
-    Nenhum usuário online no momento.
+    <div class="text-surface-300 text-base leading-tight">
+      Veja quem está conectado no sistema agora.
+    </div>
   </div>
 
-  <ul *ngIf="usuarios.length > 0" class="divide-y divide-gray-200">
-    <li *ngFor="let u of usuarios" class="py-2 flex justify-between items-center">
-      <div>
-        <p class="font-medium text-gray-700"> {{u.nome}} {{ u.login }}</p>
-        <p class="text-xs text-gray-400">
-          Último login: {{ u.dt_ultimologin | date:'short' }}
-        </p>
+  <div class="border-t border-surface-700 mb-4"></div>
+
+  <!-- LISTA -->
+  <p-dataview #dv [value]="usuarios">
+    <ng-template #list let-items>
+      <div class="grid grid-cols-12 gap-4 grid-nogutter">
+        <div class="col-span-12" *ngFor="let item of items; let first = first">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
+            [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !first }"
+          >
+            <p-avatar
+              shape="circle"
+              [label]="getInitials(item.nome)"
+              styleClass="shadow-sm flex-shrink-0"
+            ></p-avatar>
+
+            <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+              <div class="flex flex-row md:flex-col justify-between items-start gap-2">
+                <div>
+                  <div class="text-lg font-medium text-surface-900 dark:text-surface-0 mt-2">
+                    {{ item.nome }}
+                    <span class="text-surface-300 text-sm"> ({{ item.login }}) </span>
+                  </div>
+                </div>
+                <div class="bg-surface-100 dark:bg-surface-700">
+                  <div
+                    class="bg-surface-0 dark:bg-surface-900 flex items-center gap-2 justify-center"
+                  >
+                    <span class="text-surface-400 text-sm mt-1">
+                      Último login {{ item.dt_ultimologin | date : 'short' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col md:items-end gap-8">
+                <p-tag
+                  [value]="item.fl_ativo ? 'Ativo' : 'Offline'"
+                  [severity]="item.fl_ativo ? 'success' : 'danger'"
+                  styleClass="px-3 py-1 text-sm shrink-0"
+                ></p-tag>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flex items-center gap-1">
-        <span *ngIf="u.fl_ativo" class="w-2 h-2 bg-green-500 rounded-full"></span>
-        <span *ngIf="!u.fl_ativo" class="w-2 h-2 bg-red-500 rounded-full"></span>
-      </div>
-    </li>
-  </ul>
+    </ng-template>
+  </p-dataview>
 </div>

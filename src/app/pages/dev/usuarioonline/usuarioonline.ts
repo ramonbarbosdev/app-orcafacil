@@ -4,10 +4,25 @@ import { Usuariosonline } from '../../../models/usuariosonline';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WebsocketService } from '../../../services/websocket.service';
+import { TagModule } from 'primeng/tag';
+import { DividerModule } from 'primeng/divider';
+import { CardModule } from 'primeng/card';
+import { AvatarModule } from 'primeng/avatar';
+import { ListboxModule } from 'primeng/listbox';
+import { DataViewModule } from 'primeng/dataview';
 
 @Component({
   selector: 'app-usuarioonline',
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    TagModule,
+    DividerModule,
+    CardModule,
+    ListboxModule,
+    AvatarModule,
+    DataViewModule,
+  ],
   templateUrl: './usuarioonline.html',
   styleUrl: './usuarioonline.scss',
 })
@@ -24,6 +39,16 @@ export class Usuarioonline {
     });
 
     this.carregarUsuarios();
+  }
+
+  getInitials(name?: string): string {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
   }
 
   carregarUsuarios() {
