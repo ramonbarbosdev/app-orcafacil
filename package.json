@@ -28,9 +28,21 @@
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@primeuix/themes": "^2.0.1",
+    "@tailwindcss/postcss": "^4.1.17",
+    "postcss": "^8.5.6",
+    "primeng": "^20.3.0",
     "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.17",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.15.0",
+    "ngx-mask": "^19.0.7",
+    "@types/socket.io-client": "^1.4.36",
+    "@stomp/stompjs": "^7.1.1",
+    "socket.io-client": "^4.8.1",
+    "sockjs-client": "^1.5.1",
+    "primeicons": "^7.0.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@angular/build": "^20.3.8",
@@ -43,6 +55,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "@types/sockjs-client": "^1.5.4",
+    "uuid": "^13.0.0"
   }
 }
