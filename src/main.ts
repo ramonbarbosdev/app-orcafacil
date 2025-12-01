@@ -14,6 +14,7 @@ import { registerLocaleData } from '@angular/common';
 import { LOCALE_ID } from '@angular/core';
 
 registerLocaleData(localePt, 'pt-BR');
+document.documentElement.classList.add('app-dark'); //Dark como padrão
 
 bootstrapApplication(App, {
   providers: [

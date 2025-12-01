@@ -2,6 +2,9 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 
 export const OrcaFacilTheme = definePreset(Aura, {
+  primitive: {
+    colorScheme: 'dark',
+  },
   semantic: {
     primary: {
       50: '#eff6ff',

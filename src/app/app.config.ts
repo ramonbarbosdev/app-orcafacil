@@ -22,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       inputVariant: 'filled',
       theme: {
         preset: OrcaFacilTheme,
+        options: { prefix: 'p', darkModeSelector: '.app-dark' },
       },
     }),
   ],

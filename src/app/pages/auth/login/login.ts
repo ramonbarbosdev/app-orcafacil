@@ -17,7 +17,6 @@ import { AuthService } from '../../../auth/auth.service';
 import { MessageService } from 'primeng/api';
 import { LayoutCampo } from '../../../components/layout-campo/layout-campo';
 import { SelectModule } from 'primeng/select';
-import { BaseService } from '../../../services/base.service';
 import { FlagOption } from '../../../models/flag-option';
 import { SelecionarOrganizacao } from '../selecionar-organizacao/selecionar-organizacao';
 
@@ -31,7 +30,6 @@ import { SelecionarOrganizacao } from '../selecionar-organizacao/selecionar-orga
     FormsModule,
     RouterModule,
     RippleModule,
-    AppFloatingConfigurator,
     CommonModule,
     ReactiveFormsModule,
     MessageModule,
