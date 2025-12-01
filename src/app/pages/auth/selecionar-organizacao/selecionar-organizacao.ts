@@ -47,7 +47,11 @@ export class SelecionarOrganizacao {
   private cd = inject(ChangeDetectorRef);
   public errorValidacao: Record<string, string> = {};
 
-  showDialog() {}
+  showDialog() {
+
+    
+        this.objeto.id_tenant = String(this.listaEmpresa[0].code);
+  }
 
   hideDialog() {
     this.visible = false;

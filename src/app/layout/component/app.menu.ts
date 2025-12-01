@@ -68,10 +68,16 @@ export class AppMenu {
               icon: 'pi pi-fw pi-home',
               routerLink: ['/client/home'],
             },
+           
+          ],
+        },
+        {
+          label: 'Gerenciamentos',
+          items: [
             {
-              label: 'Gerenciamento de Sessão',
+              label: 'Clientes',
               icon: 'pi pi-fw pi-home',
-              routerLink: ['/client/whatsappsessao'],
+              routerLink: ['/client/cliente'],
             },
           ],
         },
@@ -81,75 +87,7 @@ export class AppMenu {
         this.model.push({
           label: 'Administração',
           items: [
-            {
-              label: 'Tipo de Serviço',
-              icon: 'pi pi-fw pi-bookmark',
-              routerLink: ['/admin/tiposervico'],
-            },
-            {
-              label: 'Relatório Administrativo',
-              icon: 'pi pi-address-book',
-              items: [
-                {
-                  label: 'Relatório Agronegócios',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/projetocreditoruralvisualizacao'],
-                },
-                {
-                  label: 'Relatório Consórcio',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/projetoconsorciovisualizacao'],
-                },
-                {
-                  label: 'Relatório Crédito Pessoal',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/projetocreditopessoalvisualizacao'],
-                },
-                {
-                  label: 'Relatório Abertura de Contas',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/projetoaberturacontavisualizacao'],
-                },
-                {
-                  label: 'Resumo por Projetista',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/resumoprojetistavisualizacao'],
-                },
-                {
-                  label: 'Resumo Visitas',
-                  icon: 'pi pi-book',
-                  routerLink: ['/admin/resumovisitavisualizacao'],
-                },
-              ],
-            },
-            {
-              label: 'Parâmetros',
-              icon: 'pi pi-chart-bar',
-              routerLink: ['/client/relatorios'],
-              items: [
-                {
-                  label: 'Categoria do Parâmetro',
-                  icon: 'pi pi-fw pi-bookmark',
-                  routerLink: ['/admin/categoriaparametro'],
-                },
-                {
-                  label: 'Parâmetro do Sistema',
-                  icon: 'pi pi-fw pi-bookmark',
-                  routerLink: ['/admin/parametromaster'],
-                },
-              ],
-            },
-
-            {
-              label: 'Permissões',
-              icon: 'pi pi-fw pi-bookmark',
-              routerLink: ['/admin/role'],
-            },
-            {
-              label: 'Usuarios',
-              icon: 'pi pi-fw pi-bookmark',
-              routerLink: ['/admin/usuario'],
-            },
+           
           ],
         });
       }

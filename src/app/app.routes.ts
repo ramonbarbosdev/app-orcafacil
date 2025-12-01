@@ -8,7 +8,7 @@ import { Empresalist } from './pages/dev/empresa/empresalist/empresalist';
 import { HomeDev } from './pages/dev/home-dev/home-dev';
 import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinaturalist/planoassinaturalist';
 import { HomeClient } from './pages/client/home-client/home-client';
-import { Sessaolist } from './pages/client/gerenciarSessao/sessaolist/sessaolist';
+import { Clientelist } from './pages/client/cliente/clientelist/clientelist';
 
 
 export const routes: Routes = [
@@ -35,7 +35,7 @@ export const routes: Routes = [
     data: { roles: ['client', 'dev'] },
     children: [
       { path: 'home', component: HomeClient },
-      { path: 'whatsappsessao', component: Sessaolist },
+      { path: 'cliente', component: Clientelist },
     ],
   },
 ];
