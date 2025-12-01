@@ -68,12 +68,16 @@ export class AppMenu {
               icon: 'pi pi-fw pi-home',
               routerLink: ['/client/home'],
             },
-           
           ],
         },
         {
           label: 'Gerenciamentos',
           items: [
+            {
+              label: 'Categoria do Serviço',
+              icon: 'pi pi-fw pi-home',
+              routerLink: ['/client/categoriaservico'],
+            },
             {
               label: 'Clientes',
               icon: 'pi pi-fw pi-home',

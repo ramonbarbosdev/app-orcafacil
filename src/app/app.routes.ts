@@ -9,6 +9,7 @@ import { HomeDev } from './pages/dev/home-dev/home-dev';
 import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinaturalist/planoassinaturalist';
 import { HomeClient } from './pages/client/home-client/home-client';
 import { Clientelist } from './pages/client/cliente/clientelist/clientelist';
+import { Categoriaservicolist } from './pages/client/categoriaservico/categoriaservicolist/categoriaservicolist';
 
 
 export const routes: Routes = [
@@ -36,6 +37,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: HomeClient },
       { path: 'cliente', component: Clientelist },
+      { path: 'categoriaservico', component: Categoriaservicolist },
     ],
   },
 ];

@@ -11,11 +11,10 @@ import {
   ColumnConfig,
   HeaderListGenerico,
 } from '../../../../components/header-list-generico/header-list-generico';
-import { Clienteform } from "../clienteform/clienteform";
 import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
-
+import { Categoriaservicoform } from "../categoriaservicoform/categoriaservicoform";
 @Component({
-  selector: 'app-clientelist',
+  selector: 'app-categoriaservicolist',
   imports: [
     TableModule,
     IconFieldModule,
@@ -23,16 +22,16 @@ import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
     InputTextModule,
     ButtonModule,
     HeaderListGenerico,
-    Clienteform,
-  ],
-  templateUrl: './clientelist.html',
-  styleUrl: './clientelist.scss',
+    Categoriaservicoform
+],
+  templateUrl: './categoriaservicolist.html',
+  styleUrl: './categoriaservicolist.scss',
 })
-export class Clientelist {
+export class Categoriaservicolist {
   loading: boolean = true;
   public baseService = inject(BaseService);
-  endpoint = 'cliente';
-  primaryKey = 'id_cliente';
+  endpoint = 'categoriaservico';
+  primaryKey = 'id_categoriaservico';
   router = inject(Router);
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
@@ -41,24 +40,16 @@ export class Clientelist {
 
   columns: ColumnConfig[] = [
     {
-      field: 'nu_cpfcnpj',
-      header: 'CPF/CNPJ',
+      field: 'cd_categoriaservico',
+      header: 'Código',
       minWidth: '10rem',
       filterType: 'text',
-      formatter: (value) => FormatCpfCnpj(value),
     },
     {
-      field: 'nm_cliente',
+      field: 'nm_categoriaservico',
       header: 'Nome',
       minWidth: '15rem',
       filterType: 'text',
-    },
-    {
-      field: 'fl_ativo',
-      header: 'Ativo',
-      minWidth: '15rem',
-      filterType: 'boolean',
-      formatter: (value) => (value ? 'Sim' : 'Não'),
     },
   ];
 
