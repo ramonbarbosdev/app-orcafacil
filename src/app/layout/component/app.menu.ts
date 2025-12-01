@@ -35,6 +35,11 @@ export class AppMenu {
             routerLink: ['/dev/home'],
           },
           {
+            label: 'Planos',
+            icon: 'pi pi-fw pi-bookmark',
+            routerLink: ['/dev/planoassinatura'],
+          },
+          {
             label: 'Empresas',
             icon: 'pi pi-fw pi-bookmark',
             routerLink: ['/dev/empresa'],

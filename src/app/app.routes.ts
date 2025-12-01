@@ -6,6 +6,7 @@ import { Usuariolist } from './pages/dev/usuario/usuariolist/usuariolist';
 import { Rolelist } from './pages/dev/role/rolelist/rolelist';
 import { Empresalist } from './pages/dev/empresa/empresalist/empresalist';
 import { HomeDev } from './pages/dev/home-dev/home-dev';
+import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinaturalist/planoassinaturalist';
 
 
 export const routes: Routes = [
@@ -21,6 +22,7 @@ export const routes: Routes = [
         { path: 'home', component: HomeDev },
         { path: 'usuario', component: Usuariolist },
         { path: 'role', component: Rolelist },
+        { path: 'planoassinatura', component: Planoassinaturalist },
         { path: 'empresa', component: Empresalist },
       ],
     },

@@ -28,9 +28,14 @@ import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { Empresa } from '../../../../models/empresa';
 import { EmpresaSchema } from '../../../../schema/empresa-schema';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { PlanoAssinaturaSchema } from '../../../../schema/planoassinatura-schema';
+import { Planoassinatura } from '../../../../models/planoassinatura';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 @Component({
-  selector: 'app-empresaform',
+  selector: 'app-planoassinaturaform',
   imports: [
     DialogModule,
     InputTextModule,
@@ -46,20 +51,23 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
     LayoutFormSimples,
     LayoutCampo,
     ToggleButtonModule,
+    InputGroupModule,
+    InputNumberModule,
+    InputGroupAddonModule,
   ],
-  templateUrl: './empresaform.html',
-  styleUrl: './empresaform.scss',
+  templateUrl: './planoassinaturaform.html',
+  styleUrl: './planoassinaturaform.scss',
 })
-export class Empresaform {
+export class Planoassinaturaform {
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
   @Input() onReloadList: () => void = () => {};
   @Input() key!: number;
 
   loading: boolean = true;
-  public objeto: Empresa = new Empresa();
+  public objeto: Planoassinatura = new Planoassinatura();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'empresa';
+  private endpoint = 'planoassinatura';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -75,10 +83,8 @@ export class Empresaform {
     this.loading = true;
     this.limparFormulario();
 
-    this.obterAssinatura();
-
     if (this.key == 0) {
-      this.obterSequencia();
+      setTimeout(() => (this.loading = false), 0);
     } else {
       this.onEdit(this.key);
     }
@@ -125,7 +131,7 @@ export class Empresaform {
 
   validarItens(): boolean {
     try {
-      EmpresaSchema.parse([this.objeto]);
+      PlanoAssinaturaSchema.parse([this.objeto]);
       this.errorValidacao = {};
       return true;
     } catch (error) {
@@ -141,37 +147,8 @@ export class Empresaform {
     }
   }
 
-  obterSequencia() {
-    this.baseService.findSequence(this.endpoint).subscribe({
-      next: (res) => {
-        this.objeto.cd_empresa = res.sequencia;
-        this.loading = false;
-        this.cd.markForCheck();
-      },
-      error: () => {
-        this.loading = false;
-        this.cd.markForCheck();
-      },
-    });
-  }
-
   limparFormulario() {
-    this.objeto = new Empresa();
+    this.objeto = new Planoassinatura();
     this.errorValidacao = {};
-  }
-
-  obterAssinatura() {
-    this.baseService.findAll(`planoassinatura/`).subscribe({
-      next: (res) => {
-        this.listaAssinatura = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.id_planoassinatura;
-          item.name = index.nm_planoassinatura;
-          this.cd.markForCheck();
-          return item;
-        });
-      },
-      error: (err) => {},
-    });
   }
 }
