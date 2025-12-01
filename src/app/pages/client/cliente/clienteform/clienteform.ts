@@ -25,12 +25,11 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FlagOption } from '../../../../models/flag-option';
 import { LayoutFormSimples } from '../../../../components/layouts/layout-form-simples/layout-form-simples';
 import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
-import { Empresa } from '../../../../models/empresa';
-import { EmpresaSchema } from '../../../../schema/empresa-schema';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { Clientes } from '../../../../models/clientes';
 import { ClienteSchema } from '../../../../schema/clientes-schema';
 import { NgxMaskDirective } from 'ngx-mask';
+import { ChipModule } from 'primeng/chip';
 
 @Component({
   selector: 'app-clienteform',
@@ -50,6 +49,7 @@ import { NgxMaskDirective } from 'ngx-mask';
     LayoutCampo,
     ToggleButtonModule,
     NgxMaskDirective,
+    ChipModule,
   ],
   templateUrl: './clienteform.html',
   styleUrl: './clienteform.scss',

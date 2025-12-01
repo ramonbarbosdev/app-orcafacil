@@ -90,4 +90,12 @@
       ></textarea>
     </app-layout-campo>
   </div>
+
+   <div class="flex-row-responsive" *ngIf="objeto.id_cliente">
+    <p-chip
+      [label]="'Registro criado em ' + objeto.dt_cadastro"
+      icon="pi pi-user"
+    />
+  </div>
+
 </app-layout-form-simples>

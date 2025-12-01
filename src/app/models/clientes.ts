@@ -9,6 +9,7 @@ export class Clientes {
   public ds_observacoes: string = '';
   public fl_ativo: boolean = true;
   public id_usuario!: number;
+  public dt_cadastro: Date | null = null;
 }
 
 
