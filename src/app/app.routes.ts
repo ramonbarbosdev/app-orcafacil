@@ -10,6 +10,8 @@ import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinatura
 import { HomeClient } from './pages/client/home-client/home-client';
 import { Clientelist } from './pages/client/cliente/clientelist/clientelist';
 import { Categoriaservicolist } from './pages/client/categoriaservico/categoriaservicolist/categoriaservicolist';
+import { Servicos } from './models/servicos';
+import { Servicolist } from './pages/client/servico/servicolist/servicolist';
 
 
 export const routes: Routes = [
@@ -38,6 +40,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeClient },
       { path: 'cliente', component: Clientelist },
       { path: 'categoriaservico', component: Categoriaservicolist },
+      { path: 'servico', component: Servicolist },
     ],
   },
 ];

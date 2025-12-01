@@ -1,0 +1,88 @@
+<app-layout-form-simples
+  [(visible)]="isDialog"
+  [title]="'Formulario de Empresas'"
+  [loading]="loading"
+  (save)="onSave()"
+  (cancel)="hideDialog()"
+  (show)="onShow()"
+>
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [error]="errorValidacao['cd_servico']"
+      [label]="'Código: (*)'"
+      [width]="'md:w-4/12'"
+      [sublabel]="'Informe o cd_servico'"
+      [describedby]="'Informe o código'"
+    >
+      <input
+        title="cd_servico"
+        pInputText
+        id="cd_servico"
+        [(ngModel)]="objeto.cd_servico"
+        [disabled]="true"
+        class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cd_servico'] }"
+      />
+    </app-layout-campo>
+
+    <app-layout-campo
+      [error]="errorValidacao['nm_servico']"
+      [label]="'Nome: (*)'"
+      [width]="'w-8/12'"
+      [sublabel]="'Informe o nome do serviço'"
+      [describedby]="'nm_servico'"
+    >
+      <input
+        title="nm_servico"
+        pInputText
+        id="nm_servico"
+        [(ngModel)]="objeto.nm_servico"
+        class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nm_servico'] }"
+      />
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [error]="errorValidacao['id_categoriaservico']"
+      [label]="'Categoria: (*)'"
+      [width]="'md:w-6/12'"
+      [sublabel]="'Informe a categoria'"
+      [describedby]="'Informe a categoria'"
+    >
+      <p-select
+        [checkmark]="true"
+        [showClear]="true"
+        name="id_categoriaservico"
+        [options]="listaCategoria"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione"
+        class="w-full"
+        [(ngModel)]="objeto.id_categoriaservico"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['id_categoriaservico'] }"
+      />
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [label]="'Observações/Pendências'"
+      [width]="'w-full'"
+      [describedby]="'ds_observacoes'"
+    >
+      <textarea
+        pTextarea
+        placeholder="Descrição"
+        [autoResize]="true"
+        rows="3"
+        [(ngModel)]="objeto.ds_observacoes"
+      ></textarea>
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive" *ngIf="objeto.id_servico">
+    <p-chip [label]="'Registro criado em ' + objeto.dt_cadastro" icon="pi pi-user" />
+  </div>
+</app-layout-form-simples>
