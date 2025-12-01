@@ -4,10 +4,14 @@
   <p-table
     #dt
     [value]="value"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="10"
+    [totalRecords]="totalRegistro"
+    (onLazyLoad)="carregarLazy($event)"
     [loading]="loading"
     dataKey="id"
-    [rows]="10"
-    [rowsPerPageOptions]="[5, 10, 15,20]"
+    [rowsPerPageOptions]="[2,5, 10, 15,20]"
     [paginator]="true"
     [rowHover]="true"
     [showGridlines]="false"
@@ -100,7 +104,7 @@
           [attr.colspan]="columns.length + 1"
           class="text-right font-semibold pr-4"
         >
-          Total de registros: {{ totalRegistro}}
+          Total de registros: {{ totalRegistro }}
         </td>
       </tr>
     </ng-template>

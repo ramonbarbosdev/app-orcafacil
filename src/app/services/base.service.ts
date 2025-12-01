@@ -70,16 +70,31 @@ export class BaseService {
 
   findAll(endpoint: string): Observable<any> {
     const url = `${this.apiUrl}/${endpoint}`;
+
     return this.http.get<any>(url).pipe(
       tap((res) => {
         return res;
       }),
       catchError((e) => {
-        console.log(e)
+        console.log(e);
         this.exibirErros(e);
         return throwError(() => e);
       })
     );
+  }
+
+  listarPaginado(endpoint: string, page: number, size: number, filters?: any) {
+    const url = `${this.apiUrl}/${endpoint}`;
+
+    const params: any = { page, size };
+
+    if (filters?.global) {
+      params.search = filters.global;
+    }
+
+    return this.http.get<any>(url, {
+      params,
+    });
   }
 
   findById(endpoint: string, id: any): Observable<any> {
@@ -115,7 +130,6 @@ export class BaseService {
 
   create(endpoint: string, data: any): Observable<any> {
     const url = `${this.apiUrl}/${endpoint}`;
-        console.log(url );
 
     return this.http.post<any>(url, data).pipe(
       tap((res) => {
@@ -161,7 +175,6 @@ export class BaseService {
       })
     );
   }
-
 
   exibirErros(e: any) {
     this.messageService.add({

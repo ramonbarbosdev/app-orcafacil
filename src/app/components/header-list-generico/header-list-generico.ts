@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -15,6 +16,7 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
+import { BaseService } from '../../services/base.service';
 
 export interface ColumnConfig {
   field: string;
@@ -55,19 +57,33 @@ export class HeaderListGenerico {
   @Input() columns: ColumnConfig[] = [];
   @Input() actions: ActionConfig[] = [];
   @Input() loading = false;
+  @Input() endpoint = '';
 
   @Output() add = new EventEmitter<void>();
   @Output() clearFilters = new EventEmitter<void>();
 
   globalFilterFields: string[] = [];
+  totalRegistro = 0;
 
   private confirmationService = inject(ConfirmationService);
+  private baseService = inject(BaseService);
+  private cd = inject(ChangeDetectorRef);
 
   @ViewChild('filter') filter!: ElementRef;
   @ViewChild('dt') tabela!: Table;
 
   ngOnInit() {
     this.globalFilterFields = this.columns.map((c) => c.field);
+  }
+
+  ngAfterViewInit() {
+    // Executar carregamento inicial automaticamente
+    const initEvent = {
+      first: 0, // início
+      rows: 10, // quantidade padrão
+    };
+
+    this.carregarLazy(initEvent);
   }
 
   onGlobalFilter(table: any, event: any) {
@@ -89,12 +105,6 @@ export class HeaderListGenerico {
     return this.tabela?.filteredValue ?? [];
   }
 
-  get totalRegistro(): number {
-    if (this.tabela?.filteredValue) {
-      return this.tabela.filteredValue.length;
-    }
-    return this.value ? this.value.length : 0;
-  }
   //TIPO FORMATACAO
   //  formatter: (value) => value ? 'Sim' : 'Não'
   //  formatter: (value) => `R$ ${value.toFixed(2)}`
@@ -117,5 +127,29 @@ export class HeaderListGenerico {
     } else {
       acao.onClick(row);
     }
+  }
+
+  carregarLazy(event: any) {
+    this.loading = true;
+
+    const pagina = event.first / event.rows;
+    const tamanho = event.rows;
+
+    const filters = {
+      global: event.globalFilter ?? '',
+    };
+
+    this.baseService.listarPaginado(this.endpoint, pagina, tamanho, filters).subscribe({
+      next: (res) => {
+        this.value = res.content;
+        this.totalRegistro = res.totalElements;
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar dados:', err);
+        this.loading = false;
+      },
+    });
   }
 }

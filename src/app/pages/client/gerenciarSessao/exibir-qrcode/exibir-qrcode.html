@@ -1,0 +1,17 @@
+<p-dialog
+  header="QR Code"
+  [modal]="true"
+  [(visible)]="isDialog"
+  [style]="{ width: '25rem' }"
+  (onHide)="hideDialog()"
+   (onShow)="onShow()"
+  appendTo="body"
+>
+  <span class="p-text-secondary block mb-8">Escaneie o QR Code abaixo no seu WhatsApp.</span>
+ 
+  <div *ngIf="objeto.qrCode" class="qr-container">
+    <img [src]="objeto.qrCode" alt="QR Code do WhatsApp" style="width: 250px; height: 250px" />
+  </div>
+
+  
+</p-dialog>

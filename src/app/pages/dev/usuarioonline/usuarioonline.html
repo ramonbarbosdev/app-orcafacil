@@ -1,0 +1,25 @@
+<div class="bg-white rounded-2xl p-4 shadow-md w-full">
+  <h2 class="text-lg font-semibold mb-3 flex items-center gap-2">
+    👥 Usuários Online
+    <span *ngIf="carregando" class="text-sm text-gray-400">(atualizando...)</span>
+  </h2>
+
+  <div *ngIf="usuarios.length === 0" class="text-gray-500">
+    Nenhum usuário online no momento.
+  </div>
+
+  <ul *ngIf="usuarios.length > 0" class="divide-y divide-gray-200">
+    <li *ngFor="let u of usuarios" class="py-2 flex justify-between items-center">
+      <div>
+        <p class="font-medium text-gray-700"> {{u.nome}} {{ u.login }}</p>
+        <p class="text-xs text-gray-400">
+          Último login: {{ u.dt_ultimologin | date:'short' }}
+        </p>
+      </div>
+      <div class="flex items-center gap-1">
+        <span *ngIf="u.fl_ativo" class="w-2 h-2 bg-green-500 rounded-full"></span>
+        <span *ngIf="!u.fl_ativo" class="w-2 h-2 bg-red-500 rounded-full"></span>
+      </div>
+    </li>
+  </ul>
+</div>
