@@ -12,7 +12,7 @@ export class BaseService {
   private readonly apiUrl = `${environment.apiUrl}`;
   private messageService = inject(MessageService);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   obterObjetoOpcoes(
     endpoint: string,
@@ -82,20 +82,33 @@ export class BaseService {
       })
     );
   }
-
-  listarPaginado(endpoint: string, page: number, size: number, filters?: any) {
-    const url = `${this.apiUrl}/${endpoint}`;
-
+  listarPaginado(
+    endpoint: string,
+    page: number,
+    size: number,
+    search?: string,
+    columnFilters: any = {},
+    sorts: string[] = []
+  ) {
     const params: any = { page, size };
 
-    if (filters?.global) {
-      params.search = filters.global;
+    // filtro global
+    if (search) {
+      params.search = search;
     }
 
-    return this.http.get<any>(url, {
-      params,
+    // filtros por coluna
+    Object.keys(columnFilters).forEach((key) => {
+      params[key] = columnFilters[key];
     });
+
+    if (sorts.length > 0) {
+      params.sort = sorts; // Spring aceita array
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/${endpoint}`, { params });
   }
+
 
   findById(endpoint: string, id: any): Observable<any> {
     const url = `${this.apiUrl}/${endpoint}/${id}`;

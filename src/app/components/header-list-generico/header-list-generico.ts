@@ -112,9 +112,11 @@ export class HeaderListGenerico {
 
   executarAcao(row: any, acao: ActionConfig) {
     const isEditAction =
-      acao.label?.toLowerCase().includes('editar') || acao.icon === 'pi pi-pencil';
+      acao.label?.toLowerCase().includes('editar') ||
+      acao.icon === 'pi pi-pencil';
 
-    const precisaConfirmar = !isEditAction && (acao.requiresConfirmation ?? true);
+    const precisaConfirmar =
+      !isEditAction && (acao.requiresConfirmation ?? true);
 
     if (precisaConfirmar) {
       this.confirmationService.confirm({
@@ -122,7 +124,7 @@ export class HeaderListGenerico {
         header: 'Confirmação',
         icon: 'pi pi-exclamation-triangle',
         accept: () => acao.onClick(row),
-        reject: () => {},
+        reject: () => { },
       });
     } else {
       acao.onClick(row);
@@ -135,22 +137,54 @@ export class HeaderListGenerico {
     const pagina = event.first / event.rows;
     const tamanho = event.rows;
 
-    const filters = {
-      global: event.globalFilter ?? '',
-    };
+    const search = this.filter?.nativeElement?.value?.trim() ?? '';
 
-    this.baseService.listarPaginado(this.endpoint, pagina, tamanho, filters).subscribe({
-      next: (res) => {
-        this.value = res.content;
-        console.log('Dados carregados:', this.value);
-        this.totalRegistro = res.totalElements;
-        this.loading = false;
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erro ao carregar dados:', err);
-        this.loading = false;
-      },
-    });
+    // filtros por coluna
+    const columnFilters: any = {};
+
+    if (event.filters) {
+      Object.keys(event.filters).forEach((campo) => {
+        const filtroArray = event.filters[campo];
+
+        if (Array.isArray(filtroArray) && filtroArray.length > 0) {
+          const filtro = filtroArray[0];
+
+          if (filtro.value !== null && filtro.value !== undefined && filtro.value !== '') {
+            columnFilters[campo] = filtro.value;
+          }
+        }
+      });
+    }
+
+    let sortParams: string[] = [];
+    if (event.multiSortMeta && event.multiSortMeta.length > 0) {
+      sortParams = event.multiSortMeta.map((s: any) => {
+        const dir = s.order === 1 ? 'asc' : 'desc';
+        return `${s.field},${dir}`;
+      });
+    }
+
+    this.baseService
+      .listarPaginado(
+        this.endpoint,
+        pagina,
+        tamanho,
+        search,
+        columnFilters,
+        sortParams  
+      )
+      .subscribe({
+        next: (res) => {
+          this.value = res.content;
+          this.totalRegistro = res.totalElements;
+          this.loading = false;
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar dados:', err);
+          this.loading = false;
+        },
+      });
   }
+
 }
