@@ -33,34 +33,34 @@ export class Empresalist {
   public listagem: Empresa[] = [];
   public baseService = inject(BaseService);
   endpoint = 'empresa';
-  primaryKey = 'id_empresa';
+  primaryKey = 'idEmpresa';
   router = inject(Router);
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
   idEdicao!: number;
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(private cd: ChangeDetectorRef) { }
 
   columns: ColumnConfig[] = [
     {
-      field: 'cd_empresa',
+      field: 'cdEmpresa',
       header: 'Código',
       minWidth: '10rem',
       filterType: 'text',
     },
     {
-      field: 'nm_empresa',
+      field: 'nmEmpresa',
       header: 'Nome',
       minWidth: '15rem',
       filterType: 'text',
     },
     {
-      field: 'nm_planoassinatura',
+      field: 'nmPlanoassinatura',
       header: 'Plano',
       minWidth: '15rem',
       filterType: 'text',
     },
     {
-      field: 'fl_ativo',
+      field: 'flAtivo',
       header: 'Status',
       minWidth: '15rem',
       filterType: 'boolean',

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export const EmpresasSchema = z.object({
-  cd_empresa: z.string('O Código é obrigatório').min(1, 'O Código é obrigatório'),
-  nm_empresa: z.string('O Nome é obrigatório').min(1, 'O Nome é obrigatório'),
-  id_planoassinatura: z.preprocess((val) => {
+  cdEmpresa: z.string('O Código é obrigatório').min(1, 'O Código é obrigatório'),
+  nmEmpresa: z.string('O Nome é obrigatório').min(1, 'O Nome é obrigatório'),
+  idPlanoAssinatura: z.preprocess((val) => {
     if (typeof val === 'string') {
       const num = Number(val);
       return isNaN(num) ? null : num;

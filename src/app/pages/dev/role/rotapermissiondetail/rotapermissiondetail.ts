@@ -42,7 +42,7 @@ import { SelectModule } from 'primeng/select';
 })
 export class Rotapermissiondetail {
   @Input() objeto: any;
-  @Input() primaryKey: string = 'id_role';
+  @Input() primaryKey: string = 'idRole';
   @Output() objetoChange = new EventEmitter<any>();
 
   @Input() itemTemp: Rotapermission = new Rotapermission();
@@ -56,7 +56,7 @@ export class Rotapermissiondetail {
   private cd = inject(ChangeDetectorRef);
   listaRotas: FlagOption[] = [];
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['objeto'] && this.carregarDados) {
@@ -130,7 +130,7 @@ export class Rotapermissiondetail {
         });
         this.cd.markForCheck(); // só uma vez
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 

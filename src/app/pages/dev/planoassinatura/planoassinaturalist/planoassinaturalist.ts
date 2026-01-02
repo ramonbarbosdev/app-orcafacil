@@ -33,22 +33,22 @@ export class Planoassinaturalist {
   loading: boolean = true;
   public baseService = inject(BaseService);
   endpoint = 'planoassinatura';
-  primaryKey = 'id_planoassinatura';
+  primaryKey = 'idPlanoAssinatura';
   router = inject(Router);
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
   idEdicao!: number;
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(private cd: ChangeDetectorRef) { }
 
   columns: ColumnConfig[] = [
     {
-      field: 'nm_planoassinatura',
+      field: 'nmPlanoAssinatura',
       header: 'Nome',
       minWidth: '15rem',
       filterType: 'text',
     },
     {
-      field: 'vl_mensal',
+      field: 'vlMensal',
       header: 'Valor',
       minWidth: '10rem',
       filterType: 'text',
@@ -59,7 +59,7 @@ export class Planoassinaturalist {
         }).format(value),
     },
     {
-      field: 'nu_limitemensagens',
+      field: 'nuLimitemensagens',
       header: 'Limite',
       minWidth: '10rem',
       filterType: 'text',

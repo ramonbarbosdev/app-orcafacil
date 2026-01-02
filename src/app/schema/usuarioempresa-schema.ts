@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const UsuariosEmpresasSchema = z.object({
-  id_empresa: z.preprocess((val) => {
+  idEmpresa: z.preprocess((val) => {
     if (typeof val === 'string') {
       const num = Number(val);
       return isNaN(num) ? null : num;

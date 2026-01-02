@@ -1,9 +1,9 @@
 export class Servicos {
-  public id_servico!: number;
-  public cd_servico: string = '';
-  public nm_servico: string = '';
-  public id_categoriaservico!: number;
-  public vl_preco!: number;
-  public ds_observacoes: string = '';
-  public dt_cadastro: Date | null = null;
+  public idServico!: number;
+  public cdServico: string = '';
+  public nmServico: string = '';
+  public idCategoriaservico!: number;
+  public vlServico!: number;
+  public dsObservacoes: string = '';
+  public dtCadastro: Date | null = null;
 }

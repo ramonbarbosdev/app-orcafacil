@@ -142,6 +142,7 @@ export class HeaderListGenerico {
     this.baseService.listarPaginado(this.endpoint, pagina, tamanho, filters).subscribe({
       next: (res) => {
         this.value = res.content;
+        console.log('Dados carregados:', this.value);
         this.totalRegistro = res.totalElements;
         this.loading = false;
         this.cd.detectChanges();

@@ -49,8 +49,8 @@ export class SelecionarOrganizacao {
 
   showDialog() {
 
-    
-        this.objeto.id_tenant = String(this.listaEmpresa[0].code);
+
+    this.objeto.idTenant = String(this.listaEmpresa[0].code);
   }
 
   hideDialog() {

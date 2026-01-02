@@ -57,7 +57,7 @@ import { ChipModule } from 'primeng/chip';
 export class Clienteform {
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
-  @Input() onReloadList: () => void = () => {};
+  @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
@@ -161,9 +161,9 @@ export class Clienteform {
           return item;
         });
 
-        this.objeto.tp_cliente = String(this.listaTipo[0].code);
+        this.objeto.tpCliente = String(this.listaTipo[0].code);
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 }

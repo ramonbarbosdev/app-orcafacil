@@ -70,8 +70,8 @@ export class Login {
         this.visibleOrganizacao = true;
         this.listaEmpresa = (res.tenants as any).map((index: any) => {
           const item = new FlagOption();
-          item.code = String(index.id_tenant);
-          item.name = index.nm_empresa;
+          item.code = String(index.idTenant);
+          item.name = index.nmEmpresa;
           return item;
         });
 

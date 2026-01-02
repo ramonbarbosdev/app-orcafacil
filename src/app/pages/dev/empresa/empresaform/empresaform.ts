@@ -53,7 +53,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 export class Empresaform {
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
-  @Input() onReloadList: () => void = () => {};
+  @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
@@ -144,7 +144,7 @@ export class Empresaform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
-        this.objeto.cd_empresa = res.sequencia;
+        this.objeto.cdEmpresa = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -165,13 +165,13 @@ export class Empresaform {
       next: (res) => {
         this.listaAssinatura = (res as any).map((index: any) => {
           const item = new FlagOption();
-          item.code = index.id_planoassinatura;
-          item.name = index.nm_planoassinatura;
+          item.code = index.idPlanoAssinatura;
+          item.name = index.nmPlanoAssinatura;
           this.cd.markForCheck();
           return item;
         });
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 }

@@ -1,70 +1,29 @@
-<app-layout-form-simples
-  [(visible)]="isDialog"
-  [title]="'Formulario de Empresas'"
-  [loading]="loading"
-  (save)="onSave()"
-  (cancel)="hideDialog()"
-  (show)="onShow()"
->
- 
+<app-layout-form-simples [(visible)]="isDialog" [title]="'Formulario de Empresas'" [loading]="loading" (save)="onSave()"
+  (cancel)="hideDialog()" (show)="onShow()">
+
   <div class="flex-row-responsive">
-    <app-layout-campo
-      [error]="errorValidacao['cd_categoriaservico']"
-      [label]="'Código: (*)'"
-      [width]="'md:w-4/12'"
-      [sublabel]="'Informe o cd_categoriaservico'"
-      [describedby]="'Informe o código'"
-    >
-      <input
-        title="cd_categoriaservico"
-        pInputText
-        id="cd_categoriaservico"
-        [(ngModel)]="objeto.cd_categoriaservico"
-        [disabled]="true"
-        class="w-full"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cd_categoriaservico'] }"
-      />
+    <app-layout-campo [error]="errorValidacao['cdCategoriaservico']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
+      [sublabel]="'Informe o cdCategoriaservico'" [describedby]="'Informe o código'">
+      <input title="cdCategoriaservico" pInputText id="cdCategoriaservico" [(ngModel)]="objeto.cdCategoriaservico"
+        [disabled]="true" class="w-full" [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCategoriaservico'] }" />
     </app-layout-campo>
 
-    <app-layout-campo
-      [error]="errorValidacao['nm_categoriaservico']"
-      [label]="'Nome: (*)'"
-      [width]="'w-8/12'"
-      [sublabel]="'Informe o nome da categoria'"
-      [describedby]="'nm_categoriaservico'"
-    >
-      <input
-        title="nm_categoriaservico"
-        pInputText
-        id="nm_categoriaservico"
-        [(ngModel)]="objeto.nm_categoriaservico"
-        class="w-full"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nm_categoriaservico'] }"
-      />
+    <app-layout-campo [error]="errorValidacao['nmCategoriaservico']" [label]="'Nome: (*)'" [width]="'w-8/12'"
+      [sublabel]="'Informe o nome da categoria'" [describedby]="'nmCategoriaservico'">
+      <input title="nmCategoriaservico" pInputText id="nmCategoriaservico" [(ngModel)]="objeto.nmCategoriaservico"
+        class="w-full" [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCategoriaservico'] }" />
     </app-layout-campo>
   </div>
 
-  <!-- Linha 2: ds_email e Permissão -->
+  <!-- Linha 2: dsEmail e Permissão -->
   <div class="flex-row-responsive">
-    <app-layout-campo
-      [label]="'Observações/Pendências'"
-      [width]="'w-full'"
-      [describedby]="'ds_observacoes'"
-    >
-      <textarea
-        pTextarea
-        placeholder="Descrição"
-        [autoResize]="true"
-        rows="3"
-        [(ngModel)]="objeto.ds_observacoes"
-      ></textarea>
+    <app-layout-campo [label]="'Observações/Pendências'" [width]="'w-full'" [describedby]="'dsObservacoes'">
+      <textarea pTextarea placeholder="Descrição" [autoResize]="true" rows="3"
+        [(ngModel)]="objeto.dsObservacoes"></textarea>
     </app-layout-campo>
   </div>
 
-   <div class="flex-row-responsive" *ngIf="objeto.id_categoriaservico">
-    <p-chip
-      [label]="'Registro criado em ' + objeto.dt_cadastro"
-      icon="pi pi-user"
-    />
+  <div class="flex-row-responsive" *ngIf="objeto.idCategoriaservico">
+    <p-chip [label]="'Registro criado em ' + objeto.dtCadastro" icon="pi pi-user" />
   </div>
 </app-layout-form-simples>

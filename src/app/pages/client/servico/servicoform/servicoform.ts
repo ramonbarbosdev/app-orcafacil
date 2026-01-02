@@ -55,7 +55,7 @@ import { ServicoSchema } from '../../../../schema/servico-schema';
 export class Servicoform {
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
-  @Input() onReloadList: () => void = () => {};
+  @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
@@ -146,7 +146,7 @@ export class Servicoform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
-        this.objeto.cd_servico = res.sequencia;
+        this.objeto.cdServico = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -167,13 +167,13 @@ export class Servicoform {
       next: (res) => {
         this.listaCategoria = (res as any).map((index: any) => {
           const item = new FlagOption();
-          item.code = index.id_categoriaservico;
-          item.name = index.nm_categoriaservico;
+          item.code = index.idCategoriaservico;
+          item.name = index.nmCategoriaservico;
           this.cd.markForCheck();
           return item;
         });
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 }

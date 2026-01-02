@@ -1,101 +1,41 @@
-<app-layout-form-simples
-  [(visible)]="isDialog"
-  [title]="'Formulario de Clientes'"
-  [loading]="loading"
-  (save)="onSave()"
-  (cancel)="hideDialog()"
-  (show)="onShow()"
-  [width]="'800px'"
->
+<app-layout-form-simples [(visible)]="isDialog" [title]="'Formulario de Clientes'" [loading]="loading" (save)="onSave()"
+  (cancel)="hideDialog()" (show)="onShow()" [width]="'800px'">
   <div class="flex-row-responsive">
-    <app-layout-campo
-      [error]="errorValidacao['tp_cliente']"
-      [label]="'Tipo: (*)'"
-      [width]="'md:w-3/12'"
-      [sublabel]="'Informe o tipo'"
-      [describedby]="'Informe o tipo'"
-    >
-      <p-select
-        [checkmark]="true"
-        [showClear]="true"
-        name="tp_cliente"
-        [options]="listaTipo"
-        optionLabel="name"
-        optionValue="code"
-        placeholder="Selecione"
-        class="w-full"
-        [(ngModel)]="objeto.tp_cliente"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tp_cliente'] }"
-      />
+    <app-layout-campo [error]="errorValidacao['tpCliente']" [label]="'Tipo: (*)'" [width]="'md:w-3/12'"
+      [sublabel]="'Informe o tipo'" [describedby]="'Informe o tipo'">
+      <p-select [checkmark]="true" [showClear]="true" name="tpCliente" [options]="listaTipo" optionLabel="name"
+        optionValue="code" placeholder="Selecione" class="w-full" [(ngModel)]="objeto.tpCliente"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCliente'] }" />
     </app-layout-campo>
-    <app-layout-campo
-      [error]="errorValidacao['nu_cpfcnpj']"
-      [label]="'CPF/CNPJ: (*)'"
-      [width]="'md:w-4/12'"
-      [sublabel]="'Informe o cpf ou cnpj'"
-      [describedby]="'Informe o código'"
-    >
-      <input
-        title="nu_cpfcnpj"
-        pInputText
-        id="nu_cpfcnpj"
-        [(ngModel)]="objeto.nu_cpfcnpj"
-        class="w-full"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nu_cpfcnpj'] }"
-        [mask]="objeto.tp_cliente == 'Fisico' ? '000.000.000-00' : '00.000.000/0000-00'"
-      />
+    <app-layout-campo [error]="errorValidacao['nuCpfcnpj']" [label]="'CPF/CNPJ: (*)'" [width]="'md:w-4/12'"
+      [sublabel]="'Informe o cpf ou cnpj'" [describedby]="'Informe o código'">
+      <input title="nuCpfcnpj" pInputText id="nuCpfcnpj" [(ngModel)]="objeto.nuCpfcnpj" class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpfcnpj'] }"
+        [mask]="objeto.tpCliente == 'Fisico' ? '000.000.000-00' : '00.000.000/0000-00'" />
     </app-layout-campo>
 
-    <app-layout-campo
-      [error]="errorValidacao['nm_cliente']"
-      [label]="'Nome: (*)'"
-      [width]="'w-6/12'"
-      [sublabel]="'Informe o nome da emrpesa'"
-      [describedby]="'nm_cliente'"
-    >
-      <input
-        title="nm_cliente"
-        pInputText
-        id="nm_cliente"
-        [(ngModel)]="objeto.nm_cliente"
-        class="w-full"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nm_cliente'] }"
-      />
+    <app-layout-campo [error]="errorValidacao['nmCliente']" [label]="'Nome: (*)'" [width]="'w-6/12'"
+      [sublabel]="'Informe o nome da emrpesa'" [describedby]="'nmCliente'">
+      <input title="nmCliente" pInputText id="nmCliente" [(ngModel)]="objeto.nmCliente" class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCliente'] }" />
     </app-layout-campo>
   </div>
 
   <div class="flex-row-responsive">
     <app-layout-campo [label]="'Status: '" [width]="'md:w-2/12'">
-      <p-togglebutton
-        [(ngModel)]="objeto.fl_ativo"
-        onLabel="Ativo"
-        offLabel="Inativo"
-        class="w-full"
-      />
+      <p-togglebutton [(ngModel)]="objeto.flAtivo" onLabel="Ativo" offLabel="Inativo" class="w-full" />
     </app-layout-campo>
   </div>
 
   <div class="flex-row-responsive">
-    <app-layout-campo
-      [label]="'Observações/Pendências'"
-      [width]="'w-full'"
-      [describedby]="'ds_observacoes'"
-    >
-      <textarea
-        pTextarea
-        placeholder="Descrição"
-        [autoResize]="true"
-        rows="3"
-        [(ngModel)]="objeto.ds_observacoes"
-      ></textarea>
+    <app-layout-campo [label]="'Observações/Pendências'" [width]="'w-full'" [describedby]="'dsObservacoes'">
+      <textarea pTextarea placeholder="Descrição" [autoResize]="true" rows="3"
+        [(ngModel)]="objeto.dsObservacoes"></textarea>
     </app-layout-campo>
   </div>
 
-   <div class="flex-row-responsive" *ngIf="objeto.id_cliente">
-    <p-chip
-      [label]="'Registro criado em ' + objeto.dt_cadastro"
-      icon="pi pi-user"
-    />
+  <div class="flex-row-responsive" *ngIf="objeto.idCliente">
+    <p-chip [label]="'Registro criado em ' + objeto.dtCadastro" icon="pi pi-user" />
   </div>
 
 </app-layout-form-simples>

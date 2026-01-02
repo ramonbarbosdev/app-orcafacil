@@ -68,7 +68,7 @@ export class Usuarioempresadetail {
 
   public getObjetoLabel = getObjetoLabel;
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['objeto'] && this.carregarDados) {
@@ -151,11 +151,9 @@ export class Usuarioempresadetail {
   //   });
   // }
 
-  processarCodigoEmpresa(event: any)
-  {
-    if(event)
-    {
-      // this.itemTemp.fl_ativo = getObjetoLabel(this.listaEmpresa, event, 'fl_ativo');
+  processarCodigoEmpresa(event: any) {
+    if (event) {
+      // this.itemTemp.flAtivo = getObjetoLabel(this.listaEmpresa, event, 'flAtivo');
     }
   }
 
@@ -164,17 +162,17 @@ export class Usuarioempresadetail {
       next: (res) => {
         this.listaEmpresa = (res as any).map((index: any) => {
           const item = new FlagOption();
-          item.code = index.id_empresa;
-          item.name = index.cd_empresa + ' - ' + index.nm_empresa;
-           item.extra = {
-             nm_empresa: index.nm_empresa,
-             cd_empresa: index.cd_empresa,
-           };
+          item.code = index.idEmpresa;
+          item.name = index.cdEmpresa + ' - ' + index.nmEmpresa;
+          item.extra = {
+            nmEmpresa: index.nmEmpresa,
+            cdEmpresa: index.cdEmpresa,
+          };
           this.cd.markForCheck();
           return item;
         });
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 }

@@ -58,7 +58,7 @@ import { CategoriasServicoSchema } from '../../../../schema/categoriaservico-sch
 export class Categoriaservicoform {
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
-  @Input() onReloadList: () => void = () => {};
+  @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
@@ -147,7 +147,7 @@ export class Categoriaservicoform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
-        this.objeto.cd_categoriaservico = res.sequencia;
+        this.objeto.cdCategoriaservico = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
       },

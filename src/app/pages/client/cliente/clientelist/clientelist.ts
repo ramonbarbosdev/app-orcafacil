@@ -32,29 +32,29 @@ export class Clientelist {
   loading: boolean = true;
   public baseService = inject(BaseService);
   endpoint = 'cliente';
-  primaryKey = 'id_cliente';
+  primaryKey = 'idCliente';
   router = inject(Router);
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
   idEdicao!: number;
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(private cd: ChangeDetectorRef) { }
 
   columns: ColumnConfig[] = [
     {
-      field: 'nu_cpfcnpj',
+      field: 'nuCpfcnpj',
       header: 'CPF/CNPJ',
       minWidth: '10rem',
       filterType: 'text',
       formatter: (value) => FormatCpfCnpj(value),
     },
     {
-      field: 'nm_cliente',
+      field: 'nmCliente',
       header: 'Nome',
       minWidth: '15rem',
       filterType: 'text',
     },
     {
-      field: 'fl_ativo',
+      field: 'flAtivo',
       header: 'Ativo',
       minWidth: '15rem',
       filterType: 'boolean',
