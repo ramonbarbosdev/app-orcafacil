@@ -11,17 +11,20 @@ import { CommonModule } from '@angular/common';
 import { LayoutFormSimples } from '../../../../components/layouts/layout-form-simples/layout-form-simples';
 import { MetodoPrecificacao } from '../../../../models/metodo-precificacao';
 import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
+import { FlagOption } from '../../../../models/flag-option';
 
 @Component({
   selector: 'app-metodoprecificacaoform',
-  imports: [    DialogModule,
+  imports: [DialogModule,
     InputTextModule,
     FormsModule,
     CommonModule,
     LayoutFormSimples,
     LayoutCampo,
-    TextareaModule
-    ],
+    TextareaModule,
+    SelectModule
+  ],
   templateUrl: './metodoprecificacaoform.html',
   styleUrl: './metodoprecificacaoform.scss',
 })
@@ -40,6 +43,9 @@ export class Metodoprecificacaoform {
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
 
+  public listaCodigo: FlagOption[] = [];
+
+
   hideDialog() {
     this.isDialog = false;
     this.isDialogChange.emit(false);
@@ -50,6 +56,7 @@ export class Metodoprecificacaoform {
     this.loading = true;
     this.limparFormulario();
 
+    this.obterCodigo();
 
     if (this.key == 0) {
       setTimeout(() => (this.loading = false), 0);
@@ -119,6 +126,21 @@ export class Metodoprecificacaoform {
   limparFormulario() {
     this.objeto = new MetodoPrecificacao();
     this.errorValidacao = {};
+  }
+
+  obterCodigo() {
+    this.baseService.findAll(`${this.endpoint}/tipo-precificacao`).subscribe({
+      next: (res) => {
+        this.listaCodigo = (res as any).map((index: any) => {
+          const item = new FlagOption();
+          item.code = index;
+          item.name = index;
+          this.cd.markForCheck();
+          return item;
+        });
+      },
+      error: (err) => { },
+    });
   }
 
 

@@ -4,8 +4,9 @@
     <div class="flex-row-responsive">
         <app-layout-campo [error]="errorValidacao['cdMetodoPrecificacao']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
             [sublabel]="'Informe o código'" [describedby]="'Informe o código'">
-            <input title="cdMetodoPrecificacao" pInputText id="cdMetodoPrecificacao"
-                [(ngModel)]="objeto.cdMetodoPrecificacao" class="w-full"
+            <p-select [checkmark]="true" [showClear]="true" name="idPlanoAssinatura" [options]="listaCodigo"
+                optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
+                [(ngModel)]="objeto.cdMetodoPrecificacao"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdMetodoPrecificacao'] }" />
         </app-layout-campo>
 
