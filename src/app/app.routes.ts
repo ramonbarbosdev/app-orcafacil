@@ -13,6 +13,7 @@ import { Categoriaservicolist } from './pages/client/categoriaservico/categorias
 import { Servicos } from './models/servicos';
 import { Servicolist } from './pages/client/servico/servicolist/servicolist';
 import { ConfiguracaoView } from './pages/client/configuracao-view/configuracao-view';
+import { Metodoprecificacaolist } from './pages/dev/metodoprecificacao/metodoprecificacaolist/metodoprecificacaolist';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
       { path: 'role', component: Rolelist },
       { path: 'planoassinatura', component: Planoassinaturalist },
       { path: 'empresa', component: Empresalist },
+      { path: 'metodoprecificacao', component: Metodoprecificacaolist },
     ],
   },
   {

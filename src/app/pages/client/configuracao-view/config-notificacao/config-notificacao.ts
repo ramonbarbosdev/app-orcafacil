@@ -9,7 +9,7 @@ import { DividerModule } from 'primeng/divider';
 import { ConfiguracaoNotificacao } from '../../../../models/configuracao-notificacao';
 @Component({
   selector: 'app-config-notificacao',
-  imports: [LayoutCardConfig, LayoutCampo, CommonModule, FormsModule,ToggleSwitchModule,DividerModule],
+  imports: [LayoutCardConfig, CommonModule, FormsModule,ToggleSwitchModule,DividerModule],
   templateUrl: './config-notificacao.html',
   styleUrl: './config-notificacao.scss',
 })

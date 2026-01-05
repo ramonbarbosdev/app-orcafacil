@@ -1,68 +1,44 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { FluidModule } from 'primeng/fluid';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { TextareaModule } from 'primeng/textarea';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { BaseService } from '../../../../services/base.service';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { EmpresaMetodoPrecificacao } from '../../../../models/empresa-metodo-precificacao';
 import { ZodError } from 'zod';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { FlagOption } from '../../../../models/flag-option';
+import { MetodoPrecificacaoSchema } from '../../../../schema/metodoprecificacao-schema';
+import { BaseService } from '../../../../services/base.service';
+import { LayoutCampo } from "../../../../components/layout-campo/layout-campo";
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { LayoutFormSimples } from '../../../../components/layouts/layout-form-simples/layout-form-simples';
-import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
-import { Empresa } from '../../../../models/empresa';
-import { EmpresaSchema } from '../../../../schema/empresa-schema';
-import { ToggleButtonModule } from 'primeng/togglebutton';
+import { MetodoPrecificacao } from '../../../../models/metodo-precificacao';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
-  selector: 'app-empresaform',
-  imports: [
-    DialogModule,
+  selector: 'app-metodoprecificacaoform',
+  imports: [    DialogModule,
     InputTextModule,
-    FluidModule,
-    ButtonModule,
     FormsModule,
-    TextareaModule,
     CommonModule,
-    ProgressSpinnerModule,
-    SelectModule,
-    PasswordModule,
     LayoutFormSimples,
     LayoutCampo,
-    ToggleButtonModule,
-  ],
-  templateUrl: './empresaform.html',
-  styleUrl: './empresaform.scss',
+    TextareaModule
+    ],
+  templateUrl: './metodoprecificacaoform.html',
+  styleUrl: './metodoprecificacaoform.scss',
 })
-export class Empresaform {
+export class Metodoprecificacaoform {
+
+
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
   @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
-  public objeto: Empresa = new Empresa();
+  public objeto: MetodoPrecificacao = new MetodoPrecificacao();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'empresa';
-  private route = inject(ActivatedRoute);
+  private endpoint = 'metodoprecificacao';
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
-  public listaAssinatura: FlagOption[] = [];
 
   hideDialog() {
     this.isDialog = false;
@@ -74,10 +50,10 @@ export class Empresaform {
     this.loading = true;
     this.limparFormulario();
 
-    this.obterAssinatura();
 
     if (this.key == 0) {
-      this.obterSequencia();
+      setTimeout(() => (this.loading = false), 0);
+
     } else {
       this.onEdit(this.key);
     }
@@ -124,7 +100,7 @@ export class Empresaform {
 
   validarItens(): boolean {
     try {
-      EmpresaSchema.parse([this.objeto]);
+      MetodoPrecificacaoSchema.parse([this.objeto]);
       this.errorValidacao = {};
       return true;
     } catch (error) {
@@ -140,37 +116,10 @@ export class Empresaform {
     }
   }
 
-  obterSequencia() {
-    this.baseService.findSequence(this.endpoint).subscribe({
-      next: (res) => {
-        this.objeto.cdEmpresa = res.sequencia;
-        this.loading = false;
-        this.cd.markForCheck();
-      },
-      error: () => {
-        this.loading = false;
-        this.cd.markForCheck();
-      },
-    });
-  }
-
   limparFormulario() {
-    this.objeto = new Empresa();
+    this.objeto = new MetodoPrecificacao();
     this.errorValidacao = {};
   }
 
-  obterAssinatura() {
-    this.baseService.findAll(`planoassinatura/`).subscribe({
-      next: (res) => {
-        this.listaAssinatura = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.idPlanoAssinatura;
-          item.name = index.nmPlanoAssinatura;
-          this.cd.markForCheck();
-          return item;
-        });
-      },
-      error: (err) => { },
-    });
-  }
+
 }

@@ -1,0 +1,32 @@
+<app-layout-form-simples [(visible)]="isDialog" [title]="'Formulario de Precificação'" [loading]="loading"
+    (save)="onSave()" (cancel)="hideDialog()" (show)="onShow()">
+
+    <div class="flex-row-responsive">
+        <app-layout-campo [error]="errorValidacao['cdMetodoPrecificacao']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
+            [sublabel]="'Informe o código'" [describedby]="'Informe o código'">
+            <input title="cdMetodoPrecificacao" pInputText id="cdMetodoPrecificacao"
+                [(ngModel)]="objeto.cdMetodoPrecificacao" class="w-full"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdMetodoPrecificacao'] }" />
+        </app-layout-campo>
+
+        <app-layout-campo [error]="errorValidacao['nmMetodoPrecificacao']" [label]="'Nome: (*)'" [width]="'w-8/12'"
+            [sublabel]="'Informe o nome da emrpesa'" [describedby]="'nmMetodoPrecificacao'">
+            <input title="nmMetodoPrecificacao" pInputText id="nmMetodoPrecificacao"
+                [(ngModel)]="objeto.nmMetodoPrecificacao" class="w-full"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmMetodoPrecificacao'] }" />
+        </app-layout-campo>
+    </div>
+
+    <!-- Linha 2: dsMetodoPrecificacao e Permissão -->
+
+
+    <div class="flex-row-responsive">
+        <app-layout-campo [label]="'Observação: '" [width]="'md:w-12/12'">
+
+            <textarea pTextarea placeholder="Descrição..." [autoResize]="false" rows="3" cols="30"
+                name="dsMetodoPrecificacao" id="dsMetodoPrecificacao"
+                [(ngModel)]="objeto.dsMetodoPrecificacao"></textarea>
+        </app-layout-campo>
+    </div>
+
+</app-layout-form-simples>

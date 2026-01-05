@@ -1,0 +1,18 @@
+<app-layout-card-config [title]="'Método de Precificação'" [subtitle]="'Como você calcula seus preços?'"
+    [icon]="'pi pi-dollar'" (salvar)="onSave()">
+
+    <div class="flex-row-responsive">
+        <app-layout-campo [error]="errorValidacao['idMetodoPrecificacao']" [label]="'Método de Precificacão: '"
+            [width]="'md:w-4/12'" [sublabel]="'Informe a método'" [describedby]="'idMetodoPrecificacao'">
+            <p-select [checkmark]="true" [showClear]="true" name="idMetodoPrecificacao" [options]="listaMetodo"
+                optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
+                [(ngModel)]="objeto.idMetodoPrecificacao"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idMetodoPrecificacao'] }" />
+        </app-layout-campo>
+
+
+    </div>
+
+
+
+</app-layout-card-config>

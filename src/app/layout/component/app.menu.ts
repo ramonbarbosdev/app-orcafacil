@@ -35,24 +35,39 @@ export class AppMenu {
             routerLink: ['/dev/home'],
           },
           {
-            label: 'Planos',
-            icon: 'pi pi-fw pi-bookmark',
-            routerLink: ['/dev/planoassinatura'],
-          },
-          {
             label: 'Empresas',
-            icon: 'pi pi-fw pi-bookmark',
-            routerLink: ['/dev/empresa'],
-          },
-          {
-            label: 'Permissões',
-            icon: 'pi pi-fw pi-bookmark',
-            routerLink: ['/dev/role'],
+            items: [
+              {
+                label: 'Planos',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['/dev/planoassinatura'],
+              },
+              {
+                label: 'Empresas',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['/dev/empresa'],
+              },
+              {
+                label: 'Método de Precificação',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['metodoprecificacao'],
+              },
+            ],
           },
           {
             label: 'Usuarios',
-            icon: 'pi pi-fw pi-bookmark',
-            routerLink: ['/dev/usuario'],
+            items: [
+              {
+                label: 'Permissões',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['/dev/role'],
+              },
+              {
+                label: 'Usuarios',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['/dev/usuario'],
+              },
+            ],
           },
         ],
       });
