@@ -1,0 +1,31 @@
+<app-layout-card-config [title]="'Configurações de Orçamento'" [subtitle]="'Padrões para novos orçamentos'"
+    [icon]="'pi pi-file'" (salvar)="onSave()">
+
+
+    <div class="flex-row-responsive">
+
+        <app-layout-campo [label]="'Prefixo do numero:'" [width]="'md:w-6/12'"
+            [sublabel]="'Informe o prefixo da empresa'">
+            <input title="prefixoNumero" pInputText id="prefixoNumero" [(ngModel)]="objeto.prefixoNumero"
+                [disabled]="false" class="w-full"
+                />
+        </app-layout-campo>
+
+        <app-layout-campo [label]="'Validade padrão:'" [width]="'md:w-6/12'">
+            <p-inputnumber [(ngModel)]="objeto.validadeDias" [showButtons]="true" inputId="minmax-buttons" [min]="0"
+                [max]="31" />
+        </app-layout-campo>
+
+
+    </div>
+
+    <div class="flex-row-responsive">
+        <app-layout-campo [label]="'Termos e condições padrão:'" [width]="'w-12/12'">
+            <textarea pTextarea placeholder="Termos e condições que aparecerão em todos os orçamentos..."
+                [autoResize]="false" rows="3" cols="30" name="termosPadrao" id="termosPadrao"
+                [(ngModel)]="objeto.termosPadrao"></textarea>
+        </app-layout-campo>
+
+    </div>
+
+</app-layout-card-config>

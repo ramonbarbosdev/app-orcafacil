@@ -12,8 +12,6 @@ export const TenantInterceptor: HttpInterceptorFn = (req, next) => {
     headers = headers.set('X-Tenant-ID', idTenant);
   }
 
-  // console.log(headers);
-
   const authReq = req.clone({ headers });
   return next(authReq);
 };

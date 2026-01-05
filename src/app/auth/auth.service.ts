@@ -14,7 +14,6 @@ export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}`;
 
   private router = inject(Router);
-  private baseService = inject(BaseService);
   private messageService = inject(MessageService);
 
   private userSubject = new BehaviorSubject<any | null>(null);

@@ -12,6 +12,7 @@ import { Error401Interceptor } from './app/interceptor/error401.interceptor';
 import localePt from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
 import { LOCALE_ID } from '@angular/core';
+import { TenantInterceptor } from './app/auth/tenant.interceptor';
 
 registerLocaleData(localePt, 'pt-BR');
 document.documentElement.classList.add('app-dark'); //Dark como padrão
@@ -22,7 +23,7 @@ bootstrapApplication(App, {
     MessageService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideHttpClient(
-      withInterceptors([TokenInterceptor, Error403Interceptor, Error401Interceptor])
+      withInterceptors([TokenInterceptor, Error403Interceptor, Error401Interceptor, TenantInterceptor])
     ),
     provideRouter(routes),
 

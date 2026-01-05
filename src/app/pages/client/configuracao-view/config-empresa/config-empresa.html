@@ -1,0 +1,39 @@
+ <app-layout-card-config [title]="'Dados da Empresa'" [subtitle]="'Informações que aparecerão nos orçamentos'"
+        [icon]="'pi pi-building'"   (salvar)="onSave()">
+
+        <div class="flex-row-responsive">
+
+            <app-layout-campo [error]="errorValidacao['cdEmpresa']" [label]="'CNPJ/CPF da empresa:'"
+                [width]="'md:w-6/12'" [sublabel]="'Informe o CNPJ/CPF da empresa'" [describedby]="'Informe o CNPJ/CPF'">
+                <input title="cdEmpresa" pInputText id="cdEmpresa" [(ngModel)]="objeto.cdEmpresa"
+                    [disabled]="false" class="w-full"
+                    [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdEmpresa'] }" 
+                    (input)="onCdEmpresaInput($event)"
+                    maxlength="18"/>
+            </app-layout-campo>
+
+
+            <app-layout-campo [error]="errorValidacao['nmEmpresa']" [label]="'Nome da empresa:'"
+                [width]="'md:w-6/12'" [sublabel]="'Informe o nome da empresa'" [describedby]="'Informe o nome'">
+                <input title="nmEmpresa" pInputText id="nmEmpresa" [(ngModel)]="objeto.nmEmpresa"
+                    [disabled]="false" class="w-full"
+                    [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmEmpresa'] }" />
+            </app-layout-campo>
+
+        </div>
+
+        <div class="flex-row-responsive">
+
+            <app-layout-campo [label]="'E-mail'" [width]="'md:w-6/12'">
+                <input title="dsEmail" pInputText id="dsEmail" [(ngModel)]="objeto.dsEmail" [disabled]="false"
+                    class="w-full" />
+            </app-layout-campo>
+
+            <app-layout-campo [label]="'Telefone'" [width]="'md:w-6/12'">
+                <input title="nuTelefone" pInputText id="nuTelefone" [(ngModel)]="objeto.nuTelefone"
+                    [disabled]="false" class="w-full" mask="(99) 99999-9999" />
+            </app-layout-campo>
+
+        </div>
+
+    </app-layout-card-config>

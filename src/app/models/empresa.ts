@@ -5,5 +5,6 @@ export class Empresa {
   public nmEmpresa: string = '';
   public idPlanoAssinatura!: number;
   public dsEmail: string = '';
+  public nuTelefone: string = '';
   public flAtivo: boolean = true;
 }
