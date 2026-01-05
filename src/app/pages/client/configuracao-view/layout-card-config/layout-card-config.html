@@ -1,0 +1,38 @@
+<p-card class="mb-4">
+
+    <!-- Cabeçalho do card -->
+    <div class="flex align-items-center gap-3 mb-3">
+        <div class="flex items-center justify-center rounded-md bg-[#eff6ff] text-[#3b82f6]" style="width: 40px; height: 40px;">
+            <i [class]="icon"></i>
+        </div>
+
+        <div>
+            <div class="font-medium text-lg"> {{title}}</div>
+            <small class="text-color-secondary">
+                {{subtitle}}
+            </small>
+        </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Formulário -->
+    <form class="p-fluid">
+
+        <div class="grid">
+
+            <ng-content></ng-content>
+
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Ações -->
+        <div class="flex justify-end">
+            <p-button label="Salvar Alteração" icon="pi pi-save" (onClick)="salvar()">
+            </p-button>
+        </div>
+
+    </form>
+
+</p-card>

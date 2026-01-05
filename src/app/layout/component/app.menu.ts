@@ -88,15 +88,21 @@ export class AppMenu {
               icon: 'pi pi-fw pi-home',
               routerLink: ['/client/servico'],
             },
+            {
+              label: 'Configuração',
+              icon: 'pi pi-cog',
+              routerLink: ['/client/configuracao'],
+            },
           ],
         },
+
       ];
 
       if (role === 'ROLE_ADMIN' && role === 'ROLE_DEV') {
         this.model.push({
           label: 'Administração',
           items: [
-           
+
           ],
         });
       }

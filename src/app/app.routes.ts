@@ -12,6 +12,7 @@ import { Clientelist } from './pages/client/cliente/clientelist/clientelist';
 import { Categoriaservicolist } from './pages/client/categoriaservico/categoriaservicolist/categoriaservicolist';
 import { Servicos } from './models/servicos';
 import { Servicolist } from './pages/client/servico/servicolist/servicolist';
+import { ConfiguracaoView } from './pages/client/configuracao-view/configuracao-view';
 
 
 export const routes: Routes = [
@@ -38,6 +39,7 @@ export const routes: Routes = [
     data: { roles: ['client', 'dev'] },
     children: [
       { path: 'home', component: HomeClient },
+      { path: 'configuracao', component: ConfiguracaoView },
       { path: 'cliente', component: Clientelist },
       { path: 'categoriaservico', component: Categoriaservicolist },
       { path: 'servico', component: Servicolist },
