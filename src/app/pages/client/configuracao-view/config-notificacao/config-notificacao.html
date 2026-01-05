@@ -1,0 +1,43 @@
+<app-layout-card-config [title]="'Notificações'" [subtitle]="'Configure alertas e lembretes'"
+    [icon]="'pi pi-bell'" (salvar)="onSave()">
+
+
+
+  <div class="flex items-center justify-between w-full p-2 ">
+    <div class="flex flex-col  gap-2">
+      <span class="font-bold">E-mail de confirmação</span>
+      <small class="">
+        Receber e-mail quando um orçamento for aprovado
+      </small>
+    </div>
+
+    <p-toggleswitch [(ngModel)]="objeto.flEmailConfirmacao"></p-toggleswitch>
+  </div>
+
+  <p-divider></p-divider>
+
+   <div class="flex items-center justify-between w-full p-2 ">
+
+    <div class="flex flex-col  gap-2">
+      <span class="font-bold ">Lembrete de validade</span>
+      <small class="">
+        Alertar quando orçamentos estiverem próximos do vencimento
+      </small>
+    </div>
+
+    <p-toggleswitch [(ngModel)]="objeto.flLembreteValidade"></p-toggleswitch>
+  </div>
+
+  <p-divider></p-divider>
+
+    <div class="flex items-center justify-between w-full p-2 ">
+      <div class="flex flex-col  gap-2">
+      <span class="font-bold">Resumo semanal</span>
+      <small class="">
+        Receber relatório semanal por e-mail
+      </small>
+    </div>
+
+    <p-toggleswitch [(ngModel)]="objeto.flResumoSemanal"></p-toggleswitch>
+  </div>
+</app-layout-card-config>

@@ -7,11 +7,12 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfigEmpresa } from "./config-empresa/config-empresa";
 import { ConfigOrcamento } from "./config-orcamento/config-orcamento";
+import { ConfigNotificacao } from "./config-notificacao/config-notificacao";
 
 
 @Component({
   selector: 'app-configuracao-view',
-  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigEmpresa, ConfigOrcamento],
+  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigEmpresa, ConfigOrcamento, ConfigNotificacao],
   templateUrl: './configuracao-view.html',
   styleUrl: './configuracao-view.scss',
 })

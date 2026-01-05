@@ -46,7 +46,6 @@ export class ConfigOrcamento {
 
   onSave() {
     this.loading = true;
-        console.log(this.objeto)
 
       this.baseService.create(`${this.endpoint}/`, this.objeto).subscribe({
         next: () => {
