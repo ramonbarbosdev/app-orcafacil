@@ -1,0 +1,119 @@
+<app-layout-card-config
+  [title]="'Campos de Precificação'"
+  [subtitle]="'Defina variáveis que influenciam o cálculo de preços'"
+  [icon]="'pi pi-sliders-h'"
+  (salvar)="onSave()"
+>
+
+  <div class="grid grid-nogutter gap-4">
+
+    <!-- LISTA -->
+  <div class="col-6 md:col-1">
+
+      <div class="section-header">
+        <span>Campos cadastrados</span>
+      </div>
+
+      <p-table
+        [value]="listaCampos"
+        [rows]="10"
+        responsiveLayout="scroll"
+        selectionMode="single"
+        [(selection)]="campoSelecionado"
+        (onRowSelect)="onSelectCampo($event)"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nome</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th style="width: 60px"></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-campo>
+          <tr>
+            <td>{{ campo.nmCampoPersonalizado }}</td>
+
+            <td>
+              <p-tag severity="info">
+                {{ campo.cdCampoPersonalizado }}
+              </p-tag>
+            </td>
+
+            <td>{{ campo.tpCampoPersonalizado }}</td>
+
+            <td class="text-center">
+              <p-button
+                icon="pi pi-trash"
+                class="p-button-text p-button-danger"
+                (click)="confirmarDelete(campo)">
+              </p-button>
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+
+    <!-- FORMULÁRIO -->
+<div class="col-6 md:col-2">
+
+
+      <div class="form-card">
+
+        <div class="form-card-header">
+          <i class="pi pi-plus"></i>
+          <span>Novo campo</span>
+        </div>
+
+        <div class="form-card-body">
+
+          <app-layout-campo label="Código (*)">
+            <input
+              pInputText
+              [(ngModel)]="objeto.cdCampoPersonalizado"
+              placeholder="Ex: TP_CLIENTE"
+              class="w-full"
+            />
+          </app-layout-campo>
+
+          <app-layout-campo label="Nome (*)">
+            <input
+              pInputText
+              [(ngModel)]="objeto.nmCampoPersonalizado"
+              placeholder="Ex: Tipo de Cliente"
+              class="w-full"
+            />
+          </app-layout-campo>
+
+          <app-layout-campo label="Tipo (*)">
+            <p-select
+              [options]="tiposCampo"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecione"
+              [(ngModel)]="objeto.tpCampoPersonalizado"
+              class="w-full"
+            ></p-select>
+          </app-layout-campo>
+
+        </div>
+
+        <div class="form-card-footer">
+          <p-button
+            label="Novo"
+            icon="pi pi-plus"
+            class="p-button-secondary"
+            (click)="novo()">
+          </p-button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</app-layout-card-config>

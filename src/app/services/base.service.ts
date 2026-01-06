@@ -82,6 +82,7 @@ export class BaseService {
       })
     );
   }
+  
   listarPaginado(
     endpoint: string,
     page: number,

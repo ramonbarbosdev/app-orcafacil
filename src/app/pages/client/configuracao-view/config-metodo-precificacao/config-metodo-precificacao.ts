@@ -3,17 +3,33 @@ import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
 import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MetodoPrecificacao } from '../../../../models/metodo-precificacao';
 import { SelectModule } from 'primeng/select';
 import { BaseService } from '../../../../services/base.service';
-import { FlagOption } from '../../../../models/flag-option';
-import { EmpresaMetodoPrecificacao } from '../../../../models/empresa-metodo-precificacao';
 import { ZodError } from 'zod';
 import { EmpresaMetodoPrecificacaoSchema } from '../../../../schema/empresametodoprecificacao-schema';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { EmpresaMetodoPrecificacao } from '../../../../models/empresa-metodo-precificacao';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { InputTextModule } from 'primeng/inputtext';
+
+export interface CampoMetodoDTO {
+  nome: string;
+  label: string;
+  tipo: 'NUMBER' | 'TEXT' | 'BOOLEAN';
+  obrigatorio: boolean;
+}
+
+export interface MetodoPrecificacaoMetaDTO {
+  idMetodoPrecificacao: number;
+  cdMetodoPrecificacao: string;
+  nmMetodoPrecificacao: string;
+  dsMetodoPrecificacao: string;
+  campos: CampoMetodoDTO[];
+}
 
 @Component({
   selector: 'app-config-metodo-precificacao',
-  imports: [LayoutCardConfig, CommonModule, FormsModule, SelectModule, LayoutCampo],
+  imports: [LayoutCardConfig, CommonModule, FormsModule, SelectModule, LayoutCampo, InputNumberModule, ToggleSwitchModule, InputTextModule],
   templateUrl: './config-metodo-precificacao.html',
   styleUrl: './config-metodo-precificacao.scss',
 })
@@ -23,7 +39,8 @@ export class ConfigMetodoPrecificacao {
   loading: boolean = true;
   private endpoint = 'empresametodoprecificacao';
   private baseService = inject(BaseService);
-  public listaMetodo: FlagOption[] = [];
+  public listaMetodo: MetodoPrecificacaoMetaDTO[] = [];
+  public camposMetodo: CampoMetodoDTO[] = [];
 
   ngAfterViewInit(): void {
     this.obterMetodo()
@@ -36,6 +53,10 @@ export class ConfigMetodoPrecificacao {
       next: (res: any) => {
         if (res) {
           this.objeto = res;
+
+          if (this.listaMetodo.length) {
+            this.processarMetodo(false);
+          }
         }
 
         this.loading = false;
@@ -47,6 +68,8 @@ export class ConfigMetodoPrecificacao {
   }
 
   onSave() {
+
+    console.log(this.objeto);
 
     if (this.validarItens()) {
 
@@ -83,19 +106,29 @@ export class ConfigMetodoPrecificacao {
     }
   }
 
+  processarMetodo(limparConfig: boolean = true) {
+    const metodo = this.listaMetodo.find(
+      m => m.idMetodoPrecificacao === this.objeto.idMetodoPrecificacao
+    );
+
+    this.camposMetodo = metodo?.campos ?? [];
+    if (limparConfig) {
+      this.objeto.configuracao = {};
+    } else {
+      this.objeto.configuracao = this.objeto.configuracao ?? {};
+    }
+  }
 
   obterMetodo() {
-    this.baseService.findAll(`metodoprecificacao/`).subscribe({
-      next: (res) => {
-        this.listaMetodo = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.idMetodoPrecificacao;
-          item.name = index.nmMetodoPrecificacao;
-          return item;
-        });
+    this.baseService.findAll(`metodoprecificacao/buscar`).subscribe({
+      next: (res: any) => {
+        this.listaMetodo = res as MetodoPrecificacaoMetaDTO[];
       },
-      error: (err) => { },
+      error: () => { }
     });
   }
+
+
+
 
 }
