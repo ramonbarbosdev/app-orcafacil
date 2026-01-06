@@ -69,8 +69,6 @@ export class ConfigMetodoPrecificacao {
 
   onSave() {
 
-    console.log(this.objeto);
-
     if (this.validarItens()) {
 
       this.loading = true;

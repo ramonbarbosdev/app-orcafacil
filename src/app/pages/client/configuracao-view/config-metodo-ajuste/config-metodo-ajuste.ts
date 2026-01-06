@@ -17,6 +17,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MetodoAjusteSchema } from '../../../../schema/metodoajuste-schema';
 import { ZodError } from 'zod';
+import { EventService } from '../../../../services/event.service';
 
 @Component({
   selector: 'app-config-metodo-ajuste',
@@ -29,6 +30,8 @@ export class ConfigMetodoAjuste {
 
   private baseService = inject(BaseService);
   private confirmationService = inject(ConfirmationService);
+  private eventService = inject(EventService);
+
   public errorValidacao: Record<string, string> = {};
 
   endpoint = 'metodoajuste';
@@ -47,6 +50,10 @@ export class ConfigMetodoAjuste {
     this.tiposOperacao();
     this.tipoAjuste();
     this.carregarLista();
+
+    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
+      this.obterCampos();
+    });
   }
 
   carregarLista() {
@@ -70,6 +77,7 @@ export class ConfigMetodoAjuste {
           this.objeto = new Metodoajuste();
           this.campoSelecionado = undefined;
           this.carregarLista();
+
         });
     }
 

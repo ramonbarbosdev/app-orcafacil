@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService } from 'primeng/api';
 import { CampoPersonalizadoSchema } from '../../../../schema/campopersonalizado-schema';
 import { ZodError } from 'zod';
+import { EventService } from '../../../../services/event.service';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class ConfigCampoPersonalizado {
   loading: boolean = true;
   private endpoint = 'campopersonalizado';
   private confirmationService = inject(ConfirmationService);
+  private eventService = inject(EventService);
   public errorValidacao: Record<string, string> = {};
 
   listaCampos: Campopersonalizado[] = [];
@@ -43,6 +45,7 @@ export class ConfigCampoPersonalizado {
 
   ngOnInit() {
     this.carregarLista();
+
   }
 
 
@@ -125,6 +128,8 @@ export class ConfigCampoPersonalizado {
       this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe(() => {
         this.novo();
         this.carregarLista();
+        this.eventService.emitAtualizarCampoPersonalizado();
+
       });
     }
 
