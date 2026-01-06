@@ -51,8 +51,6 @@ export class ConfigCampoPersonalizado {
         if (res) {
 
           this.listaCampos = res;
-          console.log(this.listaCampos)
-
         }
 
         this.loading = false;
