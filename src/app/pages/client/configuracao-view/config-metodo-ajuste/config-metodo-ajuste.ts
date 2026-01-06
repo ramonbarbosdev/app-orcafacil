@@ -15,6 +15,8 @@ import { Campopersonalizado } from '../../../../models/campopersonalizado';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { MetodoAjusteSchema } from '../../../../schema/metodoajuste-schema';
+import { ZodError } from 'zod';
 
 @Component({
   selector: 'app-config-metodo-ajuste',
@@ -27,6 +29,7 @@ export class ConfigMetodoAjuste {
 
   private baseService = inject(BaseService);
   private confirmationService = inject(ConfirmationService);
+  public errorValidacao: Record<string, string> = {};
 
   endpoint = 'metodoajuste';
 
@@ -56,17 +59,38 @@ export class ConfigMetodoAjuste {
       c => Number(c.code) == this.objeto.idCampoPersonalizado
     );
     this.objeto.vlCondicao = '';
-    console.log(this.campoSelecionado)
 
   }
 
   onSave() {
-    this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto)
-      .subscribe(() => {
-        this.objeto = new Metodoajuste();
-        this.campoSelecionado = undefined;
-        this.carregarLista();
-      });
+
+    if (this.validarItens()) {
+      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto)
+        .subscribe(() => {
+          this.objeto = new Metodoajuste();
+          this.campoSelecionado = undefined;
+          this.carregarLista();
+        });
+    }
+
+  }
+
+  validarItens(): boolean {
+    try {
+      MetodoAjusteSchema.parse([this.objeto]);
+      this.errorValidacao = {};
+      return true;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        this.errorValidacao = {};
+        error.issues.forEach((e) => {
+          const value = e.path[1];
+          this.errorValidacao[String(value)] = e.message;
+        });
+        return false;
+      }
+      throw error;
+    }
   }
 
   onEdit(event: any) {
@@ -76,8 +100,14 @@ export class ConfigMetodoAjuste {
 
   confirmarDelete(item: Metodoajuste) {
     this.confirmationService.confirm({
-      message: 'Deseja realmente excluir este ajuste?',
-      accept: () => this.deletar(item)
+      message: `Deseja realmente excluir ?`,
+      header: 'Confirmação',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.deletar(item);
+      }
     });
   }
 

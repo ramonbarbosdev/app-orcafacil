@@ -25,15 +25,12 @@
 
                 <ng-template pTemplate="body" let-item>
                     <tr>
-                        <td>{{ item.campoPersonalizado?.nmCampoPersonalizado }}</td>
-
+                        <td>{{ item.nmCampoPersonalizado }}</td>
                         <td>{{ item.vlCondicao }}</td>
-
                         <td>
                             {{ item.tpOperacao === 'DESCONTO' ? '-' : '+' }}
                             {{ item.tpAjuste === 'PERCENTUAL' ? item.vlIncremento + '%' : 'R$ ' + item.vlIncremento }}
                         </td>
-
                         <td class="text-center">
                             <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
                                 (click)="confirmarDelete(item)">
@@ -58,55 +55,63 @@
                 <div class="flex flex-col gap-2">
 
                     <!-- Campo -->
-                    <app-layout-campo label="Campo (*)">
+                    <app-layout-campo label="Campo (*)" [error]="errorValidacao['idCampoPersonalizado']">
                         <p-select [options]="listaCampos" optionLabel="name" optionValue="code" placeholder="Selecione"
-                            [(ngModel)]="objeto.idCampoPersonalizado" class="w-full" (onChange)="onCampoChange()">
+                            [(ngModel)]="objeto.idCampoPersonalizado" class="w-full" (onChange)="onCampoChange()"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCampoPersonalizado'] }">
                         </p-select>
                     </app-layout-campo>
 
                     <!-- Valor esperado -->
-                    <app-layout-campo *ngIf="campoSelecionado" label="Valor esperado (*)">
+                    <app-layout-campo *ngIf="campoSelecionado" label="Valor esperado (*)"
+                        [error]="errorValidacao['vlCondicao']">
 
                         <p-toggleswitch *ngIf="campoSelecionado.tpCampoPersonalizado === 'BOOLEAN'"
-                            [(ngModel)]="objeto.vlCondicao" [ngModelOptions]="{ standalone: true }">
+                            [(ngModel)]="objeto.vlCondicao" [ngModelOptions]="{ standalone: true }"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlCondicao'] }">
                         </p-toggleswitch>
 
                         <input *ngIf="campoSelecionado.tpCampoPersonalizado === 'TEXT'" pInputText class="w-full"
                             placeholder="Ex: VIP" [(ngModel)]="objeto.vlCondicao"
-                            [ngModelOptions]="{ standalone: true }" />
+                            [ngModelOptions]="{ standalone: true }"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlCondicao'] }" />
 
                         <!-- NUMBER -->
-                        <p-inputnumber *ngIf="campoSelecionado.tpCampoPersonalizado === 'NUMBER'" mode="currency" currency="BRL" locale="pt-BR"
-                            class="w-full" [(ngModel)]="objeto.vlCondicao" inputId="minmax" mode="decimal" [min]="0"
-                            [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4">>
-                        </p-inputnumber>
+                        <input *ngIf="campoSelecionado.tpCampoPersonalizado === 'NUMBER'" pInputText class="w-full"
+                            placeholder="Ex: 100" [(ngModel)]="objeto.vlCondicao"
+                            [ngModelOptions]="{ standalone: true }"   [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlCondicao'] }" />
 
                     </app-layout-campo>
 
                     <!-- Tipo de ajuste -->
-                    <app-layout-campo label="Tipo de ajuste (*)">
+                    <app-layout-campo label="Tipo de ajuste (*)" [error]="errorValidacao['tpAjuste']">
                         <p-select [options]="listaTiposAjuste" optionLabel="name" optionValue="code"
-                            placeholder="Selecione" [(ngModel)]="objeto.tpAjuste" class="w-full">
+                            placeholder="Selecione" [(ngModel)]="objeto.tpAjuste" class="w-full"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpAjuste'] }">
                         </p-select>
                     </app-layout-campo>
 
                     <!-- Operação -->
-                    <app-layout-campo label="Operação (*)">
+                    <app-layout-campo label="Operação (*)" [error]="errorValidacao['tpOperacao']">
                         <p-select [options]="listaTiposOperacao" optionLabel="name" optionValue="code"
-                            placeholder="Selecione" [(ngModel)]="objeto.tpOperacao" class="w-full">
+                            placeholder="Selecione" [(ngModel)]="objeto.tpOperacao" class="w-full"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpOperacao'] }">
                         </p-select>
                     </app-layout-campo>
 
                     <!-- Valor -->
-                    <app-layout-campo label="Valor do ajuste (*)" *ngIf="objeto.tpAjuste ">
+                    <app-layout-campo label="Valor do ajuste (*)" *ngIf="objeto.tpAjuste "
+                        [error]="errorValidacao['vlIncremento']">
 
                         <p-inputnumber *ngIf="objeto.tpAjuste === 'PERCENTUAL'" suffix="%" class="w-full"
-                            [(ngModel)]="objeto.vlIncremento"  [min]="0" [max]="100">
+                            [(ngModel)]="objeto.vlIncremento" [min]="0" [max]="100"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlIncremento'] }">
                         </p-inputnumber>
 
                         <p-inputnumber *ngIf="objeto.tpAjuste === 'VALOR'" mode="currency" currency="BRL" locale="pt-BR"
                             class="w-full" [(ngModel)]="objeto.vlIncremento" inputId="minmax" mode="decimal" [min]="0"
-                            [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4">
+                            [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlIncremento'] }">
                         </p-inputnumber>
 
                     </app-layout-campo>
