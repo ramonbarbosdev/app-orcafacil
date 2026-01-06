@@ -50,24 +50,26 @@
       <div class="form-card">
 
         <div class="form-card-header">
-          <i class="pi pi-plus"></i>
           <span>Novo campo</span>
         </div>
 
         <div class="form-card-body">
 
-          <app-layout-campo label="Código: (*)">
-            <input pInputText [(ngModel)]="objeto.cdCampoPersonalizado" placeholder="Ex: TP_CLIENTE" class="w-full" />
+          <app-layout-campo label="Código: (*)" [error]="errorValidacao['cdCampoPersonalizado']">
+            <input pInputText [(ngModel)]="objeto.cdCampoPersonalizado"
+             placeholder="Ex: TP_CLIENTE" class="w-full"   [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCampoPersonalizado'] }" />
           </app-layout-campo>
 
-          <app-layout-campo label="Nome: (*)">
+          <app-layout-campo label="Nome: (*)" [error]="errorValidacao['nmCampoPersonalizado']">
             <input pInputText [(ngModel)]="objeto.nmCampoPersonalizado" placeholder="Ex: Tipo de Cliente"
+            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCampoPersonalizado'] }"
               class="w-full" />
           </app-layout-campo>
 
-          <app-layout-campo label="Tipo: (*)">
+          <app-layout-campo label="Tipo: (*)" [error]="errorValidacao['tpCampoPersonalizado']">
             <p-select [options]="tiposCampo" optionLabel="label" optionValue="value" placeholder="Selecione"
-              [(ngModel)]="objeto.tpCampoPersonalizado" class="w-full"></p-select>
+              [(ngModel)]="objeto.tpCampoPersonalizado"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }" class="w-full"></p-select>
           </app-layout-campo>
 
         </div>

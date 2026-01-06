@@ -55,7 +55,7 @@
                 <div class="flex flex-col gap-2">
 
                     <!-- Campo -->
-                    <app-layout-campo label="Campo (*)" [error]="errorValidacao['idCampoPersonalizado']">
+                    <app-layout-campo label="Campo: (*)" [error]="errorValidacao['idCampoPersonalizado']">
                         <p-select [options]="listaCampos" optionLabel="name" optionValue="code" placeholder="Selecione"
                             [(ngModel)]="objeto.idCampoPersonalizado" class="w-full" (onChange)="onCampoChange()"
                             [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCampoPersonalizado'] }">
@@ -63,7 +63,7 @@
                     </app-layout-campo>
 
                     <!-- Valor esperado -->
-                    <app-layout-campo *ngIf="campoSelecionado" label="Valor esperado (*)"
+                    <app-layout-campo *ngIf="campoSelecionado" label="Valor esperado: (*)"
                         [error]="errorValidacao['vlCondicao']">
 
                         <p-toggleswitch *ngIf="campoSelecionado.tpCampoPersonalizado === 'BOOLEAN'"
@@ -84,7 +84,7 @@
                     </app-layout-campo>
 
                     <!-- Tipo de ajuste -->
-                    <app-layout-campo label="Tipo de ajuste (*)" [error]="errorValidacao['tpAjuste']">
+                    <app-layout-campo label="Tipo de ajuste: (*)" [error]="errorValidacao['tpAjuste']">
                         <p-select [options]="listaTiposAjuste" optionLabel="name" optionValue="code"
                             placeholder="Selecione" [(ngModel)]="objeto.tpAjuste" class="w-full"
                             [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpAjuste'] }">
@@ -92,7 +92,7 @@
                     </app-layout-campo>
 
                     <!-- Operação -->
-                    <app-layout-campo label="Operação (*)" [error]="errorValidacao['tpOperacao']">
+                    <app-layout-campo label="Operação: (*)" [error]="errorValidacao['tpOperacao']">
                         <p-select [options]="listaTiposOperacao" optionLabel="name" optionValue="code"
                             placeholder="Selecione" [(ngModel)]="objeto.tpOperacao" class="w-full"
                             [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpOperacao'] }">
@@ -100,7 +100,7 @@
                     </app-layout-campo>
 
                     <!-- Valor -->
-                    <app-layout-campo label="Valor do ajuste (*)" *ngIf="objeto.tpAjuste "
+                    <app-layout-campo label="Valor do ajuste: (*)" *ngIf="objeto.tpAjuste "
                         [error]="errorValidacao['vlIncremento']">
 
                         <p-inputnumber *ngIf="objeto.tpAjuste === 'PERCENTUAL'" suffix="%" class="w-full"

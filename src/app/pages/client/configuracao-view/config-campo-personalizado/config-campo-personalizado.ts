@@ -11,6 +11,8 @@ import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService } from 'primeng/api';
+import { CampoPersonalizadoSchema } from '../../../../schema/campopersonalizado-schema';
+import { ZodError } from 'zod';
 
 
 @Component({
@@ -25,6 +27,7 @@ export class ConfigCampoPersonalizado {
   loading: boolean = true;
   private endpoint = 'campopersonalizado';
   private confirmationService = inject(ConfirmationService);
+  public errorValidacao: Record<string, string> = {};
 
   listaCampos: Campopersonalizado[] = [];
   campoSelecionado?: Campopersonalizado;
@@ -117,9 +120,33 @@ export class ConfigCampoPersonalizado {
   }
 
   onSave() {
-    this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe(() => {
-      this.novo();
-      this.carregarLista();
-    });
+
+    if (this.validarItens()) {
+      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe(() => {
+        this.novo();
+        this.carregarLista();
+      });
+    }
+
   }
+
+
+  validarItens(): boolean {
+    try {
+      CampoPersonalizadoSchema.parse([this.objeto]);
+      this.errorValidacao = {};
+      return true;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        this.errorValidacao = {};
+        error.issues.forEach((e) => {
+          const value = e.path[1];
+          this.errorValidacao[String(value)] = e.message;
+        });
+        return false;
+      }
+      throw error;
+    }
+  }
+
 }
