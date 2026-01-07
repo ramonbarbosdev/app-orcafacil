@@ -9,6 +9,7 @@ import { BaseService } from '../../../../services/base.service';
 import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-schema';
 import { ZodError } from 'zod';
 import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detalhes-form";
+import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
 
 @Component({
   selector: 'app-orcamentoform',
@@ -56,6 +57,7 @@ export class Orcamentoform {
   validarItens(): boolean {
     try {
       OrcamentoClienteSchema.parse([this.objeto.cliente]);
+      OrcamentoSchema.parse([this.objeto]);
       this.errorValidacao = {};
       return true;
     } catch (error) {
