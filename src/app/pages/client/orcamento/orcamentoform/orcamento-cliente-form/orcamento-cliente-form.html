@@ -1,0 +1,52 @@
+<div class="mb-4 ">
+    <h4 class="text-2xl font-semibold">Dados do Cliente</h4>
+
+
+
+    <div class="flex-row-responsive">
+
+        <app-layout-campo [error]="errorValidacao['nmCliente']" [label]="'Nome / Razão Social: (*)'" [width]="'w-6/12'"
+            [describedby]="'nmCliente'">
+            <input title="nmCliente" pInputText id="nmCliente" [(ngModel)]="objeto.cliente.nmCliente" class="w-full"
+                placeholder="Nome do cliente ou empresa"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCliente'] }" 
+                />
+        </app-layout-campo>
+
+        <app-layout-campo [error]="errorValidacao['nuCpfcnpj']" [label]="'CPF / CNPJ: (*)'" [width]="'w-6/12'"
+            [describedby]="'nuCpfcnpj'">
+            <input title="nuCpfcnpj" pInputText id="nuCpfcnpj" [(ngModel)]="objeto.cliente.nuCpfcnpj" class="w-full"
+                placeholder="000.000.000-00" [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpfcnpj'] }"
+                  (input)="processarMascaraCpfCnpj($event)"
+                  maxlength="18"
+                />
+        </app-layout-campo>
+
+    </div>
+    <div class="flex-row-responsive">
+
+        <app-layout-campo  [label]="'E-mail:'" [width]="'w-6/12'">
+            <input title="dsEmail" pInputText id="dsEmail" [(ngModel)]="objeto.cliente.dsEmail" class="w-full"
+                placeholder="email@cliente.com"  />
+        </app-layout-campo>
+
+        <app-layout-campo [label]="'Telefone:'" [width]="'w-6/12'"
+            [describedby]="'nuTelefone'">
+            <input title="nuTelefone" pInputText id="nuTelefone" [(ngModel)]="objeto.cliente.nuTelefone" class="w-full"
+                placeholder="(00) 00000-0000"  mask="(00) 00000-0000"
+              />
+        </app-layout-campo>
+
+    </div>
+
+      <div class="flex-row-responsive">
+        <app-layout-campo [label]="'Endereço:'" [width]="'w-12/12'">
+            <textarea pTextarea placeholder="Endereço completo"
+                [autoResize]="false" rows="1" cols="30" name="dsObservacoes" id="dsObservacoes"
+                [(ngModel)]="objeto.dsObservacoes"></textarea>
+        </app-layout-campo>
+
+    </div>
+
+
+</div>

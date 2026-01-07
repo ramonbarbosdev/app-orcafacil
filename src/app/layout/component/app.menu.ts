@@ -69,6 +69,17 @@ export class AppMenu {
               },
             ],
           },
+          {
+            label: 'Configuração geral',
+            items: [
+              {
+                label: 'Condição de Pagamento',
+                icon: 'pi pi-fw pi-bookmark',
+                routerLink: ['/dev/condicaopagamento'],
+              },
+
+            ],
+          },
         ],
       });
     } else {
@@ -102,6 +113,16 @@ export class AppMenu {
               label: 'Serviços',
               icon: 'pi pi-fw pi-home',
               routerLink: ['/client/servico'],
+            },
+            {
+              label: 'Orçamentos',
+              icon: 'pi pi-file',
+              routerLink: ['/client/orcamento'],
+            },
+            {
+              label: 'Novo Orçamento',
+              icon: 'pi pi-plus',
+              routerLink: ['/client/orcamento/novo'],
             },
             {
               label: 'Configuração',

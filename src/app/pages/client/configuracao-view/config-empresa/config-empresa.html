@@ -8,7 +8,7 @@
                 <input title="cdEmpresa" pInputText id="cdEmpresa" [(ngModel)]="objeto.cdEmpresa"
                     [disabled]="false" class="w-full"
                     [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdEmpresa'] }" 
-                    (input)="onCdEmpresaInput($event)"
+                    (input)="processarMascaraCpfCnpj($event)"
                     maxlength="18"/>
             </app-layout-campo>
 

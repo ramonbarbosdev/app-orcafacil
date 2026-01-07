@@ -14,6 +14,9 @@ import { Servicos } from './models/servicos';
 import { Servicolist } from './pages/client/servico/servicolist/servicolist';
 import { ConfiguracaoView } from './pages/client/configuracao-view/configuracao-view';
 import { Metodoprecificacaolist } from './pages/dev/metodoprecificacao/metodoprecificacaolist/metodoprecificacaolist';
+import { Condicaopagamentolist } from './pages/dev/condicaopagamento/condicaopagamentolist/condicaopagamentolist';
+import { Orcamentolist } from './pages/client/orcamento/orcamentolist/orcamentolist';
+import { Orcamentoform } from './pages/client/orcamento/orcamentoform/orcamentoform';
 
 
 export const routes: Routes = [
@@ -32,6 +35,7 @@ export const routes: Routes = [
       { path: 'planoassinatura', component: Planoassinaturalist },
       { path: 'empresa', component: Empresalist },
       { path: 'metodoprecificacao', component: Metodoprecificacaolist },
+      { path: 'condicaopagamento', component: Condicaopagamentolist },
     ],
   },
   {
@@ -45,6 +49,9 @@ export const routes: Routes = [
       { path: 'cliente', component: Clientelist },
       { path: 'categoriaservico', component: Categoriaservicolist },
       { path: 'servico', component: Servicolist },
+      { path: 'orcamento', component: Orcamentolist },
+      { path: 'orcamento/novo', component: Orcamentoform },
+      { path: 'orcamento/:id', component: Orcamentoform },
     ],
   },
 ];

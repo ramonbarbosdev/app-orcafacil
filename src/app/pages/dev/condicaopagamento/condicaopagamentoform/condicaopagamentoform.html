@@ -1,0 +1,19 @@
+<app-layout-form-simples [(visible)]="isDialog" [title]="'Formulario de Condição'" [loading]="loading" (save)="onSave()"
+  (cancel)="hideDialog()" (show)="onShow()">
+
+  <div class="flex-row-responsive">
+    <app-layout-campo [error]="errorValidacao['cdCondicaoPagamento']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
+      [sublabel]="'Informe o código'" [describedby]="'Informe o código'">
+      <input title="cdCondicaoPagamento" pInputText id="cdCondicaoPagamento" [(ngModel)]="objeto.cdCondicaoPagamento" [disabled]="true" class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCondicaoPagamento'] }" />
+    </app-layout-campo>
+
+    <app-layout-campo [error]="errorValidacao['nmCondicaoPagamento']" [label]="'Nome: (*)'" [width]="'w-8/12'"
+      [sublabel]="'Informe o nome da condição'" [describedby]="'nmCondicaoPagamento'">
+      <input title="nmCondicaoPagamento" pInputText id="nmCondicaoPagamento" [(ngModel)]="objeto.nmCondicaoPagamento" class="w-full"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCondicaoPagamento'] }" />
+    </app-layout-campo>
+  </div>
+
+
+</app-layout-form-simples>

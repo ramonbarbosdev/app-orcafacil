@@ -87,7 +87,7 @@ export class ConfigEmpresa {
   }
 
 
-  onCdEmpresaInput(event: any): void {
+  processarMascaraCpfCnpj(event: any): void {
     let valor = event.target.value || '';
 
     valor = valor.replace(/\D/g, '');
