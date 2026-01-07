@@ -6,6 +6,8 @@ import { DividerModule } from 'primeng/divider';
 import { OrcamentoClienteForm } from "./orcamento-cliente-form/orcamento-cliente-form";
 import { Orcamento } from '../../../../models/orcamento';
 import { BaseService } from '../../../../services/base.service';
+import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-schema';
+import { ZodError } from 'zod';
 
 @Component({
   selector: 'app-orcamentoform',
@@ -25,10 +27,46 @@ export class Orcamentoform {
 
 
   ngAfterViewInit(): void {
-    //  this.carregarDetalhes = true;
+   
   }
 
   onClose() {
     this.router.navigate(['/client/orcamento']);
   }
+
+  onSave() {
+    console.log( this.objeto)
+    if (this.validarItens()) {
+
+      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+        next: () => {
+
+          this.cd.markForCheck();
+          this.onClose()
+        },
+        error: (erro) => {
+          this.cd.markForCheck();
+        },
+      });
+    }
+  }
+
+  validarItens(): boolean {
+    try {
+      OrcamentoClienteSchema.parse([this.objeto.cliente]);
+      this.errorValidacao = {};
+      return true;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        this.errorValidacao = {};
+        error.issues.forEach((e) => {
+          const value = e.path[1];
+          this.errorValidacao[String(value)] = e.message;
+        });
+        return false;
+      }
+      throw error;
+    }
+  }
+
 }

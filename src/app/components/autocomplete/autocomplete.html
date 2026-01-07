@@ -1,0 +1,17 @@
+<p-autoComplete
+  [(ngModel)]="selectedOptions"
+  [suggestions]="filtered"
+  (completeMethod)="filterAuto($event)"
+  (onSelect)="onSelect($event)"
+  (input)="onInput($event)"
+  [optionLabel]="optionLabel"
+  [optionValue]="optionValue"
+  [placeholder]="placeholder"
+  class="w-full"
+  [ngClass]="{'ng-dirty ng-invalid':error}"
+  [dropdown]="true"
+  [autoHighlight]="true"
+  [forceSelection]="false"
+  [disabled]="disabled"
+>
+</p-autoComplete>

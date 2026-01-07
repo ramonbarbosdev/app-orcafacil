@@ -11,11 +11,16 @@
 
 </div>
 
-<p-card >
+<p-card>
 
-    <app-orcamento-cliente-form [objeto]="objeto" 
-        [errorValidacao]="errorValidacao"></app-orcamento-cliente-form>
+    <app-orcamento-cliente-form [objeto]="objeto" [errorValidacao]="errorValidacao"></app-orcamento-cliente-form>
 
     <p-divider></p-divider>
 
+
+    <!-- Ações -->
+    <div class="flex justify-end">
+        <p-button label="Salvar" icon="pi pi-save" (onClick)="onSave()">
+        </p-button>
+    </div>
 </p-card>
