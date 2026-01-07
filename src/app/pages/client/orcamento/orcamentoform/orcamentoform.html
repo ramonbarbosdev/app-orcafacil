@@ -16,8 +16,10 @@
     <app-orcamento-cliente-form [objeto]="objeto" [errorValidacao]="errorValidacao"></app-orcamento-cliente-form>
 
     <p-divider></p-divider>
-
-
+    
+    <app-orcamento-detalhes-form [objeto]="objeto" [errorValidacao]="errorValidacao" [endpoint]="endpoint"></app-orcamento-detalhes-form>
+    
+    <p-divider></p-divider>
     <!-- Ações -->
     <div class="flex justify-end">
         <p-button label="Salvar" icon="pi pi-save" (onClick)="onSave()">

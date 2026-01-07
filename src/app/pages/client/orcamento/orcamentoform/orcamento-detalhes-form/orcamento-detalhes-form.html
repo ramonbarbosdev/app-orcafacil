@@ -1,0 +1,30 @@
+<div class="mb-4 ">
+    <h4 class="text-2xl font-semibold mb-4">Detalhes do Orçamento</h4>
+
+    <div class="flex-row-responsive">
+
+        <app-layout-campo [label]="'Número do Orçamento:'" [width]="'w-6/12'" [error]="errorValidacao['nuOrcamento']">
+            <input title="nuOrcamento" pInputText id="nuOrcamento" [(ngModel)]="objeto.nuOrcamento" class="w-full"
+                placeholder="ex: ORC-007" disabled="true" />
+        </app-layout-campo>
+
+        <app-layout-campo [error]="errorValidacao['dtEmissao']" [label]="'Data de Emissão: (*)'" [width]="'w-6/12'">
+            <p-datepicker [(ngModel)]="objeto.dtEmissao" [showButtonBar]="true" dateFormat="dd/mm/yy"
+                styleClass="w-full" inputStyleClass="w-full"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dtEmissao'] }">
+            </p-datepicker>
+        </app-layout-campo>
+
+        <app-layout-campo [error]="errorValidacao['dtValido']" [label]="'Válido Até: (*)'" [width]="'w-6/12'">
+            <p-datepicker [(ngModel)]="objeto.dtValido" [showButtonBar]="true" dateFormat="dd/mm/yy" styleClass="w-full"
+                inputStyleClass="w-full" [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dtValido'] }">
+            </p-datepicker>
+
+
+        </app-layout-campo>
+
+    </div>
+
+
+
+</div>

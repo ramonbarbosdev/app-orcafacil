@@ -17,21 +17,17 @@ import { InputNumberModule } from 'primeng/inputnumber';
 })
 export class ConfigOrcamento {
 
-
   public errorValidacao: Record<string, string> = {};
   public objeto: ConfiguracaoOrcamento = new ConfiguracaoOrcamento();
   loading: boolean = true;
-  private endpoint = 'configuracao-orcamento';
+  private endpoint = 'configuracaoorcamento';
   private baseService = inject(BaseService);
-
-
 
   ngAfterViewInit(): void {
     this.onEdit();
   }
 
   onEdit() {
-
     this.baseService.findAll(`${this.endpoint}/`).subscribe({
       next: (res: any) => {
         this.objeto = res;

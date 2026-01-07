@@ -8,10 +8,12 @@ import { Orcamento } from '../../../../models/orcamento';
 import { BaseService } from '../../../../services/base.service';
 import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-schema';
 import { ZodError } from 'zod';
+import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detalhes-form";
 
 @Component({
   selector: 'app-orcamentoform',
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm],
+  standalone: true,
+  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })
