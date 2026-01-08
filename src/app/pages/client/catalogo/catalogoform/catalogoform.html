@@ -42,7 +42,7 @@
   </div>
 
 
-  <p-tabs value="0">
+  <p-tabs value="0" (valueChange)="onTabChange($event)" >
     <p-tablist>
       <p-tab value="0">Campos de Precificação</p-tab>
       <p-tab value="1">Ajustes Padrão</p-tab>
@@ -50,10 +50,10 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-       
+        <app-catalogocampoform #camposForm [carregarDados]="carregarDados"></app-catalogocampoform>
       </p-tabpanel>
       <p-tabpanel value="1">
-       
+       <app-catalogocampoajusteform></app-catalogocampoajusteform>
       </p-tabpanel>
       <p-tabpanel value="2">
         

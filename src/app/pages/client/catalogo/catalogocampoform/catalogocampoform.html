@@ -1,0 +1,21 @@
+<div class="flex flex-col">
+
+    <div class="grid gap-y-3 gap-x-8" [style.gridTemplateRows]="'repeat(5, minmax(0, 1fr))'"
+        [style.gridAutoFlow]="'column'">
+
+        <div *ngFor="let campo of camposPrecificacao" class="flex items-center gap-3">
+            <p-checkbox [(ngModel)]="campo.ativo" [binary]="true" inputId="campo-{{ campo.idCampoPersonalizado }}"
+                (ngModelChange)="onToggleCampo()"></p-checkbox>
+
+            <label for="campo-{{ campo.idCampoPersonalizado }}" class="cursor-pointer text-sm">
+                {{ campo.nmCampoPersonalizado }}
+            </label>
+        </div>
+
+    </div>
+
+    <p-divider type="dotted" />
+    <div class="text-xs text-gray-500 mb-2 flex justify-end"> {{totalSelecionados}} campos selecionados
+    </div>
+
+</div>

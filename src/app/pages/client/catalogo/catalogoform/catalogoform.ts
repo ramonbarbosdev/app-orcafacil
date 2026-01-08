@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { EmpresaMetodoPrecificacao } from '../../../../models/empresa-metodo-precificacao';
 import { ZodError } from 'zod';
 import { MetodoPrecificacaoSchema } from '../../../../schema/metodoprecificacao-schema';
@@ -18,6 +18,9 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { TabsModule } from 'primeng/tabs';
+import { Catalogocampoform } from "../catalogocampoform/catalogocampoform";
+import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
+import { Catalogocampoajusteform } from "../catalogocampoajusteform/catalogocampoajusteform";
 @Component({
   selector: 'app-catalogoform',
   imports: [InputTextModule,
@@ -30,7 +33,7 @@ import { TabsModule } from 'primeng/tabs';
     InputGroupModule,
     InputNumberModule,
     InputGroupAddonModule,
-    TabsModule],
+    TabsModule, Catalogocampoform, Catalogocampoajusteform],
   templateUrl: './catalogoform.html',
   styleUrl: './catalogoform.scss',
 })
@@ -48,6 +51,10 @@ export class Catalogoform {
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
+  carregarDados = false;
+
+  @ViewChild('camposForm')
+  camposForm!: Catalogocampoform;
 
   hideDialog() {
     this.isDialog = false;
@@ -58,6 +65,7 @@ export class Catalogoform {
   onShow() {
     this.loading = true;
     this.limparFormulario();
+    this.carregarDados = true;
 
     if (this.key == 0) {
       this.obterSequencia();
@@ -87,6 +95,8 @@ export class Catalogoform {
   }
 
   onSave() {
+
+
     if (this.validarItens()) {
       this.loading = true;
 
@@ -140,5 +150,15 @@ export class Catalogoform {
   limparFormulario() {
     this.objeto = new Catalogo();
     this.errorValidacao = {};
+    this.carregarDados = false;
+
   }
+
+  onTabChange(event: any) {
+    if (event == 1) {
+      this.camposForm.continuar();
+    }
+  }
+
+
 }
