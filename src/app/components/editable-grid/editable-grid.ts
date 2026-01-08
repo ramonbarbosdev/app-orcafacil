@@ -1,12 +1,20 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-
-
+import { LayoutService } from '../../layout/service/layout.service';
 
 export type EditableGridColumnType =
   | 'text'
@@ -20,82 +28,110 @@ export interface EditableGridColumn {
   key: string;
   label?: string;
   type: EditableGridColumnType;
-  col: string; // ex: '5fr', '120px'
+  col: string;
   align?: 'left' | 'center' | 'right';
-  editable?: boolean;
 }
 
 @Component({
   selector: 'app-editable-grid',
-  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputTextModule,
+    InputNumberModule,
+    ButtonModule,
+    DividerModule,
+  ],
   templateUrl: './editable-grid.html',
   styleUrl: './editable-grid.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditableGrid {
+export class EditableGrid<T extends Record<string, any>> {
 
+  /* =======================
+   * Inputs
+   * ======================= */
 
   @Input({ required: true })
-  columns: EditableGridColumn[] = [];
+  columns!: EditableGridColumn[];
 
+  /** Factory responsável por criar uma nova linha */
   @Input({ required: true })
-  data: any[] = [];
+  createRow!: (index?: number) => T;
 
+  /** Valor inicial opcional */
   @Input()
-  darkMode = false;
-
-  @Output()
-  dataChange = new EventEmitter<any[]>();
-
-  @Output()
-  rowAdd = new EventEmitter<void>();
-
-  @Output()
-  rowRemove = new EventEmitter<number>();
-
-  @Output()
-  valueChange = new EventEmitter<{ row: number; key: string; value: any }>();
-
-
-  get gridTemplateColumns(): string {
-    return this.columns.map(col => col.col).join(' ');
-  }
-
-  addRow(): void {
-    this.rowAdd.emit();
-  }
-
-  removeRow(index: number): void {
-    this.rowRemove.emit(index);
-  }
-
-  updateValue(index: number, key: string, value: any): void {
-    const updated = [...this.data];
-    updated[index] = {
-      ...updated[index],
-      [key]: value,
-    };
-
-    this.dataChange.emit(updated);
-    this.valueChange.emit({ row: index, key, value });
-  }
-
-  trackByIndex(index: number): number {
-    return index;
+  set initialData(value: T[]) {
+    this._rows.set(Array.isArray(value) ? [...value] : []);
   }
 
   /* =======================
-   * Helpers de layout
+   * Outputs
    * ======================= */
 
+  @Output()
+  dataChange = new EventEmitter<T[]>();
+
+  /* =======================
+   * State
+   * ======================= */
+
+  private _rows = signal<T[]>([]);
+
+  rows = computed(() => this._rows());
+
+  layoutService = inject(LayoutService);
+
+  /* =======================
+   * Layout
+   * ======================= */
+
+  get gridTemplateColumns(): string {
+    return this.columns.map(c => c.col).join(' ');
+  }
+
+  /* =======================
+   * Actions
+   * ======================= */
+
+  addRow(): void {
+    const newRow = this.createRow(this._rows().length);
+    const updated = [...this._rows(), newRow];
+
+    this._rows.set(updated);
+    this.emit();
+  }
+
+  removeRow(index: number): void {
+    const updated = this._rows().filter((_, i) => i !== index);
+    this._rows.set(updated);
+    this.emit();
+  }
+
+  updateValue(row: number, key: string, value: any): void {
+    const updated = [...this._rows()];
+
+    updated[row] = {
+      ...updated[row],
+      [key]: value,
+    };
+
+    this._rows.set(updated);
+    this.emit();
+  }
+
+  private emit(): void {
+    this.dataChange.emit(this._rows());
+  }
+
+  trackByIndex = (i: number) => i;
+
   getAlignClass(col: EditableGridColumn): string {
-    switch (col.align) {
-      case 'center':
-        return 'text-center';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-left';
-    }
+    return col.align === 'center'
+      ? 'text-center'
+      : col.align === 'right'
+      ? 'text-right'
+      : 'text-left';
   }
 }

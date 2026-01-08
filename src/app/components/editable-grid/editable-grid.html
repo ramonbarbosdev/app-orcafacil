@@ -1,89 +1,63 @@
 <div class="w-full">
 
-  <!-- Cabeçalho -->
-  <div
-    class="grid gap-4 text-xs uppercase text-gray-500 mb-3 px-2"
-    [style.gridTemplateColumns]="gridTemplateColumns"
-  >
-    <ng-container *ngFor="let col of columns">
-      <div [ngClass]="getAlignClass(col)">
-        {{ col.label || '' }}
-      </div>
-    </ng-container>
-  </div>
 
-  <!-- Linhas -->
-  <div
-    *ngFor="let row of data; let rowIndex = index; trackBy: trackByIndex"
-    class="grid gap-4 items-center rounded-xl p-4 mb-3"
-    [style.gridTemplateColumns]="gridTemplateColumns"
-    [ngClass]="darkMode ? 'bg-gray-800' : 'bg-gray-50'"
-  >
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+            Itens / Serviços
+        </h3>
+        <button pButton type="button" icon="pi pi-plus" label="Adicionar" class="p-button-outlined mb-4"
+            (click)="addRow()">
+        </button>
+    </div>
 
-    <ng-container *ngFor="let col of columns">
 
-      <!-- TEXTO -->
-      <input
-        *ngIf="col.type === 'text'"
-        pInputText
-        class="w-full"
-        [ngModel]="row[col.key]"
-        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
-      />
+    <!-- Cabeçalho -->
+    <div class="grid gap-4 text-xs uppercase text-gray-500 mb-3 px-2" [style.gridTemplateColumns]="gridTemplateColumns">
+        <ng-container *ngFor="let col of columns">
+            <div [ngClass]="getAlignClass(col)">
+                {{ col.label || '' }}
+            </div>
+        </ng-container>
+    </div>
 
-      <!-- NÚMERO -->
-      <input
-        *ngIf="col.type === 'number'"
-        type="number"
-        pInputText
-        class="w-full"
-        [ngClass]="getAlignClass(col)"
-        [ngModel]="row[col.key]"
-        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
-      />
+    <!-- Linhas -->
+    <div *ngFor="let row of rows(); let rowIndex = index; trackBy: trackByIndex"
+        class="grid gap-4 items-center rounded-xl p-4 mb-3" [style.gridTemplateColumns]="gridTemplateColumns"
+        [ngClass]="layoutService.isDarkTheme() ? 'bg-gray-800' : 'bg-gray-50'">
 
-      <!-- MOEDA EDITÁVEL -->
-      <p-inputNumber
-        *ngIf="col.type === 'currency'"
-        mode="currency"
-        currency="BRL"
-        locale="pt-BR"
-        styleClass="w-full"
-        inputStyleClass="w-full"
-        [ngModel]="row[col.key]"
-        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
-      >
-      </p-inputNumber>
+        <ng-container *ngFor="let col of columns">
 
-      <!-- READONLY -->
-      <div
-        *ngIf="col.type === 'readonly'"
-        [ngClass]="getAlignClass(col)"
-        class="font-medium"
-      >
-        {{ row[col.key] }}
-      </div>
+            <!-- TEXTO -->
+            <input *ngIf="col.type === 'text'" pInputText class="w-full" [ngModel]="row[col.key]"
+                (ngModelChange)="updateValue(rowIndex, col.key, $event)" />
 
-      <!-- READONLY CURRENCY -->
-      <div
-        *ngIf="col.type === 'readonly-currency'"
-        class="font-medium text-right"
-      >
-        {{ row[col.key] | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
-      </div>
+            <!-- NÚMERO -->
+            <input *ngIf="col.type === 'number'" type="number" pInputText class="w-full" [ngClass]="getAlignClass(col)"
+                [ngModel]="row[col.key]" (ngModelChange)="updateValue(rowIndex, col.key, $event)" />
 
-      <!-- AÇÕES -->
-      <button
-        *ngIf="col.type === 'actions'"
-        pButton
-        type="button"
-        icon="pi pi-trash"
-        class="p-button-text p-button-secondary"
-        (click)="removeRow(rowIndex)"
-      >
-      </button>
+            <!-- MOEDA EDITÁVEL -->
+            <p-inputNumber *ngIf="col.type === 'currency'" mode="currency" currency="BRL" locale="pt-BR"
+                styleClass="w-full" inputStyleClass="w-full" [ngModel]="row[col.key]"
+                (ngModelChange)="updateValue(rowIndex, col.key, $event)">
+            </p-inputNumber>
 
-    </ng-container>
-  </div>
+            <!-- READONLY -->
+            <div *ngIf="col.type === 'readonly'" [ngClass]="getAlignClass(col)" class="font-medium">
+                {{ row[col.key] }}
+            </div>
+
+            <!-- READONLY CURRENCY -->
+            <div *ngIf="col.type === 'readonly-currency'" class="font-medium text-right">
+                {{ row[col.key] | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+            </div>
+
+            <!-- AÇÕES -->
+            <button *ngIf="col.type === 'actions'" pButton icon="pi pi-trash" class="p-button-text p-button-secondary"
+                (click)="removeRow(rowIndex)">
+            </button>
+
+        </ng-container>
+    </div>
 
 </div>
