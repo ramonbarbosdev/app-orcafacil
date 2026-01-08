@@ -1,0 +1,89 @@
+<div class="w-full">
+
+  <!-- Cabeçalho -->
+  <div
+    class="grid gap-4 text-xs uppercase text-gray-500 mb-3 px-2"
+    [style.gridTemplateColumns]="gridTemplateColumns"
+  >
+    <ng-container *ngFor="let col of columns">
+      <div [ngClass]="getAlignClass(col)">
+        {{ col.label || '' }}
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Linhas -->
+  <div
+    *ngFor="let row of data; let rowIndex = index; trackBy: trackByIndex"
+    class="grid gap-4 items-center rounded-xl p-4 mb-3"
+    [style.gridTemplateColumns]="gridTemplateColumns"
+    [ngClass]="darkMode ? 'bg-gray-800' : 'bg-gray-50'"
+  >
+
+    <ng-container *ngFor="let col of columns">
+
+      <!-- TEXTO -->
+      <input
+        *ngIf="col.type === 'text'"
+        pInputText
+        class="w-full"
+        [ngModel]="row[col.key]"
+        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
+      />
+
+      <!-- NÚMERO -->
+      <input
+        *ngIf="col.type === 'number'"
+        type="number"
+        pInputText
+        class="w-full"
+        [ngClass]="getAlignClass(col)"
+        [ngModel]="row[col.key]"
+        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
+      />
+
+      <!-- MOEDA EDITÁVEL -->
+      <p-inputNumber
+        *ngIf="col.type === 'currency'"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+        [ngModel]="row[col.key]"
+        (ngModelChange)="updateValue(rowIndex, col.key, $event)"
+      >
+      </p-inputNumber>
+
+      <!-- READONLY -->
+      <div
+        *ngIf="col.type === 'readonly'"
+        [ngClass]="getAlignClass(col)"
+        class="font-medium"
+      >
+        {{ row[col.key] }}
+      </div>
+
+      <!-- READONLY CURRENCY -->
+      <div
+        *ngIf="col.type === 'readonly-currency'"
+        class="font-medium text-right"
+      >
+        {{ row[col.key] | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </div>
+
+      <!-- AÇÕES -->
+      <button
+        *ngIf="col.type === 'actions'"
+        pButton
+        type="button"
+        icon="pi pi-trash"
+        class="p-button-text p-button-secondary"
+        (click)="removeRow(rowIndex)"
+      >
+      </button>
+
+    </ng-container>
+  </div>
+
+</div>

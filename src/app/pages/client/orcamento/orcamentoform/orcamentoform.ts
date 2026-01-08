@@ -10,11 +10,12 @@ import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-sch
 import { ZodError } from 'zod';
 import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detalhes-form";
 import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
+import { OrcamentoItemForm } from "./orcamento-item-form/orcamento-item-form";
 
 @Component({
   selector: 'app-orcamentoform',
   standalone: true,
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm],
+  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })
@@ -22,6 +23,7 @@ export class Orcamentoform {
 
   router = inject(Router);
   public objeto: Orcamento = new Orcamento();
+
   public errorValidacao: Record<string, string> = {};
   public endpoint = 'orcamento';
   public baseService = inject(BaseService);
@@ -30,7 +32,8 @@ export class Orcamentoform {
 
 
   ngAfterViewInit(): void {
-   
+
+
   }
 
   onClose() {
@@ -38,7 +41,7 @@ export class Orcamentoform {
   }
 
   onSave() {
-    console.log( this.objeto)
+    console.log(this.objeto)
     if (this.validarItens()) {
 
       this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
@@ -71,6 +74,11 @@ export class Orcamentoform {
       }
       throw error;
     }
+  }
+
+  processarTotalizador(valor: number): void {
+    this.objeto.vlPrecoBase = valor;
+    this.objeto.vlPrecoFinal = valor;
   }
 
 }

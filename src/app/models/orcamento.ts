@@ -1,4 +1,5 @@
 import { Clientes } from "./clientes";
+import { Orcamentoitem } from "./orcamentoitem";
 
 export class Orcamento {
 
@@ -16,5 +17,6 @@ export class Orcamento {
     public vlPrecoFinal!: number;
 
     public cliente?: Clientes;
+    public orcamentoItem!: Orcamentoitem[];
 
 }
