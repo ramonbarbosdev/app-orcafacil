@@ -22,7 +22,7 @@
     <div class="flex-row-responsive">
         <app-layout-campo [label]="'Termos e condições padrão:'" [width]="'w-12/12'">
             <textarea pTextarea placeholder="Termos e condições que aparecerão em todos os orçamentos..."
-                [autoResize]="false" rows="3" cols="30" name="termosPadrao" id="termosPadrao"
+                [autoResize]="false" rows="3" cols="30" name="termosPadrao" id="termosPadrao" maxlength="255"
                 [(ngModel)]="objeto.termosPadrao"></textarea>
         </app-layout-campo>
 

@@ -10,7 +10,7 @@ import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-orcamento-item-form',
-  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule,DividerModule],
+  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule],
   templateUrl: './orcamento-item-form.html',
   styleUrl: './orcamento-item-form.scss',
 })

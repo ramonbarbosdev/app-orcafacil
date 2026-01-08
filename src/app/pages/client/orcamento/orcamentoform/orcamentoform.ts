@@ -11,11 +11,12 @@ import { ZodError } from 'zod';
 import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detalhes-form";
 import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
 import { OrcamentoItemForm } from "./orcamento-item-form/orcamento-item-form";
+import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadicional-form/orcamento-informacaoadicional-form";
 
 @Component({
   selector: 'app-orcamentoform',
   standalone: true,
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm],
+  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })

@@ -25,6 +25,11 @@
         (totalChange)="processarTotalizador($event)"></app-orcamento-item-form>
 
     <p-divider></p-divider>
+
+    <app-orcamento-informacaoadicional-form [objeto]="objeto"
+        [errorValidacao]="errorValidacao"></app-orcamento-informacaoadicional-form>
+
+    <p-divider></p-divider>
     <!-- Ações -->
     <div class="flex justify-end">
         <p-button label="Salvar" icon="pi pi-save" (onClick)="onSave()">
