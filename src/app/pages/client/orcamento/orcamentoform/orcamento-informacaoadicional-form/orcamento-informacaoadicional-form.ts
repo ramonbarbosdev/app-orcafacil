@@ -45,6 +45,8 @@ export class OrcamentoInformacaoadicionalForm {
           this.cd.markForCheck();
           return item;
         });
+
+        this.objeto.idCondicaoPagamento = this.listaCondicaoPagamento[0].code
       },
       error: (err) => { },
     });

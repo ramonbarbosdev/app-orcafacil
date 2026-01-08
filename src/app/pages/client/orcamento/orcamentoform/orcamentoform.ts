@@ -78,6 +78,7 @@ export class Orcamentoform {
   }
 
   processarTotalizador(valor: number): void {
+    this.objeto.vlCustoBase  = valor;
     this.objeto.vlPrecoBase = valor;
     this.objeto.vlPrecoFinal = valor;
   }

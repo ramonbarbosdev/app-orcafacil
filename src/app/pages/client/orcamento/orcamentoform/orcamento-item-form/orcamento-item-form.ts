@@ -25,6 +25,13 @@ export class OrcamentoItemForm {
 
   total = 0;
 
+
+  ngOnInit(): void {
+    if (!this.itens || this.itens.length === 0) {
+      this.adicionarItem();
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['itens'] && Array.isArray(changes['itens'].currentValue)) {
       this.recalcular();
@@ -36,7 +43,8 @@ export class OrcamentoItemForm {
       dsItem: '',
       qtItem: 1,
       vlPrecoUnitario: 0,
-      vlPrecoTotal: 0
+      vlPrecoTotal: 0,
+      vlCustoUnitario: 0
     } as Orcamentoitem;
   }
 
