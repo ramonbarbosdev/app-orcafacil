@@ -1,25 +1,32 @@
 <div class="flex flex-col gap-4">
 
-    <div *ngFor="let campo of camposAtivos" class="flex items-center gap-4">
+    <div *ngFor="let campo of camposAtivos; trackBy: trackByCampo" class="flex items-center gap-4">
 
         <label class="w-64 text-sm font-medium">
-            {{ campo.nmCampoPersonalizado }}
+            {{ campo.nmCampoPersonalizado }}:
         </label>
 
         <ng-container [ngSwitch]="campo.tpCampoPersonalizado">
 
-            <input *ngSwitchCase="'TEXT'" pInputText class="w-full"
-                [ngModel]="ajustesPadrao[campo.idCampoPersonalizado]"
+            <input *ngSwitchCase="'TEXT'" pInputText class="w-full" [ngModel]="uiValores[campo.idCampoPersonalizado]"
                 (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)" />
 
-            <p-inputNumber *ngSwitchCase="'NUMBER'" class="w-full" [ngModel]="ajustesPadrao[campo.idCampoPersonalizado]"
-                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)"></p-inputNumber>
+            <p-inputnumber *ngSwitchCase="'PERCENTUAL'" suffix="%" class="w-full"
+                [ngModel]="uiValores[campo.idCampoPersonalizado]" [min]="0" [max]="100"
+                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)">
+            </p-inputnumber>
 
-            <p-inputNumber *ngSwitchCase="'PERCENTUAL'" suffix="%" [min]="0" [max]="100" class="w-full"
-                [ngModel]="ajustesPadrao[campo.idCampoPersonalizado]"
-                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)"></p-inputNumber>
+            <p-inputnumber *ngSwitchCase="'NUMBER'" mode="currency" currency="BRL" locale="pt-BR" class="w-full"
+                [ngModel]="uiValores[campo.idCampoPersonalizado]" inputId="minmax" mode="decimal" [min]="0"
+                [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4">
+            </p-inputnumber>
 
         </ng-container>
+    </div>
+
+    <div *ngIf="camposAtivos.length == 0" class="flex flex-col justify-center items-center h-full">
+        <p>Não existe campos selecionados.</p>
+
     </div>
 
 </div>

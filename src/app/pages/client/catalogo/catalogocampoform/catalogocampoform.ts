@@ -65,9 +65,27 @@ export class Catalogocampoform {
         tpCampoPersonalizado: c.tpCampoPersonalizado,
       }));
 
+    const atuais = this.wizardState.getCamposSelecionadosSnapshot();
 
-    this.wizardState.setCamposSelecionados(selecionados);
+    if (!this.saoIguais(atuais, selecionados)) {
+      this.wizardState.setCamposSelecionados(selecionados);
+    }
   }
+
+  private saoIguais(
+    a: any[],
+    b: any[]
+  ): boolean {
+
+    if (a.length !== b.length) return false;
+
+    return a.every((campo, i) =>
+      campo.idCampoPersonalizado === b[i].idCampoPersonalizado &&
+      campo.tpCampoPersonalizado === b[i].tpCampoPersonalizado
+    );
+  }
+
+
 
   onToggleCampo() {
     this.totalSelecionados =

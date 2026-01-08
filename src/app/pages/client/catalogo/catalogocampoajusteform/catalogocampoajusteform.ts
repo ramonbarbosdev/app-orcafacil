@@ -19,11 +19,10 @@ import { Subscription } from 'rxjs';
 })
 export class Catalogocampoajusteform {
 
-  
   private wizardState = inject(CatalogoWizardStateService);
 
   camposAtivos: CampoPrecificacaoDTO[] = [];
-  ajustesPadrao: Record<number, any> = {};
+  uiValores: Record<number, any> = {};
 
   private sub = new Subscription();
 
@@ -39,18 +38,24 @@ export class Catalogocampoajusteform {
     this.sub.add(
       this.wizardState.ajustesPadrao$
         .subscribe(ajustes => {
-          this.ajustesPadrao = ajustes;
+          this.uiValores = {
+            ...this.uiValores,
+            ...ajustes
+          };
         })
     );
   }
 
   setValor(idCampo: number, valor: any) {
+    this.uiValores[idCampo] = valor;
     this.wizardState.setAjustePadrao(idCampo, valor);
   }
 
   ngOnDestroy() {
     this.sub.unsubscribe();
-
   }
 
+  trackByCampo(index: number, campo: CampoPrecificacaoDTO): number {
+  return campo.idCampoPersonalizado;
+}
 }

@@ -37,8 +37,28 @@ export class CatalogoWizardStateService {
   ajustesPadrao$ = this.ajustesPadraoSubject.asObservable();
 
   // Setters
-  setCamposSelecionados(campos: any[]) {
-    this.camposSelecionadosSubject.next(campos);
+  setCamposSelecionados(novosCampos: any[]) {
+
+    const camposAtuais = this.camposSelecionadosSubject.value;
+    const ajustesAtuais = this.ajustesPadraoSubject.value;
+
+    // IDs dos novos campos
+    const novosIds = new Set(
+      novosCampos.map(c => c.idCampoPersonalizado)
+    );
+
+    // mantém apenas ajustes de campos que continuam existindo
+    const ajustesReconstruidos: Record<number, any> = {};
+
+    for (const id of Object.keys(ajustesAtuais)) {
+      const idNum = Number(id);
+      if (novosIds.has(idNum)) {
+        ajustesReconstruidos[idNum] = ajustesAtuais[idNum];
+      }
+    }
+
+    this.camposSelecionadosSubject.next([...novosCampos]);
+    this.ajustesPadraoSubject.next(ajustesReconstruidos);
   }
 
   setAjustePadrao(idCampo: number, valor: any) {
