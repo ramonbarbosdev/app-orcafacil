@@ -75,6 +75,18 @@ export class CatalogoWizardStateService {
     return this.camposSelecionadosSubject.value;
   }
 
+  getAjustesPadraoSnapshot(): Record<number, any> {
+    return this.ajustesPadraoSubject.value;
+  }
+
+  hidratar(
+    campos: CampoPrecificacaoDTO[],
+    ajustes: Record<number, any>
+  ): void {
+    this.camposSelecionadosSubject.next(campos);
+    this.ajustesPadraoSubject.next(ajustes);
+  }
+
 
   reset(): void {
     this.camposSelecionadosSubject.next([]);

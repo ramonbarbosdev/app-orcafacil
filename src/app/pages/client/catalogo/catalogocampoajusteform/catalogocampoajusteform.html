@@ -18,7 +18,7 @@
 
             <p-inputnumber *ngSwitchCase="'NUMBER'" mode="currency" currency="BRL" locale="pt-BR" class="w-full"
                 [ngModel]="uiValores[campo.idCampoPersonalizado]" inputId="minmax" mode="decimal" [min]="0"
-                [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4">
+                [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4"  (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)">
             </p-inputnumber>
 
         </ng-container>
@@ -26,7 +26,6 @@
 
     <div *ngIf="camposAtivos.length == 0" class="flex flex-col justify-center items-center h-full">
         <p>Não existe campos selecionados.</p>
-
     </div>
 
 </div>

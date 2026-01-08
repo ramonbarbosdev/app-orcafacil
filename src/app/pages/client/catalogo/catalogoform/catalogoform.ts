@@ -18,9 +18,11 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { TabsModule } from 'primeng/tabs';
-import { Catalogocampoform } from "../catalogocampoform/catalogocampoform";
+import { CampoPrecificacaoDTO, Catalogocampoform } from "../catalogocampoform/catalogocampoform";
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { Catalogocampoajusteform } from "../catalogocampoajusteform/catalogocampoajusteform";
+import { Catalogocampo } from '../../../../models/catalogocampo';
+import { Catalogocamposimulacaoform } from "../catalogocamposimulacaoform/catalogocamposimulacaoform";
 @Component({
   selector: 'app-catalogoform',
   imports: [InputTextModule,
@@ -33,7 +35,7 @@ import { Catalogocampoajusteform } from "../catalogocampoajusteform/catalogocamp
     InputGroupModule,
     InputNumberModule,
     InputGroupAddonModule,
-    TabsModule, Catalogocampoform, Catalogocampoajusteform],
+    TabsModule, Catalogocampoform, Catalogocampoajusteform, Catalogocamposimulacaoform],
   templateUrl: './catalogoform.html',
   styleUrl: './catalogoform.scss',
 })
@@ -51,6 +53,8 @@ export class Catalogoform {
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
+  private wizardState = inject(CatalogoWizardStateService);
+
   carregarDados = false;
 
   @ViewChild('camposForm')
@@ -84,6 +88,9 @@ export class Catalogoform {
       next: (res: any) => {
         this.objeto = res;
 
+        // 1️⃣ hidratar wizard a partir do backend
+        this.hidratarWizardState(res);
+
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -94,10 +101,54 @@ export class Catalogoform {
     });
   }
 
+  private hidratarWizardState(catalogo: any): void {
+
+    if (!catalogo.catalogoCampo || catalogo.catalogoCampo.length === 0) {
+      return;
+    }
+
+    // ordena por ordem
+    const ordenados = [...catalogo.catalogoCampo]
+      .sort((a, b) => a.ordem - b.ordem);
+
+    // 1️⃣ Campos selecionados
+    const camposSelecionados: any[] = ordenados.map(cc => ({
+      idCampoPersonalizado: cc.idCampoPersonalizado,
+      nmCampoPersonalizado: cc.campoPersonalizado?.nmCampoPersonalizado,
+      tpCampoPersonalizado: cc.campoPersonalizado?.tpCampoPersonalizado
+    }));
+
+    // 2️⃣ Ajustes padrão
+    const ajustesPadrao: Record<number, any> = {};
+
+    for (const cc of ordenados) {
+      ajustesPadrao[cc.idCampoPersonalizado] = cc.vlPadrao;
+    }
+
+    // 3️⃣ popula o wizard state
+    this.wizardState.setCamposSelecionados(camposSelecionados);
+
+    for (const [idCampo, valor] of Object.entries(ajustesPadrao)) {
+      this.wizardState.setAjustePadrao(Number(idCampo), valor);
+    }
+  }
+
+
   onSave() {
 
-
     if (this.validarItens()) {
+
+      const campos = this.wizardState.getCamposSelecionadosSnapshot();
+      const ajustes = this.wizardState.getAjustesPadraoSnapshot();
+
+      const catalogoCampos = this.buildCatalogoCampos(
+        this.objeto.idCatalogo,
+        campos,
+        ajustes
+      );
+
+      this.objeto.catalogoCampo = catalogoCampos;
+
       this.loading = true;
 
       this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
@@ -106,6 +157,7 @@ export class Catalogoform {
           this.hideDialog();
           this.onReloadList();
           this.cd.markForCheck();
+          this.wizardState.reset();
         },
         error: (erro) => {
           this.loading = false;
@@ -132,6 +184,27 @@ export class Catalogoform {
       throw error;
     }
   }
+
+  private buildCatalogoCampos(
+    idCatalogo: number,
+    campos: CampoPrecificacaoDTO[],
+    ajustes: Record<number, any>
+  ): Catalogocampo[] {
+
+    return campos.map((campo, index) => {
+
+      const catalogoCampo = new Catalogocampo();
+
+      catalogoCampo.idCatalogo = idCatalogo;
+      catalogoCampo.idCampoPersonalizado = campo.idCampoPersonalizado;
+      catalogoCampo.vlPadrao = ajustes[campo.idCampoPersonalizado] ?? null;
+      catalogoCampo.flEditavel = true; // ou regra
+      catalogoCampo.ordem = index + 1;
+
+      return catalogoCampo;
+    });
+  }
+
 
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({

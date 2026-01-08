@@ -28,7 +28,7 @@
       [error]="errorValidacao['vlPrecoBase']">
       <p-inputNumber name="vlPrecoBase" id="vlPrecoBase" [(ngModel)]="objeto.vlPrecoBase" inputId="currency-br"
         mode="currency" currency="BRL" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4" [max]="999999.99"
-        [min]="0" placeholder="R$ 0,00"></p-inputNumber>
+        [min]="0" placeholder="R$ 0,00" disabled></p-inputNumber>
     </app-layout-campo>
 
   </div>
@@ -42,7 +42,7 @@
   </div>
 
 
-  <p-tabs value="0" (valueChange)="onTabChange($event)" >
+  <p-tabs *ngIf="carregarDados" value="0" [tabindex]="0" (valueChange)="onTabChange($event)" >
     <p-tablist>
       <p-tab value="0">Campos de Precificação</p-tab>
       <p-tab value="1">Ajustes Campos</p-tab>
@@ -53,10 +53,10 @@
         <app-catalogocampoform #camposForm [carregarDados]="carregarDados"></app-catalogocampoform>
       </p-tabpanel>
       <p-tabpanel value="1">
-       <app-catalogocampoajusteform></app-catalogocampoajusteform>
+       <app-catalogocampoajusteform [objeto]="objeto" [carregarDados]="carregarDados"></app-catalogocampoajusteform>
       </p-tabpanel>
       <p-tabpanel value="2">
-        
+        <app-catalogocamposimulacaoform [objeto]="objeto" [carregarDados]="carregarDados"></app-catalogocamposimulacaoform>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>

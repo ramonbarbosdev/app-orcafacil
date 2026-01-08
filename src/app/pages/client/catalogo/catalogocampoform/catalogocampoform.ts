@@ -1,10 +1,12 @@
-import { Component, inject, Input, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { BaseService } from '../../../../services/base.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { Divider, DividerModule } from 'primeng/divider';
+import { Catalogocampoajusteform } from '../catalogocampoajusteform/catalogocampoajusteform';
+import { EventService } from '../../../../services/event.service';
 
 export interface CampoPrecificacaoDTO {
   idCampoPersonalizado: number;
@@ -30,8 +32,14 @@ export class Catalogocampoform {
   ];
 
   totalSelecionados = 0;
+  private eventService = inject(EventService);
+
+  @ViewChild('Catalogocampoajusteform')
+  camposForm!: Catalogocampoajusteform;
+
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.limpar()
     if (this.carregarDados) {
       this.obterCampos();
     }
@@ -87,13 +95,19 @@ export class Catalogocampoform {
 
 
 
-  onToggleCampo() {
+  onToggleCampo(idCampoPersonalizado?: number) {
+    if (idCampoPersonalizado) {
+      this.wizardState.setAjustePadrao(idCampoPersonalizado, 0);
+      this.camposForm.setValor(idCampoPersonalizado,0);
+    }
+
     this.totalSelecionados =
       this.camposPrecificacao.filter(c => c.ativo).length;
   }
 
 
   limpar() {
+    this.wizardState.reset();
     this.camposPrecificacao = []
   }
 

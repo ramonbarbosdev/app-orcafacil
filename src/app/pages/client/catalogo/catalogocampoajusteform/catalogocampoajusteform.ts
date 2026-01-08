@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, SimpleChanges } from '@angular/core';
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
@@ -6,7 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { CampoPrecificacaoDTO } from '../catalogocampoform/catalogocampoform';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
+import { EventService } from '../../../../services/event.service';
 
 @Component({
   selector: 'app-catalogocampoajusteform',
@@ -23,32 +24,75 @@ export class Catalogocampoajusteform {
 
   camposAtivos: CampoPrecificacaoDTO[] = [];
   uiValores: Record<number, any> = {};
+  @Input() objeto: any;
+  @Input() carregarDados = false;
 
   private sub = new Subscription();
+  private eventService = inject(EventService);
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.carregarDados && changes['objeto']) {
+
+    }
+  }
+
+  totalAtual = 0;
+  valoresAnteriores: Record<number, number> = {};
+
 
   ngOnInit() {
+    this.limpar()
+
+    this.processar();
+
+    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
+      this.processar();
+    });
+
+  }
+
+  processar() {
 
     this.sub.add(
-      this.wizardState.camposSelecionados$
-        .subscribe(campos => {
-          this.camposAtivos = campos;
-        })
-    );
+      combineLatest([
+        this.wizardState.camposSelecionados$,
+        this.wizardState.ajustesPadrao$
+      ]).subscribe(([campos, ajustes]) => {
 
-    this.sub.add(
-      this.wizardState.ajustesPadrao$
-        .subscribe(ajustes => {
-          this.uiValores = {
-            ...this.uiValores,
-            ...ajustes
-          };
-        })
+        this.camposAtivos = campos;
+
+        this.uiValores = {
+          ...this.uiValores,
+          ...ajustes
+        };
+
+        this.totalAtual = Object.values(this.uiValores)
+          .map(v => Number(v))
+          .filter(v => !isNaN(v))
+          .reduce((soma, v) => soma + v, 0);
+
+        this.valoresAnteriores = { ...this.uiValores };
+
+        if (this.objeto == null) {
+          this.objeto.vlPrecoBase = this.totalAtual;
+        }
+
+      })
     );
   }
 
-  setValor(idCampo: number, valor: any) {
+  public setValor(idCampo: number, valor: any) {
+
+    const novoValor = Number(valor) || 0;
+    const valorAnterior = this.valoresAnteriores[idCampo] ?? 0;
+
+    this.totalAtual = this.totalAtual - valorAnterior + novoValor;
+    this.valoresAnteriores[idCampo] = novoValor;
+
+    this.objeto.vlPrecoBase = this.totalAtual;
     this.uiValores[idCampo] = valor;
-    this.wizardState.setAjustePadrao(idCampo, valor);
+    this.wizardState.setAjustePadrao(idCampo, novoValor);
+
   }
 
   ngOnDestroy() {
@@ -56,6 +100,14 @@ export class Catalogocampoajusteform {
   }
 
   trackByCampo(index: number, campo: CampoPrecificacaoDTO): number {
-  return campo.idCampoPersonalizado;
-}
+    return campo.idCampoPersonalizado;
+  }
+
+  limpar() {
+    this.wizardState.reset();
+    this.uiValores = []
+  }
+
+
+
 }
