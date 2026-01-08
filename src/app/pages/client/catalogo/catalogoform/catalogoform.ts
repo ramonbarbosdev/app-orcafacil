@@ -1,58 +1,50 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { FluidModule } from 'primeng/fluid';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { TextareaModule } from 'primeng/textarea';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { BaseService } from '../../../../services/base.service';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { EmpresaMetodoPrecificacao } from '../../../../models/empresa-metodo-precificacao';
 import { ZodError } from 'zod';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MetodoPrecificacaoSchema } from '../../../../schema/metodoprecificacao-schema';
+import { BaseService } from '../../../../services/base.service';
+import { LayoutCampo } from "../../../../components/layout-campo/layout-campo";
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { LayoutFormSimples } from '../../../../components/layouts/layout-form-simples/layout-form-simples';
-import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { Condicaopagamento } from '../../../../models/condicaopagamento';
-import { CondicaoPagamentoSchema } from '../../../../schema/condicaopagamento-schema';
-
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
+import { Catalogo } from '../../../../models/catalogo';
+import { ActivatedRoute } from '@angular/router';
+import { CatalogoSchema } from '../../../../schema/catalogo-schema';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { TabsModule } from 'primeng/tabs';
 @Component({
-  selector: 'app-condicaopagamentoform',
-  imports: [DialogModule,
-    InputTextModule,
-    FluidModule,
-    ButtonModule,
+  selector: 'app-catalogoform',
+  imports: [InputTextModule,
     FormsModule,
-    TextareaModule,
     CommonModule,
-    ProgressSpinnerModule,
-    SelectModule,
-    PasswordModule,
     LayoutFormSimples,
     LayoutCampo,
-    ToggleButtonModule,],
-  templateUrl: './condicaopagamentoform.html',
-  styleUrl: './condicaopagamentoform.scss',
+    TextareaModule,
+    SelectModule,
+    InputGroupModule,
+    InputNumberModule,
+    InputGroupAddonModule,
+    TabsModule],
+  templateUrl: './catalogoform.html',
+  styleUrl: './catalogoform.scss',
 })
-export class Condicaopagamentoform {
+export class Catalogoform {
+
   @Input() isDialog: boolean = true;
   @Output() isDialogChange = new EventEmitter<boolean>();
   @Input() onReloadList: () => void = () => { };
   @Input() key!: number;
 
   loading: boolean = true;
-  public objeto: Condicaopagamento = new Condicaopagamento();
+  public objeto: Catalogo = new Catalogo();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'condicaopagamento';
+  private endpoint = 'catalogo';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -115,7 +107,7 @@ export class Condicaopagamentoform {
 
   validarItens(): boolean {
     try {
-      CondicaoPagamentoSchema.parse([this.objeto]);
+      CatalogoSchema.parse([this.objeto]);
       this.errorValidacao = {};
       return true;
     } catch (error) {
@@ -134,7 +126,7 @@ export class Condicaopagamentoform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
-        this.objeto.cdCondicaoPagamento = res.sequencia;
+        this.objeto.cdCatalogo = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -146,9 +138,7 @@ export class Condicaopagamentoform {
   }
 
   limparFormulario() {
-    this.objeto = new Condicaopagamento();
+    this.objeto = new Catalogo();
     this.errorValidacao = {};
   }
-
-
 }

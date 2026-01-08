@@ -10,13 +10,13 @@ import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinatura
 import { HomeClient } from './pages/client/home-client/home-client';
 import { Clientelist } from './pages/client/cliente/clientelist/clientelist';
 import { Categoriaservicolist } from './pages/client/categoriaservico/categoriaservicolist/categoriaservicolist';
-import { Servicos } from './models/servicos';
 import { Servicolist } from './pages/client/servico/servicolist/servicolist';
 import { ConfiguracaoView } from './pages/client/configuracao-view/configuracao-view';
 import { Metodoprecificacaolist } from './pages/dev/metodoprecificacao/metodoprecificacaolist/metodoprecificacaolist';
 import { Condicaopagamentolist } from './pages/dev/condicaopagamento/condicaopagamentolist/condicaopagamentolist';
 import { Orcamentolist } from './pages/client/orcamento/orcamentolist/orcamentolist';
 import { Orcamentoform } from './pages/client/orcamento/orcamentoform/orcamentoform';
+import { Catalogolist } from './pages/client/catalogo/catalogolist/catalogolist';
 
 
 export const routes: Routes = [
@@ -49,6 +49,7 @@ export const routes: Routes = [
       { path: 'cliente', component: Clientelist },
       { path: 'categoriaservico', component: Categoriaservicolist },
       { path: 'servico', component: Servicolist },
+      { path: 'catalogo', component: Catalogolist },
       { path: 'orcamento', component: Orcamentolist },
       { path: 'orcamento/novo', component: Orcamentoform },
       { path: 'orcamento/:id', component: Orcamentoform },

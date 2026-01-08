@@ -100,19 +100,14 @@ export class AppMenu {
           label: 'Gerenciamentos',
           items: [
             {
-              label: 'Categoria do Serviço',
-              icon: 'pi pi-fw pi-home',
-              routerLink: ['/client/categoriaservico'],
-            },
-            {
               label: 'Clientes',
               icon: 'pi pi-fw pi-home',
               routerLink: ['/client/cliente'],
             },
             {
-              label: 'Serviços',
+              label: 'Catalogo',
               icon: 'pi pi-fw pi-home',
-              routerLink: ['/client/servico'],
+              routerLink: ['catalogo'],
             },
             {
               label: 'Orçamentos',
