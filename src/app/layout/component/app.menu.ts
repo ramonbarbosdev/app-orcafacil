@@ -101,12 +101,12 @@ export class AppMenu {
           items: [
             {
               label: 'Clientes',
-              icon: 'pi pi-fw pi-home',
+              icon: 'pi pi-user',
               routerLink: ['/client/cliente'],
             },
             {
               label: 'Catalogo',
-              icon: 'pi pi-fw pi-home',
+              icon: 'pi pi-book',
               routerLink: ['catalogo'],
             },
             {
