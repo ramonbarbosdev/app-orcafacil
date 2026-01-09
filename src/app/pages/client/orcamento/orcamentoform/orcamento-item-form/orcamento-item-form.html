@@ -1,57 +1,73 @@
 <div class="mt-8">
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-        <h4 class="text-xl font-semibold text-gray-900">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h4 class="text-xl font-semibold">
             Itens / Serviços
         </h4>
 
-        <button pButton type="button" icon="pi pi-plus" label="Adicionar Item" class="p-button-outlined"
+        <button pButton icon="pi pi-plus" label="Adicionar Item" class="p-button-outlined w-full sm:w-auto"
             (click)="adicionarItem()">
         </button>
     </div>
 
-    <!-- Cabeçalho -->
-    <div class="grid grid-cols-[5fr_2fr_2fr_2fr_40px] gap-4
-           text-xs uppercase text-gray-500 mb-3 px-2">
-        <div>Descrição</div>
-        <div class="text-center">Quantidade</div>
-        <div class="text-right">Valor Unitário</div>
-        <div class="text-right">Subtotal</div>
-        <div></div>
+    <!-- Cabeçalho (desktop) -->
+    <div class="hidden lg:grid gap-4 text-xs uppercase text-gray-500 mb-3 px-2"
+        [style.gridTemplateColumns]="gridTemplate">
+        <div *ngFor="let col of colunas" [class.text-center]="col.align === 'center'"
+            [class.text-right]="col.align === 'right'">
+            {{ col.label }}
+        </div>
     </div>
 
-    <!-- Itens -->
-    <div *ngFor="let item of itens; let i = index"
-        [ngClass]="layoutService.isDarkTheme() ? 'bg-gray-800' : 'bg-gray-50'"
-        class="grid grid-cols-[5fr_2fr_2fr_2fr_40px] gap-4 items-center rounded-xl p-4 mb-3">
+    <!-- Linhas -->
+    <div *ngFor="let item of itens; let i = index" class="grid gap-4 rounded-xl p-4 mb-4
+           grid-cols-1 md:grid-cols-2 lg:[grid-template-columns:inherit]" [style.gridTemplateColumns]="gridTemplate">
 
-        <!-- Descrição -->
-        <input #descricaoInput pInputText [(ngModel)]="item.dsItem" placeholder="Descrição do item ou serviço"
-            class="w-full" />
+        <ng-container *ngFor="let col of colunas">
 
-        <!-- Quantidade -->
-        <input pInputText type="number" [(ngModel)]="item.qtItem" class="w-full text-center"
-            (ngModelChange)="recalcular()" />
+            <!-- ITEM -->
+            <div *ngIf="col.tipo === 'select'">
+                <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
+                <p-select [options]="listaCatalogo" optionLabel="name" optionValue="code" class="w-full" filter="true"
+                    [(ngModel)]="item.idCatalogo" (ngModelChange)="processarCatalogo($event, i)">
+                </p-select>
+            </div>
 
-        <!-- Valor Unitário -->
-        <p-inputNumber [(ngModel)]="item.vlPrecoUnitario" mode="currency" currency="BRL" locale="pt-BR"
-            styleClass="w-full" inputStyleClass="w-full" (ngModelChange)="recalcular()">
-        </p-inputNumber>
+            <!-- NUMBER -->
+            <div *ngIf="col.tipo === 'number'" [class.text-center]="true">
+                <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
+                <input type="number" pInputText class="w-full text-center" [(ngModel)]="item.qtItem"
+                    (ngModelChange)="recalcular()">
+            </div>
 
-        <!-- Subtotal -->
-        <div class="text-right font-medium">
-            {{ item.vlPrecoTotal | currency:'BRL' }}
-        </div>
+            <!-- CURRENCY -->
+            <div *ngIf="col.tipo === 'currency'" class="text-right">
+                <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
+                <p-inputNumber [(ngModel)]="item[col.key === 'custo' ? 'vlCustoUnitario' : 'vlPrecoUnitario']"
+                    mode="currency" currency="BRL" locale="pt-BR" styleClass="w-full" inputStyleClass="w-full"
+                    (ngModelChange)="recalcular()">
+                </p-inputNumber>
+            </div>
 
-        <!-- Remover -->
-        <button pButton icon="pi pi-trash" class="p-button-text p-button-secondary" (click)="removerItem(i)">
-        </button>
+            <!-- SUBTOTAL -->
+            <div *ngIf="col.tipo === 'readonly'" class="  flex justify-center items-center font-semibold text-primary">
+                <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
+                {{ item.vlPrecoTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+            </div>
 
+            <!-- ACTION -->
+            <div *ngIf="col.tipo === 'action'" class="flex justify-end">
+                <button pButton icon="pi pi-cog" class="p-button-text p-button-secondary" >
+                </button>
+                <button pButton icon="pi pi-trash" class="p-button-text p-button-secondary" (click)="removerItem(i)">
+                </button>
+            </div>
+
+        </ng-container>
     </div>
 
     <p-divider></p-divider>
-
 
     <!-- Total -->
     <div class="flex justify-end mt-8">

@@ -2,7 +2,7 @@ export class Orcamentoitem {
 
     public idOrcamentoItem!: number;
     public idOrcamento!: number;
-    public dsItem!: string;
+    public idCatalogo!: number;
     public qtItem!: number;
     public vlCustoUnitario!: number;
     public vlPrecoUnitario!: number;

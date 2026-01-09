@@ -15,7 +15,6 @@ import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadiciona
 
 @Component({
   selector: 'app-orcamentoform',
-  standalone: true,
   imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
