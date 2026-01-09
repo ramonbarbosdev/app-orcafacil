@@ -220,15 +220,12 @@ export class OrcamentoItemForm {
     });
   }
 
-
-
   recalcularItem(item: Orcamentoitem): Orcamentoitem {
     
     const vlPrecoUnitario = item.orcamentoItemCampoValor.reduce(
       (acc, c) => acc + (Number(c.vlInformado) || 0),
       0
     );
-
 
     const vlPrecoTotal =
       (item.vlCustoUnitario + vlPrecoUnitario) * item.qtItem;
@@ -249,6 +246,8 @@ export class OrcamentoItemForm {
     );
 
     this.ajusteVisible = false;
+
+    this.recalcular()
   }
 
 }

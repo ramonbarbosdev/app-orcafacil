@@ -1,10 +1,10 @@
 export class Orcamentoitemcampovalor {
 
     public idOrcamentoItemCampoValor!: number;
-    public idOrcamentoItem!: number;
-    public idCampoPersonalizado!: number;
+    public idOrcamentoItem: number = 0;
+    public idCampoPersonalizado: number = 0;
     public nmCampoPersonalizado!: string;
-    public vlInformado!: number;
+    public vlInformado: number = 0;
 
 
     constructor(init?: Partial<Orcamentoitemcampovalor>) {
