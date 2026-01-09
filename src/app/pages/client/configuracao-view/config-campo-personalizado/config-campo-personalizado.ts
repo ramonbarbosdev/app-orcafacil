@@ -116,7 +116,6 @@ export class ConfigCampoPersonalizado {
   }
 
   onSelectCampo(event: any) {
-    console.log(event)
     this.objeto = { ...event.data };
   }
 

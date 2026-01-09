@@ -3,56 +3,68 @@
 
 
 
-    <div class="grid grid-nogutter gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- LISTA -->
-        <div class="col-12 md:col-1">
+        <div class="lg:col-span-8">
 
-            <div class="section-header">
-                <span></span>
+            <div class="rounded-xl shadow-sm  p-4">
+
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-lg font-semibold">
+                        Campos cadastrados
+                    </p>
+                </div>
+
+                <p-table [value]="lista" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
+                    [(selection)]="itemSelecionado" dataKey="idMetodoAjuste" (onRowSelect)="onEdit($event)">
+
+                    <ng-template pTemplate="header">
+                        <tr class="text-sm text-gray-600">
+                            <th class="px-3 py-2">Campo</th>
+                            <th class="px-3 py-2 hidden md:table-cell">Condição</th>
+                            <th class="px-3 py-2 hidden md:table-cell">Ajuste</th>
+                            <th class="px-3 py-2 w-16 text-center"></th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-item>
+                         <tr class="border-t text-sm"  [pSelectableRow]="item">
+                            <td class="px-3 py-2 font-medium">{{ item.nmCampoPersonalizado }}</td>
+                            <td class="px-3 py-2 hidden md:table-cell">{{ item.vlCondicao }}</td>
+                           <td class="px-3 py-2 hidden md:table-cell">
+                                {{ item.tpOperacao === 'DESCONTO' ? '-' : '+' }}
+                                {{ item.tpAjuste === 'PERCENTUAL' ? item.vlIncremento + '%' : 'R$ ' + item.vlIncremento
+                                }}
+                            </td>
+                            <td class="px-3 py-2 text-center">
+                                <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
+                                    (click)="confirmarDelete(item)">
+                                </p-button>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                </p-table>
+
             </div>
 
-            <p-table [value]="lista" [rows]="10" responsiveLayout="scroll" selectionMode="single"
-                [(selection)]="itemSelecionado" (onRowSelect)="onEdit($event)">
 
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Campo</th>
-                        <th>Condição</th>
-                        <th>Ajuste</th>
-                        <th style="width: 60px"></th>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-item>
-                    <tr>
-                        <td>{{ item.nmCampoPersonalizado }}</td>
-                        <td>{{ item.vlCondicao }}</td>
-                        <td>
-                            {{ item.tpOperacao === 'DESCONTO' ? '-' : '+' }}
-                            {{ item.tpAjuste === 'PERCENTUAL' ? item.vlIncremento + '%' : 'R$ ' + item.vlIncremento }}
-                        </td>
-                        <td class="text-center">
-                            <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
-                                (click)="confirmarDelete(item)">
-                            </p-button>
-                        </td>
-                    </tr>
-                </ng-template>
-
-            </p-table>
         </div>
 
 
         <!-- FORMULÁRIO -->
-        <div class="col-12 md:col-2">
+        <div class="lg:col-span-4">
 
-            <div class="form-card">
+            <div class=" rounded-xl shadow-sm p-4 sticky top-4">
 
-                <div class="form-card-header">
-                    <span>Novo ajuste</span>
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="pi pi-plus-circle text-primary"></i>
+                    <p class="text-lg font-semibold">
+                        {{ campoSelecionado ? 'Editar ajuste' : 'Novo ajuste' }}
+                    </p>
                 </div>
 
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-4">
 
                     <!-- Campo -->
                     <app-layout-campo label="Campo: (*)" [error]="errorValidacao['idCampoPersonalizado']">
@@ -79,7 +91,8 @@
                         <!-- NUMBER -->
                         <input *ngIf="campoSelecionado.tpCampoPersonalizado === 'NUMBER'" pInputText class="w-full"
                             placeholder="Ex: 100" [(ngModel)]="objeto.vlCondicao"
-                            [ngModelOptions]="{ standalone: true }"   [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlCondicao'] }" />
+                            [ngModelOptions]="{ standalone: true }"
+                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['vlCondicao'] }" />
 
                     </app-layout-campo>
 

@@ -103,7 +103,6 @@ export class ConfigMetodoAjuste {
 
   onEdit(event: any) {
     this.objeto = { ...event.data };
-    this.campoSelecionado = event.data.campoPersonalizado;
   }
 
   confirmarDelete(item: Metodoajuste) {
@@ -155,5 +154,10 @@ export class ConfigMetodoAjuste {
         }));
       });
   }
+
+   onSelectCampo(event: any) {
+    this.objeto = { ...event.data };
+  }
+
 
 }
