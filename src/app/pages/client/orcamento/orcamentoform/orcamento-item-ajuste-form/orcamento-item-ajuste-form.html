@@ -3,14 +3,23 @@
 
   <div *ngIf="itemEditavel" class="">
 
+
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-mg font-semibold">
+        Material / Condição
+      </p>
+    </div>
+    <p-divider />
+
+
     <!-- Lista de campos -->
     <div *ngFor="let campo of itemEditavel.orcamentoItemCampoValor; let i = index" class="flex flex-col">
 
       <!-- Select do campo -->
       <div class=" flex flex-row gap-2 w-full">
         <app-layout-campo [width]="'md:w-5/12'">
-          <p-select [options]="listaCampos" optionLabel="name" optionValue="code" filter="true"
-            class="w-full" [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
+          <p-select [options]="listaCampos" optionLabel="name" optionValue="code" filter="true" class="w-full"
+            [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
           </p-select>
           <!-- <p-select [options]="getListaCamposDisponiveis(campo)" optionLabel="name" optionValue="code" filter="true"
             class="w-full" [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
@@ -31,7 +40,7 @@
 
     </div>
 
-     <p-divider />
+    <p-divider />
 
     <!-- Adicionar novo campo -->
     <div class="pt-2">
