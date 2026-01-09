@@ -107,25 +107,21 @@ export class Catalogoform {
       return;
     }
 
-    // ordena por ordem
     const ordenados = [...catalogo.catalogoCampo]
       .sort((a, b) => a.ordem - b.ordem);
 
-    // 1️⃣ Campos selecionados
     const camposSelecionados: any[] = ordenados.map(cc => ({
       idCampoPersonalizado: cc.idCampoPersonalizado,
       nmCampoPersonalizado: cc.campoPersonalizado?.nmCampoPersonalizado,
       tpCampoPersonalizado: cc.campoPersonalizado?.tpCampoPersonalizado
     }));
 
-    // 2️⃣ Ajustes padrão
     const ajustesPadrao: Record<number, any> = {};
 
     for (const cc of ordenados) {
       ajustesPadrao[cc.idCampoPersonalizado] = cc.vlPadrao;
     }
 
-    // 3️⃣ popula o wizard state
     this.wizardState.setCamposSelecionados(camposSelecionados);
 
     for (const [idCampo, valor] of Object.entries(ajustesPadrao)) {
@@ -198,7 +194,7 @@ export class Catalogoform {
       catalogoCampo.idCatalogo = idCatalogo;
       catalogoCampo.idCampoPersonalizado = campo.idCampoPersonalizado;
       catalogoCampo.vlPadrao = ajustes[campo.idCampoPersonalizado] ?? null;
-      catalogoCampo.flEditavel = true; // ou regra
+      catalogoCampo.flEditavel = true; 
       catalogoCampo.ordem = index + 1;
 
       return catalogoCampo;
@@ -231,6 +227,11 @@ export class Catalogoform {
     if (event == 1) {
       this.camposForm.continuar();
     }
+  }
+
+  processarValorPreco(event: any)
+  {
+    this.objeto.vlPrecoBase = event;
   }
 
 

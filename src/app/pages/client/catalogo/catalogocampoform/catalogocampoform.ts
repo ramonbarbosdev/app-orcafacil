@@ -1,4 +1,4 @@
-import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { BaseService } from '../../../../services/base.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
@@ -25,6 +25,7 @@ export interface CampoPrecificacaoDTO {
 export class Catalogocampoform {
 
   @Input() carregarDados = false;
+  @Output() valorPreco = new EventEmitter<number>();
 
   private baseService = inject(BaseService);
   private wizardState = inject(CatalogoWizardStateService);
@@ -41,7 +42,6 @@ export class Catalogocampoform {
   }
 
   ngOnInit() {
-    // this.obterCampos();
   }
 
   obterCampos() {
@@ -91,7 +91,23 @@ export class Catalogocampoform {
 
 
   onToggleCampo(campo?: any) {
- 
+
+    const ajustes = this.wizardState.getAjustesPadraoSnapshot();
+    const valorCampo = Number(ajustes[campo.idCampoPersonalizado] ?? 0);
+
+    if (!campo.ativo) {
+      delete ajustes[campo.idCampoPersonalizado];
+    } else {
+      ajustes[campo.idCampoPersonalizado] ??= 0;
+    }
+
+    const total = Object.values(ajustes)
+      .map(v => Number(v))
+      .filter(v => !isNaN(v))
+      .reduce((soma, v) => soma + v, 0);
+
+    this.wizardState.setAjustePadrao(campo.idCampoPersonalizado,0 );
+    this.valorPreco.emit(total);
 
     this.totalSelecionados =
       this.camposPrecificacao.filter(c => c.ativo).length;

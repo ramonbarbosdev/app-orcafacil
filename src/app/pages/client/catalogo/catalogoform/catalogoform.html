@@ -50,7 +50,7 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-        <app-catalogocampoform #camposForm [carregarDados]="carregarDados"></app-catalogocampoform>
+        <app-catalogocampoform #camposForm [carregarDados]="carregarDados" (valorPreco)="processarValorPreco($event)"></app-catalogocampoform>
       </p-tabpanel>
       <p-tabpanel value="1">
        <app-catalogocampoajusteform [objeto]="objeto" [carregarDados]="carregarDados"></app-catalogocampoajusteform>

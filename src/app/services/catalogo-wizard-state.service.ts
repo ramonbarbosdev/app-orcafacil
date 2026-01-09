@@ -5,17 +5,14 @@ import { BehaviorSubject } from 'rxjs';
 
 export interface CatalogoDraft {
 
-  // Aba 1 – Dados básicos
   cdCatalogo?: string;
   nmCatalogo?: string;
   dsCatalogo?: string;
   vlCustoBase?: number;
   vlPrecoBase?: number;
 
-  // Aba 2 – Campos de precificação
   camposSelecionados: CampoPrecificacaoDTO[];
 
-  // Aba 3 – Ajustes padrão
   ajustesPadrao: {
     [idCampoPersonalizado: number]: any;
   };
@@ -32,22 +29,18 @@ export class CatalogoWizardStateService {
   private ajustesPadraoSubject =
     new BehaviorSubject<Record<number, any>>({});
 
-  // Observables públicos (readonly)
   camposSelecionados$ = this.camposSelecionadosSubject.asObservable();
   ajustesPadrao$ = this.ajustesPadraoSubject.asObservable();
 
-  // Setters
   setCamposSelecionados(novosCampos: any[]) {
 
     const camposAtuais = this.camposSelecionadosSubject.value;
     const ajustesAtuais = this.ajustesPadraoSubject.value;
 
-    // IDs dos novos campos
     const novosIds = new Set(
       novosCampos.map(c => c.idCampoPersonalizado)
     );
 
-    // mantém apenas ajustes de campos que continuam existindo
     const ajustesReconstruidos: Record<number, any> = {};
 
     for (const id of Object.keys(ajustesAtuais)) {
@@ -70,7 +63,6 @@ export class CatalogoWizardStateService {
     });
   }
 
-  // (opcional) getters síncronos
   getCamposSelecionadosSnapshot() {
     return this.camposSelecionadosSubject.value;
   }
