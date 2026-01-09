@@ -89,7 +89,7 @@ export class Orcamentolist {
 
   onAdd() {
     this.idEdicao = 0;
-    this.isDialog = true;
+    this.router.navigate(['/client/orcamento/novo']);
   }
 
   @ViewChild(HeaderListGenerico) header!: HeaderListGenerico;
