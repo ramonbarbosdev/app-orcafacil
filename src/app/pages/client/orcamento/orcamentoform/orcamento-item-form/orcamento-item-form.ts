@@ -103,7 +103,7 @@ export class OrcamentoItemForm {
   abrirAjuste(index: any): void {
     this.itemSelecionado = this.itens[index];
 
-    if (this.itemSelecionado.idCatalogo) {
+    if (this.itemSelecionado.idCatalogo ) {
       this.ajusteVisible = true;
     }
     else {
@@ -143,7 +143,6 @@ export class OrcamentoItemForm {
   processarCatalogo(event: any, index: any) {
 
     const item = this.listaCatalogo.find((a) => a.code === event);
-
     if (item && item.extra) {
       const catalogoSelecionado = this.listaCatalogo.find(
         c => c.code === event

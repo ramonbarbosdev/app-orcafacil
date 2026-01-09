@@ -26,7 +26,7 @@ import { Catalogoform } from "../catalogoform/catalogoform";
   styleUrl: './catalogolist.scss',
 })
 export class Catalogolist {
- loading: boolean = true;
+  loading: boolean = true;
   public listagem: Catalogo[] = [];
   public baseService = inject(BaseService);
   endpoint = 'catalogo';
@@ -50,7 +50,7 @@ export class Catalogolist {
       minWidth: '15rem',
       filterType: 'text',
     },
-   
+
   ];
 
   actions: ActionConfig[] = [

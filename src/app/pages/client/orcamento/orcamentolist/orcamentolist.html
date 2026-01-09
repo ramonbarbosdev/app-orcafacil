@@ -1,1 +1,8 @@
-<p>orcamentolist works!</p>
+<app-header-list-generico
+  [title]="'Orçamentos'"
+  [columns]="columns"
+  [actions]="actions"
+  (add)="onAdd()"
+  [endpoint]="endpoint + '/listar'"
+>
+</app-header-list-generico>

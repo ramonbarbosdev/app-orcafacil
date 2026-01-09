@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
@@ -12,6 +12,7 @@ import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detal
 import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
 import { OrcamentoItemForm } from "./orcamento-item-form/orcamento-item-form";
 import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadicional-form/orcamento-informacaoadicional-form";
+import { FormatarDataBanco } from '../../../../utils/FormatarData';
 
 @Component({
   selector: 'app-orcamentoform',
@@ -28,12 +29,45 @@ export class Orcamentoform {
   public endpoint = 'orcamento';
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+
   carregarDetalhes = false;
 
 
   ngAfterViewInit(): void {
+    const key = Number(this.route.snapshot.paramMap.get('id'));
+
+    
+    if (key == 0) {
+     
+    } else {
+      this.onEdit(key);
+    }
+  }
 
 
+  
+  onEdit(id: number) {
+    if (!id) {
+      return;
+    }
+
+    this.baseService.findById(`${this.endpoint}`, id).subscribe({
+      next: (res: any) => {
+
+        this.objeto = res;
+        this.objeto.dtPrazoEntrega = FormatarDataBanco(res.dtPrazoEntrega);
+        this.objeto.dtEmissao = FormatarDataBanco(res.dtEmissao);
+        this.objeto.dtValido = FormatarDataBanco(res.dtValido);
+
+        console.log(this.objeto)
+        
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onClose() {
@@ -77,9 +111,7 @@ export class Orcamentoform {
   }
 
   processarTotalizador(valor: number): void {
-    this.objeto.vlCustoBase  = valor;
     this.objeto.vlPrecoBase = valor;
-    this.objeto.vlPrecoFinal = valor;
   }
 
 }
