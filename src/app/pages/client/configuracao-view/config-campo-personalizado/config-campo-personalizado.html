@@ -1,87 +1,107 @@
 <app-layout-card-config [title]="'Campos de Precificação'"
   [subtitle]="'Defina variáveis que influenciam o cálculo de preços'" [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
 
-  <div class="grid grid-nogutter gap-4">
+  <!-- GRID PRINCIPAL -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- LISTA -->
-    <div class="col-12 md:col-1">
 
-      <div class="section-header">
-        <!-- <span>Campos cadastrados</span> -->
-      </div>
+    <!-- FORMULÁRIO / DETAIL -->
+    <div class="lg:col-span-4">
 
-      <p-table [value]="listaCampos" [rows]="10" responsiveLayout="scroll" selectionMode="single"
-        [(selection)]="campoSelecionado" (onRowSelect)="onSelectCampo($event)">
+      <div class=" rounded-xl shadow-sm p-4 sticky top-4">
 
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Nome</th>
-            <th>Código</th>
-            <th>Tipo</th>
-            <th style="width: 60px"></th>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-campo>
-          <tr>
-            <td>{{ campo.nmCampoPersonalizado }}</td>
-
-            <td>
-              <p-tag severity="info">
-                {{ campo.cdCampoPersonalizado }}
-              </p-tag>
-            </td>
-
-            <td>{{ campo.tpCampoPersonalizado }}</td>
-
-            <td class="text-center">
-              <p-button icon="pi pi-trash" class="p-button-text p-button-danger" (click)="confirmarDelete(campo)">
-              </p-button>
-            </td>
-          </tr>
-        </ng-template>
-
-      </p-table>
-    </div>
-
-    <!-- FORMULÁRIO -->
-    <div class="col-12 md:col-2">
-
-      <div class="form-card">
-
-        <div class="form-card-header">
-          <span>Novo campo</span>
+        <!-- Header -->
+        <div class="flex items-center gap-2 mb-4">
+          <i class="pi pi-plus-circle text-primary"></i>
+          <p class="text-lg font-semibold">
+            {{ campoSelecionado ? 'Editar campo' : 'Novo campo' }}
+          </p>
         </div>
 
-        <div class="form-card-body">
+        <!-- Corpo -->
+        <div class="flex flex-col gap-4">
 
-          <app-layout-campo label="Código: (*)" [error]="errorValidacao['cdCampoPersonalizado']">
-            <input pInputText [(ngModel)]="objeto.cdCampoPersonalizado"
-             placeholder="Ex: TP_CLIENTE" class="w-full"   [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCampoPersonalizado'] }" />
-          </app-layout-campo>
-
+          <!-- Nome -->
           <app-layout-campo label="Nome: (*)" [error]="errorValidacao['nmCampoPersonalizado']">
-            <input pInputText [(ngModel)]="objeto.nmCampoPersonalizado" placeholder="Ex: Tipo de Cliente"
-            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCampoPersonalizado'] }"
-              class="w-full" />
+            <input pInputText class="w-full" [(ngModel)]="objeto.nmCampoPersonalizado" placeholder="Ex: Tipo de Cliente"
+              [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCampoPersonalizado'] }"
+              (ngModelChange)="processarNome($event)" />
           </app-layout-campo>
 
+          <!-- Código -->
+          <app-layout-campo label="Código: (*)" [error]="errorValidacao['cdCampoPersonalizado']">
+            <input pInputText class="w-full" [(ngModel)]="objeto.cdCampoPersonalizado" placeholder="Ex: TP_CLIENTE"
+              [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCampoPersonalizado'] }" />
+          </app-layout-campo>
+
+          <!-- Tipo -->
           <app-layout-campo label="Tipo: (*)" [error]="errorValidacao['tpCampoPersonalizado']">
-            <p-select [options]="tiposCampo" optionLabel="label" optionValue="value" placeholder="Selecione"
-              [(ngModel)]="objeto.tpCampoPersonalizado"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }" class="w-full"></p-select>
+            <p-select class="w-full" [options]="tiposCampo" optionLabel="label" optionValue="value"
+              placeholder="Selecione" [(ngModel)]="objeto.tpCampoPersonalizado"
+              [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }"></p-select>
           </app-layout-campo>
 
         </div>
 
-        <!-- <div class="form-card-footer">
-          <p-button label="Novo" icon="pi pi-plus" class="p-button-secondary" (click)="novo()">
-          </p-button>
-        </div> -->
+      </div>
+    </div>
+
+
+    <!-- LISTA / MASTER -->
+    <div class="lg:col-span-8">
+
+      <div class="rounded-xl shadow-sm  p-4">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-lg font-semibold">
+            Campos cadastrados
+          </p>
+        </div> 
+
+        <!-- Tabela -->
+        <p-table [value]="listaCampos" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
+          [(selection)]="campoSelecionado" (onRowSelect)="onSelectCampo($event)" class="w-full">
+
+          <ng-template pTemplate="header">
+            <tr class="text-sm text-gray-600">
+              <th class="px-3 py-2">Nome</th>
+              <th class="px-3 py-2 hidden md:table-cell">Código</th>
+              <th class="px-3 py-2 hidden md:table-cell">Tipo</th>
+              <th class="px-3 py-2 w-16 text-center"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-campo>
+            <tr class="border-t text-sm">
+
+              <td class="px-3 py-2 font-medium">
+                {{ campo.nmCampoPersonalizado }}
+              </td>
+
+              <td class="px-3 py-2 hidden md:table-cell">
+                <p-tag severity="info">
+                  {{ campo.cdCampoPersonalizado }}
+                </p-tag>
+              </td>
+
+              <td class="px-3 py-2 hidden md:table-cell">
+                {{ campo.tpCampoPersonalizado }}
+              </td>
+
+              <td class="px-3 py-2 text-center">
+                <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
+                  (click)="confirmarDelete(campo)"></p-button>
+              </td>
+
+            </tr>
+          </ng-template>
+
+        </p-table>
 
       </div>
-
     </div>
+
 
   </div>
 

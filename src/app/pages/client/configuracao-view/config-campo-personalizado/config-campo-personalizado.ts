@@ -135,7 +135,6 @@ export class ConfigCampoPersonalizado {
 
   }
 
-
   validarItens(): boolean {
     try {
       CampoPersonalizadoSchema.parse([this.objeto]);
@@ -152,6 +151,24 @@ export class ConfigCampoPersonalizado {
       }
       throw error;
     }
+  }
+
+  processarNome(event: any) {
+    
+    let nome = this.formatarNome(event)
+
+    this.objeto.cdCampoPersonalizado = nome;
+  }
+  formatarNome(nome: string) {
+    const valor = nome;
+
+    return valor
+      .normalize('NFD')                     // separa acentos
+      .replace(/[\u0300-\u036f]/g, '')      // remove acentos
+      .replace(/[^a-zA-Z0-9\s]/g, '')       // remove caracteres especiais
+      .trim()
+      .replace(/\s+/g, '_')                 // espaços → _
+      .toUpperCase();
   }
 
 }
