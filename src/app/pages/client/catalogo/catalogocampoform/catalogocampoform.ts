@@ -95,11 +95,8 @@ export class Catalogocampoform {
 
 
 
-  onToggleCampo(idCampoPersonalizado?: number) {
-    if (idCampoPersonalizado) {
-      this.wizardState.setAjustePadrao(idCampoPersonalizado, 0);
-      this.camposForm.setValor(idCampoPersonalizado,0);
-    }
+  onToggleCampo(campo?: any) {
+ 
 
     this.totalSelecionados =
       this.camposPrecificacao.filter(c => c.ativo).length;

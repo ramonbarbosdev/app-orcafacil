@@ -5,7 +5,7 @@
 
         <div *ngFor="let campo of camposPrecificacao" class="flex items-center gap-3">
             <p-checkbox [(ngModel)]="campo.ativo" [binary]="true" inputId="campo-{{ campo.idCampoPersonalizado }}"
-                (ngModelChange)="onToggleCampo(campo.idCampoPersonalizado)"></p-checkbox>
+                (ngModelChange)="onToggleCampo(campo)"></p-checkbox>
 
             <label for="campo-{{ campo.idCampoPersonalizado }}" class="cursor-pointer text-sm">
                 {{ campo.nmCampoPersonalizado }}
