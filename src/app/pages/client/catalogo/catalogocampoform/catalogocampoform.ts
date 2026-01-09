@@ -32,11 +32,6 @@ export class Catalogocampoform {
   ];
 
   totalSelecionados = 0;
-  private eventService = inject(EventService);
-
-  @ViewChild('Catalogocampoajusteform')
-  camposForm!: Catalogocampoajusteform;
-
 
   ngOnChanges(changes: SimpleChanges): void {
     this.limpar()
