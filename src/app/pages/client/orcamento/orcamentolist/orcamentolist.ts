@@ -53,7 +53,7 @@ export class Orcamentolist {
     {
       field: 'vlPrecoBase',
       header: 'Valor',
-      minWidth: '15rem',
+      minWidth: '10rem',
       filterType: 'text',
       formatter: (value: number) =>
         new Intl.NumberFormat('pt-BR', {
@@ -64,6 +64,13 @@ export class Orcamentolist {
     {
       field: 'dtEmissao',
       header: 'Emissão',
+      minWidth: '10rem',
+      filterType: 'text',
+      formatter: (value: any) =>FormatDataParaListagem(value) ,
+    },
+    {
+      field: 'dtValido',
+      header: 'Validade',
       minWidth: '10rem',
       filterType: 'text',
       formatter: (value: any) =>FormatDataParaListagem(value) ,
