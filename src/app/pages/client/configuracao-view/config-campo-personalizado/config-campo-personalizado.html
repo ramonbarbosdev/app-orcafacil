@@ -5,6 +5,62 @@
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
 
+
+    <!-- LISTA / MASTER -->
+    <div class="lg:col-span-8">
+
+      <div class="rounded-xl shadow-sm  p-4">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-lg font-semibold">
+            Campos cadastrados
+          </p>
+        </div>
+
+        <!-- Tabela -->
+        <p-table [value]="listaCampos" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
+          [(selection)]="campoSelecionado" dataKey="idCampoPersonalizado" (onRowSelect)="onSelectCampo($event)"  class="w-full">
+
+          <ng-template pTemplate="header">
+            <tr class="text-sm text-gray-600">
+              <th class="px-3 py-2">Nome</th>
+              <th class="px-3 py-2 hidden md:table-cell">Código</th>
+              <th class="px-3 py-2 hidden md:table-cell">Tipo</th>
+              <th class="px-3 py-2 w-16 text-center"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-campo>
+            <tr class="border-t text-sm"  [pSelectableRow]="campo">
+
+              <td class="px-3 py-2 font-medium">
+                {{ campo.nmCampoPersonalizado }}
+              </td>
+
+              <td class="px-3 py-2 hidden md:table-cell">
+                <p-tag severity="info">
+                  {{ campo.cdCampoPersonalizado }}
+                </p-tag>
+              </td>
+
+              <td class="px-3 py-2 hidden md:table-cell">
+                {{ campo.tpCampoPersonalizado }}
+              </td>
+
+              <td class="px-3 py-2 text-center">
+                <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
+                  (click)="confirmarDelete(campo)"></p-button>
+              </td>
+
+            </tr>
+          </ng-template>
+
+        </p-table>
+
+      </div>
+    </div>
+
     <!-- FORMULÁRIO / DETAIL -->
     <div class="lg:col-span-4">
 
@@ -47,60 +103,6 @@
     </div>
 
 
-    <!-- LISTA / MASTER -->
-    <div class="lg:col-span-8">
-
-      <div class="rounded-xl shadow-sm  p-4">
-
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-lg font-semibold">
-            Campos cadastrados
-          </p>
-        </div> 
-
-        <!-- Tabela -->
-        <p-table [value]="listaCampos" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
-          [(selection)]="campoSelecionado" (onRowSelect)="onSelectCampo($event)" class="w-full">
-
-          <ng-template pTemplate="header">
-            <tr class="text-sm text-gray-600">
-              <th class="px-3 py-2">Nome</th>
-              <th class="px-3 py-2 hidden md:table-cell">Código</th>
-              <th class="px-3 py-2 hidden md:table-cell">Tipo</th>
-              <th class="px-3 py-2 w-16 text-center"></th>
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-campo>
-            <tr class="border-t text-sm">
-
-              <td class="px-3 py-2 font-medium">
-                {{ campo.nmCampoPersonalizado }}
-              </td>
-
-              <td class="px-3 py-2 hidden md:table-cell">
-                <p-tag severity="info">
-                  {{ campo.cdCampoPersonalizado }}
-                </p-tag>
-              </td>
-
-              <td class="px-3 py-2 hidden md:table-cell">
-                {{ campo.tpCampoPersonalizado }}
-              </td>
-
-              <td class="px-3 py-2 text-center">
-                <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  (click)="confirmarDelete(campo)"></p-button>
-              </td>
-
-            </tr>
-          </ng-template>
-
-        </p-table>
-
-      </div>
-    </div>
 
 
   </div>

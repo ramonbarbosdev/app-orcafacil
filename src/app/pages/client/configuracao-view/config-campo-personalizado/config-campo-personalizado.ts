@@ -15,10 +15,11 @@ import { CampoPersonalizadoSchema } from '../../../../schema/campopersonalizado-
 import { ZodError } from 'zod';
 import { EventService } from '../../../../services/event.service';
 
+import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-config-campo-personalizado',
-  imports: [LayoutCardConfig, TableModule, TagModule, LayoutCampo, CommonModule, FormsModule, SelectModule, ButtonModule, InputTextModule],
+  imports: [LayoutCardConfig, TableModule, TagModule, LayoutCampo, CommonModule, FormsModule, SelectModule, ButtonModule, InputTextModule,DividerModule],
   templateUrl: './config-campo-personalizado.html',
   styleUrl: './config-campo-personalizado.scss',
 })
@@ -115,6 +116,7 @@ export class ConfigCampoPersonalizado {
   }
 
   onSelectCampo(event: any) {
+    console.log(event)
     this.objeto = { ...event.data };
   }
 
