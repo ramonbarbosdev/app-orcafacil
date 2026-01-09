@@ -14,7 +14,6 @@ export class Orcamentoitem {
 
     constructor(init?: Partial<Orcamentoitem>) {
         Object.assign(this, init);
-        this.orcamentoItemCampoValor ??= [];
     }
 
 }

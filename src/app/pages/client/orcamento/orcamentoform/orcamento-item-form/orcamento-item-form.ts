@@ -55,7 +55,6 @@ export class OrcamentoItemForm {
     { key: 'acao', label: '', width: '5%', tipo: 'action' }
   ];
 
-
   get gridTemplate(): string {
     return this.colunas.map(c => c.width).join(' ');
   }
@@ -96,6 +95,7 @@ export class OrcamentoItemForm {
     if (!Array.isArray(this.itens)) return;
 
     this.itensChange.emit(this.itens.filter((_, i) => i !== index));
+    // this.recalcular();
   }
 
   //funcoes de regra 
@@ -117,9 +117,6 @@ export class OrcamentoItemForm {
     }
   }
 
-
-
-
   recalcular(): void {
     if (!Array.isArray(this.itens)) {
       this.totalChange.emit(0);
@@ -138,6 +135,9 @@ export class OrcamentoItemForm {
 
     this.total = total;
     this.totalChange.emit(total);
+
+    this.itensChange.emit(this.itens);
+
   }
 
   processarCatalogo(event: any, index: any) {
@@ -171,8 +171,6 @@ export class OrcamentoItemForm {
       this.itens = this.itens.map((it, i) =>
         i === index ? itemAtualizado : it
       );
-
-      console.log(this.itens)
 
       this.recalcular();
     }
@@ -248,6 +246,8 @@ export class OrcamentoItemForm {
     this.ajusteVisible = false;
 
     this.recalcular()
+
+    console.log( this.itens)
   }
 
 }
