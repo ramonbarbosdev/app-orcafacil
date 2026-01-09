@@ -30,7 +30,8 @@
             <div *ngIf="col.tipo === 'select'">
                 <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
                 <p-select [options]="listaCatalogo" optionLabel="name" optionValue="code" class="w-full" filter="true"
-                    [(ngModel)]="item.idCatalogo" (ngModelChange)="processarCatalogo($event, i)">
+                    [(ngModel)]="item.idCatalogo" (ngModelChange)="processarCatalogo($event, i)"
+                    placeholder="Selecione um item">
                 </p-select>
             </div>
 
@@ -44,7 +45,7 @@
             <!-- CURRENCY -->
             <div *ngIf="col.tipo === 'currency'" class="text-right">
                 <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
-                <p-inputNumber [(ngModel)]="item[col.key === 'custo' ? 'vlCustoUnitario' : 'vlPrecoUnitario']"
+                <p-inputNumber [(ngModel)]="item[col.key === 'vlCustoUnitario' ? 'vlCustoUnitario' : 'vlPrecoUnitario']"
                     mode="currency" currency="BRL" locale="pt-BR" styleClass="w-full" inputStyleClass="w-full"
                     (ngModelChange)="recalcular()">
                 </p-inputNumber>
@@ -58,13 +59,20 @@
 
             <!-- ACTION -->
             <div *ngIf="col.tipo === 'action'" class="flex justify-end">
-                <button pButton icon="pi pi-cog" class="p-button-text p-button-secondary" >
+
+                <button pButton icon="pi pi-cog" class="p-button-text p-button-secondary"  (click)="abrirAjuste(i)">
                 </button>
+                
                 <button pButton icon="pi pi-trash" class="p-button-text p-button-secondary" (click)="removerItem(i)">
                 </button>
             </div>
 
+
+         
+
         </ng-container>
+
+          
     </div>
 
     <p-divider></p-divider>
@@ -80,3 +88,6 @@
     </div>
 
 </div>
+
+ <app-orcamento-item-ajuste-form [visible]="ajusteVisible" (cancel)="hideDialog()"
+                [item]="itemSelecionado"   (confirmar)="onConfirmarAjustes($event)"></app-orcamento-item-ajuste-form>

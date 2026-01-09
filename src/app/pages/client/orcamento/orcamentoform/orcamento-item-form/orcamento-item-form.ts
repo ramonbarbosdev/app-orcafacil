@@ -10,6 +10,9 @@ import { DividerModule } from 'primeng/divider';
 import { BaseService } from '../../../../../services/base.service';
 import { FlagOption } from '../../../../../models/flag-option';
 import { SelectModule } from 'primeng/select';
+import { OrcamentoItemAjusteForm } from '../orcamento-item-ajuste-form/orcamento-item-ajuste-form';
+import { Orcamentoitemcampovalor } from '../../../../../models/orcamentoitemcampovalor';
+import { ConfirmationService } from 'primeng/api';
 
 
 export interface GridColuna {
@@ -23,7 +26,7 @@ export interface GridColuna {
 
 @Component({
   selector: 'app-orcamento-item-form',
-  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, SelectModule],
+  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, SelectModule, OrcamentoItemAjusteForm],
   templateUrl: './orcamento-item-form.html',
   styleUrl: './orcamento-item-form.scss',
 })
@@ -35,8 +38,11 @@ export class OrcamentoItemForm {
   layoutService = inject(LayoutService);
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
-  public listaCatalogo: FlagOption[] = [];
+  private confirmationService = inject(ConfirmationService);
 
+  public listaCatalogo: FlagOption[] = [];
+  ajusteVisible: boolean = false;
+  itemSelecionado?: any;
 
   total = 0;
 
@@ -49,8 +55,13 @@ export class OrcamentoItemForm {
     { key: 'acao', label: '', width: '5%', tipo: 'action' }
   ];
 
+
   get gridTemplate(): string {
     return this.colunas.map(c => c.width).join(' ');
+  }
+
+  hideDialog() {
+    this.ajusteVisible = false;
   }
 
   ngOnInit(): void {
@@ -68,13 +79,7 @@ export class OrcamentoItemForm {
   }
 
   private criarItem(): Orcamentoitem {
-    return {
-      idCatalogo: 0,
-      qtItem: 1,
-      vlPrecoUnitario: 0,
-      vlPrecoTotal: 0,
-      vlCustoUnitario: 0
-    } as Orcamentoitem;
+    return new Orcamentoitem();
   }
 
   adicionarItem(): void {
@@ -85,9 +90,6 @@ export class OrcamentoItemForm {
 
     this.itensChange.emit(novosItens);
 
-    // setTimeout(() => {
-    //   this.inputs?.last?.nativeElement.focus();
-    // });
   }
 
   removerItem(index: any): void {
@@ -95,6 +97,28 @@ export class OrcamentoItemForm {
 
     this.itensChange.emit(this.itens.filter((_, i) => i !== index));
   }
+
+  //funcoes de regra 
+
+  abrirAjuste(index: any): void {
+    this.itemSelecionado = this.itens[index];
+
+    if (this.itemSelecionado.idCatalogo) {
+      this.ajusteVisible = true;
+    }
+    else {
+      this.confirmationService.confirm({
+        message: 'O item não foi selecionado!',
+        header: 'Aviso',
+        icon: 'pi pi-exclamation-triangle',
+        acceptVisible: false,
+        rejectVisible: false,
+      });
+    }
+  }
+
+
+
 
   recalcular(): void {
     if (!Array.isArray(this.itens)) {
@@ -105,8 +129,10 @@ export class OrcamentoItemForm {
     const total = this.itens.reduce((acc, item) => {
       item.qtItem ||= 0;
       item.vlPrecoUnitario ||= 0;
+      item.vlCustoUnitario ||= 0;
+      let unitario = item.vlPrecoUnitario +   item.vlCustoUnitario ;
 
-      item.vlPrecoTotal = item.qtItem * item.vlPrecoUnitario;
+      item.vlPrecoTotal = item.qtItem * unitario;
       return acc + item.vlPrecoTotal;
     }, 0);
 
@@ -119,8 +145,35 @@ export class OrcamentoItemForm {
     const item = this.listaCatalogo.find((a) => a.code === event);
 
     if (item && item.extra) {
-      this.itens[index].vlCustoUnitario = item.extra['vlCustoBase'];
-      this.itens[index].vlPrecoUnitario = item.extra['vlPrecoBase'];
+      const catalogoSelecionado = this.listaCatalogo.find(
+        c => c.code === event
+      );
+
+      if (!catalogoSelecionado || !catalogoSelecionado.extra) {
+        return;
+      }
+
+      const itemAtual = this.itens[index];
+
+      const novosCampos = this.mapearCamposCatalogoParaItem(
+        catalogoSelecionado.extra['catalogoCampo'],
+        itemAtual.idOrcamentoItem
+      );
+
+      const itemAtualizado = new Orcamentoitem({
+        ...itemAtual,
+        idCatalogo: Number(catalogoSelecionado.code),
+        vlCustoUnitario: catalogoSelecionado.extra['vlCustoBase'],
+        vlPrecoUnitario: catalogoSelecionado.extra['vlPrecoBase'],
+        orcamentoItemCampoValor: novosCampos
+      });
+
+      this.itens = this.itens.map((it, i) =>
+        i === index ? itemAtualizado : it
+      );
+
+      console.log(this.itens)
+
       this.recalcular();
     }
 
@@ -130,19 +183,19 @@ export class OrcamentoItemForm {
 
     this.baseService.findAll('catalogo/').subscribe({
       next: (res) => {
-
         this.listaCatalogo = (res as any).map((index: any) => {
-
           const item = new FlagOption();
           item.code = index.idCatalogo;
           item.name = index.nmCatalogo;
           item.extra = {
             vlCustoBase: index.vlCustoBase,
             vlPrecoBase: index.vlPrecoBase,
+            catalogoCampo: index.catalogoCampo
           };
-          this.cd.markForCheck();
           return item;
         });
+
+        // this.itens[0].idCatalogo = Number(this.listaCatalogo[0].code);
 
         this.cd.markForCheck();
       },
@@ -152,7 +205,50 @@ export class OrcamentoItemForm {
     });
   }
 
+  private mapearCamposCatalogoParaItem(
+    catalogoCampos: any[],
+    idOrcamentoItem?: number
+  ): Orcamentoitemcampovalor[] {
+
+    return catalogoCampos.map(campo => {
+      return {
+        idOrcamentoItemCampoValor: 0,
+        idOrcamentoItem: idOrcamentoItem ?? 0,
+        idCampoPersonalizado: campo.idCampoPersonalizado,
+        vlInformado: campo.vlPadrao ?? 0
+      } as Orcamentoitemcampovalor;
+    });
+  }
 
 
+
+  recalcularItem(item: Orcamentoitem): Orcamentoitem {
+    
+    const vlPrecoUnitario = item.orcamentoItemCampoValor.reduce(
+      (acc, c) => acc + (Number(c.vlInformado) || 0),
+      0
+    );
+
+
+    const vlPrecoTotal =
+      (item.vlCustoUnitario + vlPrecoUnitario) * item.qtItem;
+
+    return new Orcamentoitem({
+      ...item,
+      vlPrecoUnitario,
+      vlPrecoTotal
+    });
+  }
+
+  onConfirmarAjustes(itemAtualizado: Orcamentoitem) {
+
+    const itemRecalculado = this.recalcularItem(itemAtualizado);
+
+    this.itens = this.itens.map((it, i) =>
+      it.idCatalogo === this.itemSelecionado.idCatalogo ? itemRecalculado : it
+    );
+
+    this.ajusteVisible = false;
+  }
 
 }

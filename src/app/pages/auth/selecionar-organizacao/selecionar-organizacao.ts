@@ -48,8 +48,6 @@ export class SelecionarOrganizacao {
   public errorValidacao: Record<string, string> = {};
 
   showDialog() {
-
-
     this.objeto.idTenant = String(this.listaEmpresa[0].code);
   }
 

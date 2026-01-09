@@ -1,0 +1,54 @@
+<p-dialog header="Ajustes e Precificação" [modal]="true" [(visible)]="visible" [style]="{ width: '40em' }"
+  (onHide)="hideDialog()" (onShow)="showDialog()">
+
+  <div *ngIf="itemEditavel" class="">
+
+    <!-- Lista de campos -->
+    <div *ngFor="let campo of itemEditavel.orcamentoItemCampoValor; let i = index" class="flex flex-col">
+
+      <!-- Select do campo -->
+      <div class=" flex flex-row gap-2 w-full">
+        <app-layout-campo [width]="'md:w-5/12'">
+          <p-select [options]="listaCampos" optionLabel="name" optionValue="code" filter="true"
+            class="w-full" [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
+          </p-select>
+          <!-- <p-select [options]="getListaCamposDisponiveis(campo)" optionLabel="name" optionValue="code" filter="true"
+            class="w-full" [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
+          </p-select> -->
+
+        </app-layout-campo>
+        <app-layout-campo [width]="'md:w-5/12'">
+          <p-inputNumber [(ngModel)]="campo.vlInformado" mode="currency" currency="BRL" locale="pt-BR" class="w-full">
+          </p-inputNumber>
+        </app-layout-campo>
+
+        <div class=" flex justify-center items-end">
+          <p-button icon="pi pi-trash" severity="danger" text (onClick)="removerCampo(campo)">
+          </p-button>
+        </div>
+
+      </div>
+
+    </div>
+
+     <p-divider />
+
+    <!-- Adicionar novo campo -->
+    <div class="pt-2">
+      <p-button label="Campo Personalizado" icon="pi pi-plus" severity="secondary" (onClick)="adicionarCampo()">
+      </p-button>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+
+      <p-button label="Atualiza Preço" icon="pi pi-refresh" (onClick)="confirmarAlteracoes()">
+      </p-button>
+
+    </div>
+  </ng-template>
+
+</p-dialog>
