@@ -1,4 +1,4 @@
-<app-layout-card-config [title]="'Ajustes de Preço'" [subtitle]="'Defina regras que alteram o valor final'"
+<app-layout-card-config [title]="'Ajustes de Preço'" [subtitle]="'Defina regras dos materias que alteram o valor final do orçamento.'"
     [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
 
 
@@ -11,7 +11,7 @@
 
                 <div class="flex items-center justify-between mb-4">
                     <p class="text-lg font-semibold">
-                        Campos cadastrados
+                        Ajustes dos materiais cadastrados
                     </p>
                 </div>
 
@@ -20,7 +20,7 @@
 
                     <ng-template pTemplate="header">
                         <tr class="text-sm text-gray-600">
-                            <th class="px-3 py-2">Campo</th>
+                            <th class="px-3 py-2">Material</th>
                             <th class="px-3 py-2 hidden md:table-cell">Condição</th>
                             <th class="px-3 py-2 hidden md:table-cell">Ajuste</th>
                             <th class="px-3 py-2 w-16 text-center"></th>
@@ -67,7 +67,7 @@
                 <div class="flex flex-col gap-4">
 
                     <!-- Campo -->
-                    <app-layout-campo label="Campo: (*)" [error]="errorValidacao['idCampoPersonalizado']">
+                    <app-layout-campo label="Material: (*)" [error]="errorValidacao['idCampoPersonalizado']">
                         <p-select [options]="listaCampos" optionLabel="name" optionValue="code" placeholder="Selecione"
                             [(ngModel)]="objeto.idCampoPersonalizado" class="w-full" (onChange)="onCampoChange()"
                             [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCampoPersonalizado'] }">

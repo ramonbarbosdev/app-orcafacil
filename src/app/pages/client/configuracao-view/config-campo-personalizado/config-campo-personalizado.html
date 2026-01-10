@@ -1,5 +1,5 @@
-<app-layout-card-config [title]="'Campos de Precificação'"
-  [subtitle]="'Defina variáveis que influenciam o cálculo de preços'" [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
+<app-layout-card-config [title]="'Materiais de Precificação'"
+  [subtitle]="'Defina variáveis que influenciam o cálculo de preços. Essa informação irá servir de materiais para os orçamentos.'" [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
 
   <!-- GRID PRINCIPAL -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -14,7 +14,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
           <p class="text-lg font-semibold">
-            Campos cadastrados
+            Materiais cadastrados
           </p>
         </div>
 
@@ -70,7 +70,7 @@
         <div class="flex items-center gap-2 mb-4">
           <i class="pi pi-plus-circle text-primary"></i>
           <p class="text-lg font-semibold">
-            {{ campoSelecionado ? 'Editar campo' : 'Novo campo' }}
+            {{ campoSelecionado ? 'Editar material' : 'Novo material' }}
           </p>
         </div>
 

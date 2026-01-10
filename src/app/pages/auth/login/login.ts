@@ -63,11 +63,15 @@ export class Login {
   }
 
   entrar() {
+
+
     if (!this.validarItens()) return;
 
+    this.loading = true;
     this.auth.obterOrganizacao(this.objeto).subscribe({
       next: (res) => {
         this.visibleOrganizacao = true;
+        this.loading = false;
         this.listaEmpresa = (res.tenants as any).map((index: any) => {
           const item = new FlagOption();
           item.code = String(index.idTenant);
@@ -79,6 +83,8 @@ export class Login {
       },
       error: (e) => {
         this.visibleOrganizacao = false;
+        this.loading = false;
+
       },
     });
   }
