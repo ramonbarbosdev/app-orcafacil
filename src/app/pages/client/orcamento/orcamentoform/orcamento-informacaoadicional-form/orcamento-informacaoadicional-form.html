@@ -14,12 +14,11 @@
         </app-layout-campo>
 
 
-        <app-layout-campo [error]="errorValidacao['dtPrazoEntrega']" [label]="'Prazo de Entrega: (*)'"
-            [width]="'w-6/12'" [describedby]="'dtPrazoEntrega'">
-            <p-datepicker [(ngModel)]="objeto.dtPrazoEntrega" [showButtonBar]="true" dateFormat="dd/mm/yy"
-                styleClass="w-full" inputStyleClass="w-full"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dtPrazoEntrega'] }">
-            </p-datepicker>
+        <app-layout-campo [error]="errorValidacao['nuPrazoEntrega']" [label]="'Prazo de Entrega: (*)'"
+            [width]="'w-6/12'" [describedby]="'nuPrazoEntrega'">
+            <input type="number" pInputText name="nuPrazoEntrega" id="nuPrazoEntrega" class="w-full"
+                placeholder="Informe o prazo de entrega em dias" [(ngModel)]="objeto.nuPrazoEntrega"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuPrazoEntrega'] }" />
         </app-layout-campo>
 
 

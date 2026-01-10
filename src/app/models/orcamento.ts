@@ -10,7 +10,7 @@ export class Orcamento {
     public idEmpresaMetodoPrecificacao!: number;
     public idCliente!: number;
     public idCondicaoPagamento!: number;
-    public dtPrazoEntrega!: string;
+    public nuPrazoEntrega!: number;
     public dsObservacoes!: string;
     public vlCustoBase!: number;
     public vlPrecoBase!: number;

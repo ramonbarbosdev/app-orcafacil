@@ -56,12 +56,9 @@ export class Orcamentoform {
       next: (res: any) => {
 
         this.objeto = res;
-        this.objeto.dtPrazoEntrega = FormatarDataBanco(res.dtPrazoEntrega);
         this.objeto.dtEmissao = FormatarDataBanco(res.dtEmissao);
         this.objeto.dtValido = FormatarDataBanco(res.dtValido);
 
-        console.log(this.objeto)
-        
         this.cd.markForCheck();
       },
       error: (err) => {
