@@ -2,10 +2,13 @@
   (cancel)="hideDialog()" (show)="onShow()">
 
   <div class="flex-row-responsive">
-    <app-layout-campo [error]="errorValidacao['cdEmpresa']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
-      [sublabel]="'Informe o cdEmpresa'" [describedby]="'Informe o código'">
-      <input title="cdEmpresa" pInputText id="cdEmpresa" [(ngModel)]="objeto.cdEmpresa" [disabled]="true" class="w-full"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdEmpresa'] }" />
+    <app-layout-campo [error]="errorValidacao['cdEmpresa']" [label]="'CPF / CNPJ: (*)'" [width]="'md:w-4/12'"
+      [sublabel]="'Informe o cpf/cnpj'" [describedby]="'Informe o cpf/cnpj'">
+       <input title="cdEmpresa" pInputText id="cdEmpresa" [(ngModel)]="objeto.cdEmpresa"
+                    [disabled]="false" class="w-full"
+                    [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdEmpresa'] }" 
+                    (input)="processarMascaraCpfCnpj($event)"
+                    maxlength="18"/>
     </app-layout-campo>
 
     <app-layout-campo [error]="errorValidacao['nmEmpresa']" [label]="'Nome: (*)'" [width]="'w-8/12'"

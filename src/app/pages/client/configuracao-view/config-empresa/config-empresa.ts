@@ -10,6 +10,7 @@ import { ZodError } from 'zod';
 import { BaseService } from '../../../../services/base.service';
 import { AuthService } from '../../../../auth/auth.service';
 import { NgxMaskDirective } from 'ngx-mask';
+import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 
 @Component({
   selector: 'app-config-empresa',
@@ -37,6 +38,7 @@ export class ConfigEmpresa {
       next: (res: any) => {
 
         this.objeto = res;
+        this.objeto.cdEmpresa = FormatCpfCnpj(this.objeto.cdEmpresa);
 
         this.loading = false;
       },
@@ -92,22 +94,8 @@ export class ConfigEmpresa {
 
     valor = valor.replace(/\D/g, '');
 
-    if (valor.length <= 11) {
-      // CPF
-      valor = valor
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    } else {
-      // CNPJ
-      valor = valor
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2');
-    }
+    this.objeto.cdEmpresa = FormatCpfCnpj(valor);
 
-    this.objeto.cdEmpresa = valor;
   }
 
 

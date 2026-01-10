@@ -50,6 +50,29 @@ export class Catalogolist {
       minWidth: '15rem',
       filterType: 'text',
     },
+    {
+      field: 'vlCustoBase',
+      header: 'Custo',
+      minWidth: '10rem',
+      filterType: 'text',
+      formatter: (value: number) =>
+        new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(value ?? 0),
+    },
+    {
+      field: 'vlPrecoBase',
+      header: 'Material',
+      minWidth: '10rem',
+      filterType: 'text',
+      formatter: (value: number) =>
+        new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(value ?? 0),
+
+    },
 
   ];
 

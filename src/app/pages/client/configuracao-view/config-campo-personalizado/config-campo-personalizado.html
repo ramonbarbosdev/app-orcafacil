@@ -1,5 +1,6 @@
 <app-layout-card-config [title]="'Materiais de Precificação'"
-  [subtitle]="'Defina variáveis que influenciam o cálculo de preços. Essa informação irá servir de materiais para os orçamentos.'" [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
+  [subtitle]="'Defina variáveis que influenciam o cálculo de preços. Essa informação irá servir de materiais para os orçamentos.'"
+  [icon]="'pi pi-sliders-h'" (salvar)="onSave()">
 
   <!-- GRID PRINCIPAL -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -20,7 +21,8 @@
 
         <!-- Tabela -->
         <p-table [value]="listaCampos" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
-          [(selection)]="campoSelecionado" dataKey="idCampoPersonalizado" (onRowSelect)="onSelectCampo($event)"  class="w-full">
+          [(selection)]="campoSelecionado" dataKey="idCampoPersonalizado" (onRowSelect)="onSelectCampo($event)"
+          class="w-full">
 
           <ng-template pTemplate="header">
             <tr class="text-sm text-gray-600">
@@ -32,7 +34,7 @@
           </ng-template>
 
           <ng-template pTemplate="body" let-campo>
-            <tr class="border-t text-sm"  [pSelectableRow]="campo">
+            <tr class="border-t text-sm" [pSelectableRow]="campo">
 
               <td class="px-3 py-2 font-medium">
                 {{ campo.nmCampoPersonalizado }}
@@ -90,12 +92,31 @@
               [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCampoPersonalizado'] }" />
           </app-layout-campo>
 
-          <!-- Tipo -->
+
+          <app-layout-campo label="Tipo de valor: (*)" [error]="errorValidacao['tpCampoValor']">
+            <p-select class="w-full" [options]="listaTipoValor" optionLabel="name" optionValue="code"
+              placeholder="Selecione" [(ngModel)]="objeto.tpCampoValor"
+              [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoValor'] }"></p-select>
+          </app-layout-campo>
+
           <app-layout-campo label="Tipo: (*)" [error]="errorValidacao['tpCampoPersonalizado']">
             <p-select class="w-full" [options]="tiposCampo" optionLabel="label" optionValue="value"
               placeholder="Selecione" [(ngModel)]="objeto.tpCampoPersonalizado"
               [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }"></p-select>
           </app-layout-campo>
+
+
+          <div class="flex-row-responsive">
+            <app-layout-campo [label]="'Descrição:'" [width]="'w-12/12'">
+              <textarea pTextarea placeholder="Descrição" [autoResize]="false" rows="1" cols="30"
+                name="dsCampoPersonalizado" id="dsCampoPersonalizado"
+                [(ngModel)]="objeto.dsCampoPersonalizado"></textarea>
+            </app-layout-campo>
+
+          </div>
+
+
+
 
         </div>
 

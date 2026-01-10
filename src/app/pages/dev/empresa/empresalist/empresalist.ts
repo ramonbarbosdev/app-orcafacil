@@ -13,6 +13,7 @@ import {
 } from '../../../../components/header-list-generico/header-list-generico';
 import { Empresa } from '../../../../models/empresa';
 import { Empresaform } from '../empresaform/empresaform';
+import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 
 @Component({
   selector: 'app-empresalist',
@@ -43,9 +44,10 @@ export class Empresalist {
   columns: ColumnConfig[] = [
     {
       field: 'cdEmpresa',
-      header: 'Código',
+      header: 'CPF / CNPJ',
       minWidth: '10rem',
       filterType: 'text',
+      formatter: (value) => FormatCpfCnpj(value),
     },
     {
       field: 'nmEmpresa',

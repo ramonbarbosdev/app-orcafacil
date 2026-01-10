@@ -16,10 +16,12 @@ import { ZodError } from 'zod';
 import { EventService } from '../../../../services/event.service';
 
 import { DividerModule } from 'primeng/divider';
+import { TextareaModule } from 'primeng/textarea';
+import { FlagOption } from '../../../../models/flag-option';
 
 @Component({
   selector: 'app-config-campo-personalizado',
-  imports: [LayoutCardConfig, TableModule, TagModule, LayoutCampo, CommonModule, FormsModule, SelectModule, ButtonModule, InputTextModule,DividerModule],
+  imports: [LayoutCardConfig, TextareaModule, TableModule, TagModule, LayoutCampo, CommonModule, FormsModule, SelectModule, ButtonModule, InputTextModule, DividerModule],
   templateUrl: './config-campo-personalizado.html',
   styleUrl: './config-campo-personalizado.scss',
 })
@@ -34,6 +36,7 @@ export class ConfigCampoPersonalizado {
 
   listaCampos: Campopersonalizado[] = [];
   campoSelecionado?: Campopersonalizado;
+  listaTipoValor: FlagOption[] = [];
 
   objeto: Campopersonalizado = new Campopersonalizado();
 
@@ -45,10 +48,9 @@ export class ConfigCampoPersonalizado {
   ];
 
   ngOnInit() {
+    this.obterTipoValor();
     this.carregarLista();
-
   }
-
 
   carregarLista() {
 
@@ -155,11 +157,32 @@ export class ConfigCampoPersonalizado {
   }
 
   processarNome(event: any) {
-    
+
     let nome = this.formatarNome(event)
 
     this.objeto.cdCampoPersonalizado = nome;
   }
+
+
+  obterTipoValor() {
+    this.baseService.findAll(`${this.endpoint}/tipo-valor/`).subscribe({
+      next: (res) => {
+
+        this.listaTipoValor = (res as any).map((index: any) => {
+
+          const item = new FlagOption();
+          item.code = index;
+          item.name = index;
+
+          return item;
+        });
+      },
+      error: (err) => {
+      },
+    });
+  }
+
+
   formatarNome(nome: string) {
     const valor = nome;
 

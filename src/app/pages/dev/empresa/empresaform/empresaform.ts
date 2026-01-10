@@ -28,6 +28,7 @@ import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { Empresa } from '../../../../models/empresa';
 import { EmpresaSchema } from '../../../../schema/empresa-schema';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 
 @Component({
   selector: 'app-empresaform',
@@ -77,7 +78,9 @@ export class Empresaform {
     this.obterAssinatura();
 
     if (this.key == 0) {
-      this.obterSequencia();
+      // this.obterSequencia();
+      setTimeout(() => (this.loading = false), 0);
+
     } else {
       this.onEdit(this.key);
     }
@@ -92,8 +95,9 @@ export class Empresaform {
     this.baseService.findById(`${this.endpoint}`, id).subscribe({
       next: (res: any) => {
         this.objeto = res;
-
         this.loading = false;
+       this.objeto.cdEmpresa =  FormatCpfCnpj(this.objeto.cdEmpresa);
+
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -107,7 +111,13 @@ export class Empresaform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+         const payload = {
+        ...this.objeto,
+        cdEmpresa: this.objeto.cdEmpresa.replace(/\D/g, '')
+      };
+
+      
+      this.baseService.create(`${this.endpoint}/cadastrar`, payload).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();
@@ -172,5 +182,29 @@ export class Empresaform {
       },
       error: (err) => { },
     });
+  }
+
+  
+  processarMascaraCpfCnpj(event: any): void {
+    let valor = event.target.value || '';
+
+    valor = valor.replace(/\D/g, '');
+
+    if (valor.length <= 11) {
+      // CPF
+      valor = valor
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else {
+      // CNPJ
+      valor = valor
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2');
+    }
+
+    this.objeto.cdEmpresa = valor;
   }
 }
