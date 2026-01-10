@@ -6,4 +6,5 @@ export class Campopersonalizado {
     public dsCampoPersonalizado!: string; // ENUM
     public tpCampoPersonalizado!: string; // ENUM
     public tpCampoValor!: string; // ENUM
+    public ativo!: boolean;
 }

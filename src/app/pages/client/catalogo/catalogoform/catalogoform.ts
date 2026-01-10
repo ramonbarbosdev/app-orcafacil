@@ -18,11 +18,12 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { TabsModule } from 'primeng/tabs';
-import { CampoPrecificacaoDTO, Catalogocampoform } from "../catalogocampoform/catalogocampoform";
+import {  Catalogocampoform } from "../catalogocampoform/catalogocampoform";
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { Catalogocampoajusteform } from "../catalogocampoajusteform/catalogocampoajusteform";
 import { Catalogocampo } from '../../../../models/catalogocampo';
 import { Catalogocamposimulacaoform } from "../catalogocamposimulacaoform/catalogocamposimulacaoform";
+import { Campopersonalizado } from '../../../../models/campopersonalizado';
 @Component({
   selector: 'app-catalogoform',
   imports: [InputTextModule,
@@ -113,7 +114,9 @@ export class Catalogoform {
     const camposSelecionados: any[] = ordenados.map(cc => ({
       idCampoPersonalizado: cc.idCampoPersonalizado,
       nmCampoPersonalizado: cc.campoPersonalizado?.nmCampoPersonalizado,
-      tpCampoPersonalizado: cc.campoPersonalizado?.tpCampoPersonalizado
+      tpCampoPersonalizado: cc.campoPersonalizado?.tpCampoPersonalizado,
+      tpCampoValor: cc.campoPersonalizado?.tpCampoValor,
+      dsCampoPersonalizado: cc.campoPersonalizado?.dsCampoPersonalizado
     }));
 
     const ajustesPadrao: Record<number, any> = {};
@@ -128,7 +131,6 @@ export class Catalogoform {
       this.wizardState.setAjustePadrao(Number(idCampo), valor);
     }
   }
-
 
   onSave() {
 
@@ -183,7 +185,7 @@ export class Catalogoform {
 
   private buildCatalogoCampos(
     idCatalogo: number,
-    campos: CampoPrecificacaoDTO[],
+    campos: Campopersonalizado[],
     ajustes: Record<number, any>
   ): Catalogocampo[] {
 

@@ -1,7 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { Catalogo } from '../models/catalogo';
-import { CampoPrecificacaoDTO } from '../pages/client/catalogo/catalogocampoform/catalogocampoform';
 import { BehaviorSubject } from 'rxjs';
+import { Campopersonalizado } from '../models/campopersonalizado';
 
 export interface CatalogoDraft {
 
@@ -11,7 +10,7 @@ export interface CatalogoDraft {
   vlCustoBase?: number;
   vlPrecoBase?: number;
 
-  camposSelecionados: CampoPrecificacaoDTO[];
+  camposSelecionados: Campopersonalizado[];
 
   ajustesPadrao: {
     [idCampoPersonalizado: number]: any;
@@ -24,7 +23,7 @@ export interface CatalogoDraft {
 export class CatalogoWizardStateService {
 
   private camposSelecionadosSubject =
-    new BehaviorSubject<CampoPrecificacaoDTO[]>([]);
+    new BehaviorSubject<Campopersonalizado[]>([]);
 
   private ajustesPadraoSubject =
     new BehaviorSubject<Record<number, any>>({});
@@ -72,7 +71,7 @@ export class CatalogoWizardStateService {
   }
 
   hidratar(
-    campos: CampoPrecificacaoDTO[],
+    campos: Campopersonalizado[],
     ajustes: Record<number, any>
   ): void {
     this.camposSelecionadosSubject.next(campos);

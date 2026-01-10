@@ -5,15 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { Divider, DividerModule } from 'primeng/divider';
-import { Catalogocampoajusteform } from '../catalogocampoajusteform/catalogocampoajusteform';
-import { EventService } from '../../../../services/event.service';
-
-export interface CampoPrecificacaoDTO {
-  idCampoPersonalizado: number;
-  nmCampoPersonalizado: string;
-  tpCampoPersonalizado: string;
-  ativo: boolean;
-}
+import { Campopersonalizado } from '../../../../models/campopersonalizado';
 
 
 @Component({
@@ -29,7 +21,7 @@ export class Catalogocampoform {
 
   private baseService = inject(BaseService);
   private wizardState = inject(CatalogoWizardStateService);
-  camposPrecificacao: CampoPrecificacaoDTO[] = [
+  camposPrecificacao: Campopersonalizado[] = [
   ];
 
   totalSelecionados = 0;
@@ -52,6 +44,8 @@ export class Catalogocampoform {
         idCampoPersonalizado: campo.idCampoPersonalizado,
         nmCampoPersonalizado: campo.nmCampoPersonalizado,
         tpCampoPersonalizado: campo.tpCampoPersonalizado,
+        tpCampoValor: campo.tpCampoValor,
+        dsCampoPersonalizado: campo.dsCampoPersonalizado,
         ativo: selecionados.some(
           s => s.idCampoPersonalizado === campo.idCampoPersonalizado
         ),
@@ -66,6 +60,8 @@ export class Catalogocampoform {
         idCampoPersonalizado: c.idCampoPersonalizado,
         nmCampoPersonalizado: c.nmCampoPersonalizado,
         tpCampoPersonalizado: c.tpCampoPersonalizado,
+        tpCampoValor: c.tpCampoValor,
+        dsCampoPersonalizado: c.dsCampoPersonalizado,
       }));
 
     const atuais = this.wizardState.getCamposSelecionadosSnapshot();
@@ -106,7 +102,7 @@ export class Catalogocampoform {
       .filter(v => !isNaN(v))
       .reduce((soma, v) => soma + v, 0);
 
-    this.wizardState.setAjustePadrao(campo.idCampoPersonalizado,0 );
+    this.wizardState.setAjustePadrao(campo.idCampoPersonalizado, 0);
     this.valorPreco.emit(total);
 
     this.totalSelecionados =

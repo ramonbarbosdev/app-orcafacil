@@ -1,13 +1,12 @@
 import { ChangeDetectorRef, Component, inject, Input, SimpleChanges } from '@angular/core';
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
-import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { CampoPrecificacaoDTO } from '../catalogocampoform/catalogocampoform';
 import { combineLatest, Subscription } from 'rxjs';
 import { EventService } from '../../../../services/event.service';
+import { Campopersonalizado } from '../../../../models/campopersonalizado';
 
 @Component({
   selector: 'app-catalogocampoajusteform',
@@ -22,7 +21,7 @@ export class Catalogocampoajusteform {
 
   private wizardState = inject(CatalogoWizardStateService);
 
-  camposAtivos: CampoPrecificacaoDTO[] = [];
+  camposAtivos: Campopersonalizado[] = [];
   uiValores: Record<number, any> = {};
   @Input() objeto: any;
   @Input() carregarDados = false;
@@ -99,7 +98,7 @@ export class Catalogocampoajusteform {
     this.sub.unsubscribe();
   }
 
-  trackByCampo(index: number, campo: CampoPrecificacaoDTO): number {
+  trackByCampo(index: number, campo: Campopersonalizado): number {
     return campo.idCampoPersonalizado;
   }
 
