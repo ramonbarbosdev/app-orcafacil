@@ -23,17 +23,25 @@
 
         </app-layout-campo>
 
-        <app-layout-campo [error]="errorValidacao['idEmpresaMetodoPrecificacao']" [label]="'Método de Precificacão: (*)'"
-            [width]="'md:w-12/12'"[describedby]="'idEmpresaMetodoPrecificacao'">
+        <app-layout-campo  [error]="errorValidacao['idEmpresaMetodoPrecificacao']"
+            [label]="'Método de Precificacão: (*)'" [width]="'md:w-12/12'"
+            [describedby]="'idEmpresaMetodoPrecificacao'">
             <p-select [checkmark]="true" [showClear]="true" name="idEmpresaMetodoPrecificacao" [options]="listaMetodo"
-                optionLabel="name" optionValue="code" placeholder="Selecione"
-                class="w-full" [(ngModel)]="objeto.idEmpresaMetodoPrecificacao"
+                optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
+                [(ngModel)]="objeto.idEmpresaMetodoPrecificacao"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idEmpresaMetodoPrecificacao'] }"
-                ></p-select>
+                 (ngModelChange)="processarMetodo($event)"></p-select>
         </app-layout-campo>
 
     </div>
 
+    <div *ngIf="metodoSelecionado" class="mt-3 p-3  rounded-md ">
+
+        <p class="text-sm leading-relaxed italic ">
+            {{ metodoSelecionado.extra['descricao'] }}
+        </p>
+
+    </div>
 
 
 </div>

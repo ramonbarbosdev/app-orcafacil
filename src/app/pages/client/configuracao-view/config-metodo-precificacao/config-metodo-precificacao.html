@@ -92,31 +92,29 @@
 
                     </div>
 
-                    <div class="flex-row-responsive">
+                    <div *ngIf="camposMetodo?.length" class="flex-row-responsive">
 
-                        <div *ngIf="camposMetodo?.length">
+                        <div *ngFor="let campo of camposMetodo">
 
-                            <div *ngFor="let campo of camposMetodo" class="flex-row-responsive">
+                            <app-layout-campo [label]="campo.label + (campo.obrigatorio ? ' (*)' : '')"
+                                [width]="'md:w-12/12'">
 
-                                <app-layout-campo [label]="campo.label + (campo.obrigatorio ? ' (*)' : '')"
-                                    [width]="'md:w-12/12'">
+                                <p-inputnumber *ngIf="campo.tipo === 'NUMBER'"
+                                    [(ngModel)]="objeto.configuracao[campo.nome]" inputId="minmax" mode="decimal"
+                                    [min]="0" [max]="100" class="w-full" [minFractionDigits]="2"
+          [maxFractionDigits]="5" />
 
-                                    <p-inputnumber *ngIf="campo.tipo === 'NUMBER'"
-                                        [(ngModel)]="objeto.configuracao[campo.nome]" inputId="minmax" mode="decimal"
-                                        [min]="0" [max]="100" />
+                                <input pInputText *ngIf="campo.tipo === 'TEXT'" type="text" pInputText
+                                    [(ngModel)]="objeto.configuracao[campo.nome]" class="w-full" />
 
-                                    <input pInputText *ngIf="campo.tipo === 'TEXT'" type="text" pInputText
-                                        class="w-full" [(ngModel)]="objeto.configuracao[campo.nome]" class="w-full" />
+                                <p-toggleswitch *ngIf="campo.tipo === 'BOOLEAN'"
+                                    [(ngModel)]="objeto.configuracao[campo.nome]" class="w-full">
+                                </p-toggleswitch>
 
-                                    <p-toggleswitch *ngIf="campo.tipo === 'BOOLEAN'"
-                                        [(ngModel)]="objeto.configuracao[campo.nome]">
-                                    </p-toggleswitch>
-
-                                </app-layout-campo>
-
-                            </div>
+                            </app-layout-campo>
 
                         </div>
+
                     </div>
 
                 </div>

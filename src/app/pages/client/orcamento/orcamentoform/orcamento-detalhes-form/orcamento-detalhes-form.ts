@@ -70,11 +70,11 @@ export class OrcamentoDetalhesForm {
   obterMetodo() {
     this.baseService.findAll(`empresametodoprecificacao/listar`).subscribe({
       next: (res) => {
-        console.log(res )
         this.listaMetodo = (res.content as any).map((index: any) => {
           const item = new FlagOption();
           item.code = index.idEmpresaMetodoPrecificacao;
           item.name = index.nmMetodoPrecificacao;
+          item.extra = { descricao: index.dsMetodoPrecificacao };
           this.cd.markForCheck();
           return item;
         });
@@ -83,5 +83,16 @@ export class OrcamentoDetalhesForm {
     });
   }
 
-  
+
+  metodoSelecionado: any;
+
+  processarMetodo(event: any) {
+    const metodo = this.listaMetodo.find(m => m.code === event);
+    if (metodo) {
+          console.log(metodo)
+
+     this.metodoSelecionado = metodo;
+    }
+
+  }
 }
