@@ -20,6 +20,14 @@ export const OrcamentosSchema = z.object({
     if (typeof val === 'number') return val;
     return null;
   }, z.number('A Condição de pagamento é obrigatório').min(1, 'A Condição de pagamento é obrigatório')),
+  idEmpresaMetodoPrecificacao: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      const num = Number(val);
+      return isNaN(num) ? null : num;
+    }
+    if (typeof val === 'number') return val;
+    return null;
+  }, z.number('O Método de Precificação é obrigatório').min(1, 'O Método de Precificação é obrigatório')),
 
   dsObservacoes: z
     .string()

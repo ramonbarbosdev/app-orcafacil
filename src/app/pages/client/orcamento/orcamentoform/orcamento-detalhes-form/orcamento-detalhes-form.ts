@@ -5,12 +5,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
+import { FlagOption } from '../../../../../models/flag-option';
+import { SelectModule } from 'primeng/select';
 
 
 @Component({
   selector: 'app-orcamento-detalhes-form',
   standalone: true,
-  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule],
+  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule,SelectModule],
   templateUrl: './orcamento-detalhes-form.html',
   styleUrl: './orcamento-detalhes-form.scss',
 })
@@ -21,6 +23,7 @@ export class OrcamentoDetalhesForm {
 
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
+  public listaMetodo: FlagOption[] = [];
 
 
   ngOnInit(): void {
@@ -28,7 +31,7 @@ export class OrcamentoDetalhesForm {
       this.objeto.dtEmissao = new Date();
     }
     this.obterDiasValido()
-
+    this.obterMetodo();
     this.obterSequencia();
   }
 
@@ -64,5 +67,21 @@ export class OrcamentoDetalhesForm {
     });
   }
 
+  obterMetodo() {
+    this.baseService.findAll(`empresametodoprecificacao/listar`).subscribe({
+      next: (res) => {
+        console.log(res )
+        this.listaMetodo = (res.content as any).map((index: any) => {
+          const item = new FlagOption();
+          item.code = index.idEmpresaMetodoPrecificacao;
+          item.name = index.nmMetodoPrecificacao;
+          this.cd.markForCheck();
+          return item;
+        });
+      },
+      error: (err) => { },
+    });
+  }
 
+  
 }
