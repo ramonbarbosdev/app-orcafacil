@@ -1,41 +1,130 @@
 <app-layout-card-config [title]="'Método de Precificação da Empresa'" [subtitle]="'Como você calcula seus preços?'"
     [icon]="'pi pi-dollar'" (salvar)="onSave()">
 
-    <div class="flex-row-responsive">
-        <app-layout-campo [error]="errorValidacao['idMetodoPrecificacao']" [label]="'Método de Precificacão: '"
-            [width]="'md:w-6/12'" [sublabel]="'Informe a método'" [describedby]="'idMetodoPrecificacao'">
-            <p-select [checkmark]="true" [showClear]="true" name="idMetodoPrecificacao" [options]="listaMetodo"
-                optionLabel="cdMetodoPrecificacao" optionValue="idMetodoPrecificacao" placeholder="Selecione"
-                class="w-full" [(ngModel)]="objeto.idMetodoPrecificacao"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idMetodoPrecificacao'] }"
-                (onChange)="processarMetodo()"></p-select>
-        </app-layout-campo>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <div class="lg:col-span-8">
+
+            <div class="rounded-xl shadow-sm  p-4">
+
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-lg font-semibold">
+                        Métodos cadastrados
+                    </p>
+                </div>
+
+                <!-- Tabela -->
+                <p-table [value]="lista" [rows]="5" [paginator]="true" responsiveLayout="scroll" selectionMode="single"
+                    [(selection)]="campoSelecionado" dataKey="idEmpresaMetodoPrecificacao"
+                    (onRowSelect)="onSelectCampo($event)" class="w-full">
+
+                    <ng-template pTemplate="header">
+                        <tr class="text-sm text-gray-600">
+                            <th class="px-3 py-2">Nome</th>
+                            <th class="px-3 py-2 hidden md:table-cell">Código</th>
+                            <th class="px-3 py-2 hidden md:table-cell">Descrição</th>
+                            <th class="px-3 py-2 w-16 text-center"></th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-metodo>
+                        <tr class="border-t text-sm" [pSelectableRow]="metodo">
+
+                            <td class="px-3 py-2 font-medium">
+                                {{ metodo.nmMetodoPrecificacao }}
+                            </td>
+
+                            <td class="px-3 py-2 hidden md:table-cell">
+                                <p-tag severity="info">
+                                    {{ metodo.cdMetodoPrecificacao }}
+                                </p-tag>
+                            </td>
+
+                            <td class="px-3 py-2 hidden md:table-cell">
+                                {{ metodo.dsMetodoPrecificacao }}
+                            </td>
+
+                            <td class="px-3 py-2 text-center">
+                                <p-button icon="pi pi-trash" class="p-button-text p-button-danger"
+                                    (click)="confirmarDelete(metodo)">
+                                </p-button>
+                            </td>
+
+                        </tr>
+                    </ng-template>
 
 
-        <div *ngIf="camposMetodo?.length" >
-
-            <div *ngFor="let campo of camposMetodo" class="flex-row-responsive">
-
-                <app-layout-campo [label]="campo.label + (campo.obrigatorio ? ' (*)' : '')" [width]="'md:w-6/12'">
-
-                    <p-inputnumber *ngIf="campo.tipo === 'NUMBER'" [(ngModel)]="objeto.configuracao[campo.nome]"
-                        inputId="minmax" mode="decimal" [min]="0" [max]="100" />
-
-                    <input pInputText *ngIf="campo.tipo === 'TEXT'" type="text" pInputText class="w-full"
-                        [(ngModel)]="objeto.configuracao[campo.nome]" class="w-full" />
-
-                    <p-toggleswitch *ngIf="campo.tipo === 'BOOLEAN'" [(ngModel)]="objeto.configuracao[campo.nome]">
-                    </p-toggleswitch>
-
-                </app-layout-campo>
+                </p-table>
 
             </div>
-
         </div>
 
+        <!-- FORMULÁRIO / DETAIL -->
+        <div class="lg:col-span-4">
+
+            <div class=" rounded-xl shadow-sm p-4 sticky top-4">
+
+                <!-- Header -->
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="pi pi-plus-circle text-primary"></i>
+                    <p class="text-lg font-semibold">
+                        {{ campoSelecionado ? 'Editar método' : 'Novo método' }}
+                    </p>
+                </div>
+
+                <!-- Corpo -->
+                <div class="flex flex-col gap-4">
+
+                    <div class="flex-row-responsive">
+                        <app-layout-campo [error]="errorValidacao['idMetodoPrecificacao']"
+                            [label]="'Método de Precificacão: '" [width]="'md:w-12/12'" [sublabel]="'Informe a método'"
+                            [describedby]="'idMetodoPrecificacao'">
+                            <p-select [checkmark]="true" [showClear]="true" name="idMetodoPrecificacao"
+                                [options]="listaMetodo" optionLabel="cdMetodoPrecificacao"
+                                optionValue="idMetodoPrecificacao" placeholder="Selecione" class="w-full"
+                                [(ngModel)]="objeto.idMetodoPrecificacao"
+                                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idMetodoPrecificacao'] }"
+                                (onChange)="processarMetodo()"></p-select>
+                        </app-layout-campo>
+
+                    </div>
+
+                    <div class="flex-row-responsive">
+
+                        <div *ngIf="camposMetodo?.length">
+
+                            <div *ngFor="let campo of camposMetodo" class="flex-row-responsive">
+
+                                <app-layout-campo [label]="campo.label + (campo.obrigatorio ? ' (*)' : '')"
+                                    [width]="'md:w-12/12'">
+
+                                    <p-inputnumber *ngIf="campo.tipo === 'NUMBER'"
+                                        [(ngModel)]="objeto.configuracao[campo.nome]" inputId="minmax" mode="decimal"
+                                        [min]="0" [max]="100" />
+
+                                    <input pInputText *ngIf="campo.tipo === 'TEXT'" type="text" pInputText
+                                        class="w-full" [(ngModel)]="objeto.configuracao[campo.nome]" class="w-full" />
+
+                                    <p-toggleswitch *ngIf="campo.tipo === 'BOOLEAN'"
+                                        [(ngModel)]="objeto.configuracao[campo.nome]">
+                                    </p-toggleswitch>
+
+                                </app-layout-campo>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
 
     </div>
-
 
 
 
