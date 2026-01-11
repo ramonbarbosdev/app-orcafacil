@@ -103,7 +103,7 @@ export class OrcamentoItemForm {
   abrirAjuste(index: any): void {
     this.itemSelecionado = this.itens[index];
 
-    if (this.itemSelecionado.idCatalogo ) {
+    if (this.itemSelecionado.idCatalogo) {
       this.ajusteVisible = true;
     }
     else {
@@ -123,22 +123,42 @@ export class OrcamentoItemForm {
       return;
     }
 
-    const total = this.itens.reduce((acc, item) => {
-      item.qtItem ||= 0;
-      item.vlPrecoUnitario ||= 0;
-      item.vlCustoUnitario ||= 0;
-      let unitario = item.vlPrecoUnitario +   item.vlCustoUnitario ;
+    let totalOrcamento = 0;
 
-      item.vlPrecoTotal = item.qtItem * unitario;
-      return acc + item.vlPrecoTotal;
-    }, 0);
+    for (const item of this.itens) {
 
-    this.total = total;
-    this.totalChange.emit(total);
+      const quantidade = Number(item.qtItem) || 0;
+      const custoUnitario = Number(item.vlCustoUnitario) || 0;
 
+      let totalItem = custoUnitario * quantidade;
+
+      for (const campo of item.orcamentoItemCampoValor ?? []) {
+        const valor = Number(campo.vlInformado) || 0;
+
+        switch (campo.tpValor) {
+
+          case 'PRECO_FIXO':
+            totalItem += valor;
+            break;
+
+          case 'CUSTO_UNITARIO':
+            totalItem += valor * quantidade;
+            break;
+
+          case 'AJUSTE_METODO':
+            break;
+        }
+      }
+
+      item.vlPrecoTotal = totalItem;
+      totalOrcamento += totalItem;
+    }
+
+    this.total = totalOrcamento;
+    this.totalChange.emit(totalOrcamento);
     this.itensChange.emit(this.itens);
-
   }
+
 
   processarCatalogo(event: any, index: any) {
 
@@ -192,7 +212,6 @@ export class OrcamentoItemForm {
           return item;
         });
 
-        // this.itens[0].idCatalogo = Number(this.listaCatalogo[0].code);
 
         this.cd.markForCheck();
       },
@@ -212,13 +231,13 @@ export class OrcamentoItemForm {
         idOrcamentoItemCampoValor: 0,
         idOrcamentoItem: idOrcamentoItem ?? 0,
         idCampoPersonalizado: campo.idCampoPersonalizado,
-        vlInformado: campo.vlPadrao ?? 0
+        vlInformado: campo.vlPadrao ?? 0,
+        tpValor: campo.tpCampoValor
       } as Orcamentoitemcampovalor;
     });
   }
 
   recalcularItem(item: Orcamentoitem): Orcamentoitem {
-    
     const vlPrecoUnitario = item.orcamentoItemCampoValor.reduce(
       (acc, c) => acc + (Number(c.vlInformado) || 0),
       0
@@ -246,7 +265,6 @@ export class OrcamentoItemForm {
 
     this.recalcular()
 
-    console.log( this.itens)
   }
 
 }

@@ -37,18 +37,14 @@ export class ConfigCampoPersonalizado {
   listaCampos: Campopersonalizado[] = [];
   campoSelecionado?: Campopersonalizado;
   listaTipoValor: FlagOption[] = [];
+  listaTipoCampo: FlagOption[] = [];
 
   objeto: Campopersonalizado = new Campopersonalizado();
 
-
-  tiposCampo = [
-    { label: 'Texto', value: 'TEXT' },
-    { label: 'Número', value: 'NUMBER' },
-    { label: 'Booleano', value: 'BOOLEAN' }
-  ];
-
   ngOnInit() {
+
     this.obterTipoValor();
+    this.obterTipoCampo();
     this.carregarLista();
   }
 
@@ -176,6 +172,28 @@ export class ConfigCampoPersonalizado {
 
           return item;
         });
+
+        this.objeto.tpCampoValor = String(this.listaTipoValor[0]?.code)
+      },
+      error: (err) => {
+      },
+    });
+  }
+
+  obterTipoCampo() {
+    this.baseService.findAll(`${this.endpoint}/tipo-campo/`).subscribe({
+      next: (res) => {
+
+        this.listaTipoCampo = (res as any).map((index: any) => {
+
+          const item = new FlagOption();
+          item.code = index;
+          item.name = index;
+
+          return item;
+        });
+
+        this.objeto.tpCampoPersonalizado = String(this.listaTipoCampo[1]?.code)
       },
       error: (err) => {
       },

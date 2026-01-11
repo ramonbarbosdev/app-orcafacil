@@ -1,4 +1,4 @@
-<p-dialog header="Ajustes e Precificação" [modal]="true" [(visible)]="visible" [style]="{ width: '40em' }"
+<p-dialog header="Ajustes e Precificação" [modal]="true" [(visible)]="visible" [style]="{ width: '60rem' }"
   (onHide)="hideDialog()" (onShow)="showDialog()">
 
   <div *ngIf="itemEditavel" class="">
@@ -17,24 +17,30 @@
 
       <!-- Select do campo -->
       <div class=" flex flex-row gap-2 w-full">
-        <app-layout-campo [width]="'md:w-5/12'">
-          <p-select [options]="listaCampos" optionLabel="name" optionValue="code" filter="true" class="w-full"
-            [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
-          </p-select>
-          <!-- <p-select [options]="getListaCamposDisponiveis(campo)" optionLabel="name" optionValue="code" filter="true"
-            class="w-full" [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo">
-          </p-select> -->
 
+        <app-layout-campo [width]="'md:w-12/12'">
+          <p-select [options]="listaCampos" optionLabel="name" optionValue="code" filter="true" class="w-full"
+            [(ngModel)]="campo.idCampoPersonalizado" placeholder="Selecione um campo" appendTo="body" (ngModelChange)="processarCampo($event,campo)">
+          </p-select>
+         
         </app-layout-campo>
-        <app-layout-campo [width]="'md:w-5/12'">
+
+        <app-layout-campo [width]="'md:w-6/12'">
           <p-inputNumber [(ngModel)]="campo.vlInformado" mode="currency" currency="BRL" locale="pt-BR" class="w-full">
           </p-inputNumber>
         </app-layout-campo>
 
-        <div class=" flex justify-center items-end">
-          <p-button icon="pi pi-trash" severity="danger" text (onClick)="removerCampo(campo)">
+        <app-layout-campo [width]="'md:w-6/12'">
+          <input pInputText class="w-full"
+            [(ngModel)]="campo.tpValor"  disabled   />
+
+        </app-layout-campo>
+        <app-layout-campo [width]="'md:w-3/12'">
+            <p-button icon="pi pi-trash" severity="danger" text (onClick)="removerCampo(campo)">
           </p-button>
-        </div>
+        </app-layout-campo>
+
+      
 
       </div>
 

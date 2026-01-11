@@ -100,7 +100,7 @@
           </app-layout-campo>
 
           <app-layout-campo label="Tipo: (*)" [error]="errorValidacao['tpCampoPersonalizado']">
-            <p-select class="w-full" [options]="tiposCampo" optionLabel="label" optionValue="value"
+            <p-select class="w-full" [options]="listaTipoCampo" optionLabel="name" optionValue="code"
               placeholder="Selecione" [(ngModel)]="objeto.tpCampoPersonalizado"
               [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }"></p-select>
           </app-layout-campo>

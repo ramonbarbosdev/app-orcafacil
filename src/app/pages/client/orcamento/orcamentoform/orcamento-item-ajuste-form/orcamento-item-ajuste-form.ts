@@ -11,6 +11,7 @@ import { FlagOption } from '../../../../../models/flag-option';
 import { Orcamentoitemcampovalor } from '../../../../../models/orcamentoitemcampovalor';
 import { LayoutCampo } from "../../../../../components/layout-campo/layout-campo";
 import { DividerModule } from 'primeng/divider';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-orcamento-item-ajuste-form',
@@ -19,7 +20,7 @@ import { DividerModule } from 'primeng/divider';
     FormsModule,
     ButtonModule,
     SelectModule,
-    InputNumberModule, LayoutCampo, DividerModule],
+    InputNumberModule, LayoutCampo, DividerModule, InputTextModule],
   templateUrl: './orcamento-item-ajuste-form.html',
   styleUrl: './orcamento-item-ajuste-form.scss',
 })
@@ -50,7 +51,6 @@ export class OrcamentoItemAjusteForm {
       orcamentoItemCampoValor: this.item.orcamentoItemCampoValor.map(c => ({ ...c }))
     });
     this.obterCampos()
-   
 
   }
 
@@ -80,6 +80,15 @@ export class OrcamentoItemAjusteForm {
     );
   }
 
+  processarCampo(event: any, campo?: Orcamentoitemcampovalor) {
+
+    const item = this.listaCampos.find((a) => a.code === event);
+    if (item && item.extra) {
+      campo!.tpValor = item.extra['tpCampoValor'];
+      
+    }
+  }
+
 
   obterCampos() {
 
@@ -89,7 +98,9 @@ export class OrcamentoItemAjusteForm {
           const item = new FlagOption();
           item.code = index.idCampoPersonalizado;
           item.name = index.nmCampoPersonalizado;
-
+          item.extra = {
+            tpCampoValor: index.tpCampoValor,
+          };
           return item;
         });
 
