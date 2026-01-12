@@ -183,7 +183,7 @@ export class OrcamentoItemForm {
         ...itemAtual,
         idCatalogo: Number(catalogoSelecionado.code),
         vlCustoUnitario: catalogoSelecionado.extra['vlCustoBase'],
-        vlPrecoUnitario: catalogoSelecionado.extra['vlPrecoBase'],
+        vlPrecoUnitario: catalogoSelecionado.extra['vlPrecoBase'] ?? 0,
         orcamentoItemCampoValor: novosCampos
       });
 
