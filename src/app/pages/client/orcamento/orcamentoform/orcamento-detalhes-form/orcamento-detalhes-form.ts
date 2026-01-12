@@ -7,12 +7,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FlagOption } from '../../../../../models/flag-option';
 import { SelectModule } from 'primeng/select';
+import { EventService } from '../../../../../services/event.service';
 
 
 @Component({
   selector: 'app-orcamento-detalhes-form',
   standalone: true,
-  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule,SelectModule],
+  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule, SelectModule],
   templateUrl: './orcamento-detalhes-form.html',
   styleUrl: './orcamento-detalhes-form.scss',
 })
@@ -23,6 +24,8 @@ export class OrcamentoDetalhesForm {
 
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
+  private eventService = inject(EventService);
+
   public listaMetodo: FlagOption[] = [];
 
 
@@ -58,7 +61,7 @@ export class OrcamentoDetalhesForm {
         const dtBase = new Date(this.objeto.dtEmissao);
         dtBase.setDate(dtBase.getDate() + validadeDias);
         this.objeto.dtValido = dtBase;
-        
+
         this.cd.markForCheck();
       },
       error: () => {
@@ -84,15 +87,15 @@ export class OrcamentoDetalhesForm {
   }
 
 
-  metodoSelecionado: any;
+  descricao: any;
 
   processarMetodo(event: any) {
     const metodo = this.listaMetodo.find(m => m.code === event);
     if (metodo) {
-          console.log(metodo)
-
-     this.metodoSelecionado = metodo;
+      this.objeto.descricaoMetodo = metodo.extra?.['descricao']
     }
+    this.eventService.emitAtualizarCampoPersonalizado();
+
 
   }
 }

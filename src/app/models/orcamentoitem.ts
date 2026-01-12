@@ -6,9 +6,9 @@ export class Orcamentoitem {
     public idOrcamento!: number;
     public idCatalogo!: number;
     public qtItem: number = 1;
-    public vlCustoUnitario!: number;
-    public vlPrecoUnitario!: number;
-    public vlPrecoTotal!: number;
+    public vlCustoUnitario: number = 0;
+    public vlPrecoUnitario: number = 0;
+    public vlPrecoTotal: number = 0 ;
 
     public orcamentoItemCampoValor!: Orcamentoitemcampovalor[];
 

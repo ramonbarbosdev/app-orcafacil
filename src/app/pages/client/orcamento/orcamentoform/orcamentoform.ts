@@ -13,10 +13,12 @@ import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
 import { OrcamentoItemForm } from "./orcamento-item-form/orcamento-item-form";
 import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadicional-form/orcamento-informacaoadicional-form";
 import { FormatarDataBanco } from '../../../../utils/FormatarData';
+import { OrcamentoResumo } from "./orcamento-resumo/orcamento-resumo";
+import { EventService } from '../../../../services/event.service';
 
 @Component({
   selector: 'app-orcamentoform',
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm],
+  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm, OrcamentoResumo],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })
@@ -30,6 +32,7 @@ export class Orcamentoform {
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
+  private eventService = inject(EventService);
 
   carregarDetalhes = false;
 
@@ -37,16 +40,20 @@ export class Orcamentoform {
   ngAfterViewInit(): void {
     const key = Number(this.route.snapshot.paramMap.get('id'));
 
-    
+
+    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
+      this.consultarPreviewValorFinal();
+    });
+
     if (key == 0) {
-     
+
     } else {
       this.onEdit(key);
     }
   }
 
 
-  
+
   onEdit(id: number) {
     if (!id) {
       return;
@@ -54,8 +61,8 @@ export class Orcamentoform {
 
     this.baseService.findById(`${this.endpoint}`, id).subscribe({
       next: (res: any) => {
-
         this.objeto = res;
+        this.objeto.descricaoMetodo = res.dsMetodoPrecificacao;
         this.objeto.dtEmissao = FormatarDataBanco(res.dtEmissao);
         this.objeto.dtValido = FormatarDataBanco(res.dtValido);
 
@@ -72,7 +79,6 @@ export class Orcamentoform {
   }
 
   onSave() {
-    console.log(this.objeto)
     if (this.validarItens()) {
 
       this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
@@ -108,7 +114,25 @@ export class Orcamentoform {
   }
 
   processarTotalizador(valor: number): void {
+    this.consultarPreviewValorFinal();
     this.objeto.vlPrecoBase = valor;
+    this.objeto.vlPrecoFinal = valor;
+  }
+
+  //buscar preview
+  consultarPreviewValorFinal() {
+    if (this.objeto.orcamentoItem.length > 0) {
+
+      this.baseService.post(`${this.endpoint}/preview-precificacao`, this.objeto).subscribe({
+        next: (res) => {
+          this.objeto.vlPrecoBase = res.valorTotal;
+          this.cd.markForCheck();
+        },
+        error: (erro) => {
+          this.cd.markForCheck();
+        },
+      });
+    }
   }
 
 }

@@ -13,4 +13,12 @@ export class EventService {
     this.atualizarCampoPersonalizado.next();
   }
 
+  private consultarPreviewValorFinal = new Subject<void>();
+  consultarPreviewValorFinal$ = this.consultarPreviewValorFinal.asObservable();
+
+  emitConsultarPreviewValorFinal() {
+    this.consultarPreviewValorFinal.next();
+  }
+
+
 }

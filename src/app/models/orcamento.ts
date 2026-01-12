@@ -12,9 +12,10 @@ export class Orcamento {
     public idCondicaoPagamento!: number;
     public nuPrazoEntrega!: number;
     public dsObservacoes!: string;
-    public vlCustoBase!: number;
+    public vlPreview!: number;
     public vlPrecoBase!: number;
-    public vlPrecoFinal!: number;
+    public vlPrecoFinal: number = 0;
+    public descricaoMetodo!: string;
 
     public cliente?: Clientes;
     public orcamentoItem!: Orcamentoitem[];

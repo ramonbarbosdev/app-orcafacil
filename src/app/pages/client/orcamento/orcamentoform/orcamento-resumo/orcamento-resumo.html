@@ -1,0 +1,54 @@
+<!-- Resumo da Precificação -->
+<div class="mt-10 border rounded-xl shadow-sm">
+
+  <!-- Cabeçalho -->
+  <div class="px-6 py-4 border-b">
+    <h4 class="text-lg font-semibold">
+      Resumo da Precificação
+    </h4>
+    <p class="text-sm">
+      Valores calculados conforme o método de precificação selecionado
+    </p>
+  </div>
+
+  <!-- Conteúdo -->
+  <div class="px-6 py-6 space-y-4">
+
+    <!-- Valor Base -->
+    <div class="flex items-center justify-between">
+      <span class="text-sm">
+        Valor base do orçamento
+      </span>
+      <span class="text-lg font-semibold">
+        {{ objeto.vlPrecoFinal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </span>
+    </div>
+
+    <!-- Valor Final -->
+    <div class="flex items-center justify-between">
+      <span class="text-sm">
+        Valor final do orçamento
+      </span>
+      <span class="text-2xl font-bold">
+        {{ objeto.vlPrecoBase | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </span>
+    </div>
+
+    <!-- Observação -->
+    <p class="text-xs mt-2">
+      O valor final será confirmado no momento do salvamento do orçamento.
+    </p>
+
+  </div>
+
+  <!-- Rodapé -->
+  <div class="px-6 py-4 border-t rounded-b-xl">
+    <div class="flex items-center gap-2 text-xs">
+      <i class="pi pi-info-circle"></i>
+      <span>
+        Este valor é uma prévia calculada automaticamente com base nos dados informados.
+      </span>
+    </div>
+  </div>
+
+</div>

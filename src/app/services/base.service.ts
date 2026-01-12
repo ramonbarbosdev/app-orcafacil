@@ -158,6 +158,21 @@ export class BaseService {
     );
   }
 
+  post(endpoint: string, data: any): Observable<any> {
+    const url = `${this.apiUrl}/${endpoint}`;
+
+    return this.http.post<any>(url, data).pipe(
+      tap((res) => {
+        return res;
+      }),
+      catchError((e) => {
+        console.log(e);
+        this.exibirErros(e);
+        return throwError(() => e);
+      })
+    );
+  }
+
   update(endpoint: string, data: any): Observable<any> {
     const url = `${this.apiUrl}/${endpoint}`;
 
