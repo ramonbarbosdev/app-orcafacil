@@ -1,11 +1,11 @@
 <div class="mb-4 ">
-    <h4 class="text-2xl font-semibold mb-4">Detalhes do Orçamento</h4>
+    <h4 class="text-2xl font-semibold mb-4">Informações adicionais</h4>
 
     <div class="flex-row-responsive">
 
 
         <app-layout-campo [error]="errorValidacao['idCondicaoPagamento']" [label]="'Condições de Pagamento: (*)'"
-            [width]="'w-6/12'"  [describedby]="'idCondicaoPagamento'">
+            [width]="'w-4/12'" [describedby]="'idCondicaoPagamento'">
             <p-select [checkmark]="true" [showClear]="true" name="idCondicaoPagamento"
                 [options]="listaCondicaoPagamento" optionLabel="name" optionValue="code" placeholder="Selecione"
                 class="w-full" [(ngModel)]="objeto.idCondicaoPagamento"
@@ -15,19 +15,28 @@
 
 
         <app-layout-campo [error]="errorValidacao['nuPrazoEntrega']" [label]="'Prazo de Entrega: (*)'"
-            [width]="'w-6/12'" [describedby]="'nuPrazoEntrega'">
+            [width]="'w-4/12'" [describedby]="'nuPrazoEntrega'">
             <input type="number" pInputText name="nuPrazoEntrega" id="nuPrazoEntrega" class="w-full"
                 placeholder="Informe o prazo de entrega em dias" [(ngModel)]="objeto.nuPrazoEntrega"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuPrazoEntrega'] }" />
+        </app-layout-campo>
+
+        <app-layout-campo [error]="errorValidacao['tpStatus']" [label]="'Status: (*)'" [width]="'w-4/12'"
+            [describedby]="'tpStatus'">
+            <p-select [checkmark]="true" [showClear]="true" name="tpStatus" [options]="listaStatus" optionLabel="name"
+                optionValue="code" placeholder="Selecione" class="w-full" [(ngModel)]="objeto.tpStatus"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpStatus'] }" />
+
         </app-layout-campo>
 
 
     </div>
 
     <div class="flex-row-responsive">
-         <app-layout-campo [label]="'Observações:'" [width]="'w-12/12'" [error]="errorValidacao['dsObservacoes']" [describedby]="'dsObservacoes'">
-            <textarea pTextarea placeholder="Observações, termo e condições adicionais..." [autoResize]="false" rows="3" cols="30"
-                name="dsObservacoes" id="dsObservacoes" [(ngModel)]="objeto.dsObservacoes"  
+        <app-layout-campo [label]="'Observações:'" [width]="'w-12/12'" [error]="errorValidacao['dsObservacoes']"
+            [describedby]="'dsObservacoes'">
+            <textarea pTextarea placeholder="Observações, termo e condições adicionais..." [autoResize]="false" rows="3"
+                cols="30" name="dsObservacoes" id="dsObservacoes" [(ngModel)]="objeto.dsObservacoes"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsObservacoes'] }" maxlength="255"></textarea>
         </app-layout-campo>
     </div>

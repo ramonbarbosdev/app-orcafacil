@@ -26,12 +26,14 @@ export class OrcamentoInformacaoadicionalForm {
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
   public listaCondicaoPagamento: FlagOption[] = [];
+  public listaStatus: FlagOption[] = [];
 
 
   ngOnInit(): void {
 
     this.obterCondicao()
     this.obterTermoCondicoes()
+    this.obterStatus();
 
   }
 
@@ -67,5 +69,22 @@ export class OrcamentoInformacaoadicionalForm {
       },
     });
   }
+  
+  
+   obterStatus() {
+    this.baseService.findAll(`orcamento/status-orcamento`).subscribe({
+      next: (res) => {
+        this.listaStatus = (res as any).map((index: any) => {
+          const item = new FlagOption();
+          item.code = index;
+          item.name = index;
+          this.cd.markForCheck();
+          return item;
+        });
 
+        this.objeto.tpStatus =  this.listaStatus[0].code;
+      },
+      error: (err) => { },
+    });
+  }
 }

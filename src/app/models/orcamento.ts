@@ -16,6 +16,8 @@ export class Orcamento {
     public vlPrecoBase!: number;
     public vlPrecoFinal: number = 0;
     public descricaoMetodo!: string;
+    public tpStatus!: string;
+
 
     public cliente?: Clientes;
     public orcamentoItem!: Orcamentoitem[];
