@@ -92,6 +92,7 @@ export class Orcamentoform {
 
     this.onSave('gerar');
     this.partilharVisible = true;
+
   }
 
   onSave(url?: string) {
@@ -101,6 +102,12 @@ export class Orcamentoform {
 
       this.baseService.create(`${this.endpoint}/${urlRequisicao}`, this.objeto).subscribe({
         next: () => {
+
+
+          if (urlRequisicao == 'gerar') {
+            this.partilharVisible = true;
+
+          }
 
           this.cd.markForCheck();
           this.onClose()
