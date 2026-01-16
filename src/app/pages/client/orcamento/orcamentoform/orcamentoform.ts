@@ -15,10 +15,11 @@ import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadiciona
 import { FormatarDataBanco } from '../../../../utils/FormatarData';
 import { OrcamentoResumo } from "./orcamento-resumo/orcamento-resumo";
 import { EventService } from '../../../../services/event.service';
+import { PartilharOrcamento } from "../../partilhar-orcamento/partilhar-orcamento";
 
 @Component({
   selector: 'app-orcamentoform',
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm, OrcamentoResumo],
+  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm, OrcamentoResumo, PartilharOrcamento],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })
@@ -35,6 +36,7 @@ export class Orcamentoform {
   private eventService = inject(EventService);
 
   carregarDetalhes = false;
+  partilharVisible: boolean = false;
 
 
   ngAfterViewInit(): void {
@@ -53,6 +55,9 @@ export class Orcamentoform {
   }
 
 
+  hideDialog() {
+    this.partilharVisible = false;
+  }
 
   onEdit(id: number) {
     if (!id) {
@@ -79,19 +84,20 @@ export class Orcamentoform {
   }
 
   onSaveRascunho() {
-   
+
     this.onSave('rascunho');
   }
 
   onSaveGerado() {
-   
+
     this.onSave('gerar');
+    this.partilharVisible = true;
   }
 
   onSave(url?: string) {
     if (this.validarItens()) {
 
-      let urlRequisicao =  url ? url : `cadastrar`;
+      let urlRequisicao = url ? url : `cadastrar`;
 
       this.baseService.create(`${this.endpoint}/${urlRequisicao}`, this.objeto).subscribe({
         next: () => {

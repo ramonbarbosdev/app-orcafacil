@@ -1,0 +1,65 @@
+<p-dialog header="Partilhar" [modal]="true" [(visible)]="visible" [style]="{ width: '42rem' }" (onHide)="hideDialog()"
+    (onShow)="showDialog()">
+
+    <div class="flex flex-col gap-6">
+
+        <p class="text-sm">
+            O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            <!-- WhatsApp -->
+            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
+                (click)="enviarWhatsApp()">
+                <div class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
+                    <i class="pi pi-whatsapp text-white text-2xl"></i>
+                </div>
+                <span class="text-sm ">WhatsApp</span>
+            </button>
+
+            <!-- Email -->
+            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
+                (click)="enviarEmail()">
+                <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center">
+                    <i class="pi pi-envelope text-white text-2xl"></i>
+                </div>
+                <span class="text-sm ">E-mail</span>
+            </button>
+
+            <!-- Copiar link -->
+            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
+                (click)="copiarLink()">
+                <div class="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center">
+                    <i class="pi pi-link text-white text-2xl"></i>
+                </div>
+                <span class="text-sm">Copiar link</span>
+            </button>
+
+            <!-- PDF -->
+            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
+                (click)="gerarPdf()">
+                <div class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center">
+                    <i class="pi pi-file-pdf text-white text-2xl"></i>
+                </div>
+                <span class="text-sm ">Gerar PDF</span>
+            </button>
+
+        </div>
+
+
+        <p-divider />
+
+
+        <div class="flex items-center gap-2">
+            <input type="text" pInputText [value]="linkOrcamento" readonly class="w-full text-sm" />
+
+            <button pButton type="button" icon="pi pi-copy" class="p-button-outlined" (click)="copiarLink()">
+            </button>
+        </div>
+
+
+
+    </div>
+
+</p-dialog>
