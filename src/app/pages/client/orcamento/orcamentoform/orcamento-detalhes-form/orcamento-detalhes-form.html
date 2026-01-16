@@ -5,7 +5,7 @@
 
         <app-layout-campo [label]="'Número do Orçamento:'" [width]="'w-6/12'" [error]="errorValidacao['nuOrcamento']">
             <input title="nuOrcamento" pInputText id="nuOrcamento" [(ngModel)]="objeto.nuOrcamento" class="w-full"
-                placeholder="ex: ORC-007" disabled="true" />
+                placeholder="ex: ORC-007" disabled="false" />
         </app-layout-campo>
 
         <app-layout-campo [error]="errorValidacao['dtEmissao']" [label]="'Data de Emissão: (*)'" [width]="'w-6/12'">
@@ -30,7 +30,7 @@
                 optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
                 [(ngModel)]="objeto.idEmpresaMetodoPrecificacao"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idEmpresaMetodoPrecificacao'] }"
-                 (ngModelChange)="processarMetodo($event)"></p-select>
+                 (ngModelChange)="processarMetodo($event)" ></p-select>
         </app-layout-campo>
 
     </div>

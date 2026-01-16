@@ -5,7 +5,7 @@
 
 
         <app-layout-campo [error]="errorValidacao['idCondicaoPagamento']" [label]="'Condições de Pagamento: (*)'"
-            [width]="'w-4/12'" [describedby]="'idCondicaoPagamento'">
+            [width]="'w-6/12'" [describedby]="'idCondicaoPagamento'">
             <p-select [checkmark]="true" [showClear]="true" name="idCondicaoPagamento"
                 [options]="listaCondicaoPagamento" optionLabel="name" optionValue="code" placeholder="Selecione"
                 class="w-full" [(ngModel)]="objeto.idCondicaoPagamento"
@@ -15,19 +15,19 @@
 
 
         <app-layout-campo [error]="errorValidacao['nuPrazoEntrega']" [label]="'Prazo de Entrega: (*)'"
-            [width]="'w-4/12'" [describedby]="'nuPrazoEntrega'">
+            [width]="'w-6/12'" [describedby]="'nuPrazoEntrega'">
             <input type="number" pInputText name="nuPrazoEntrega" id="nuPrazoEntrega" class="w-full"
                 placeholder="Informe o prazo de entrega em dias" [(ngModel)]="objeto.nuPrazoEntrega"
                 [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuPrazoEntrega'] }" />
         </app-layout-campo>
 
-        <app-layout-campo [error]="errorValidacao['tpStatus']" [label]="'Status: (*)'" [width]="'w-4/12'"
+        <!-- <app-layout-campo [error]="errorValidacao['tpStatus']" [label]="'Status: (*)'" [width]="'w-4/12'"
             [describedby]="'tpStatus'">
             <p-select [checkmark]="true" [showClear]="true" name="tpStatus" [options]="listaStatus" optionLabel="name"
                 optionValue="code" placeholder="Selecione" class="w-full" [(ngModel)]="objeto.tpStatus"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpStatus'] }" />
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpStatus'] }" disabled />
 
-        </app-layout-campo>
+        </app-layout-campo> -->
 
 
     </div>

@@ -82,7 +82,7 @@ export class OrcamentoInformacaoadicionalForm {
           return item;
         });
 
-        this.objeto.tpStatus =  this.listaStatus[0].code;
+        // this.objeto.tpStatus =  this.listaStatus[1].code;
       },
       error: (err) => { },
     });

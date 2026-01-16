@@ -35,8 +35,11 @@
     
     <p-divider></p-divider>
     <!-- Ações -->
-    <div class="flex justify-end">
-        <p-button label="Salvar" icon="pi pi-save" (onClick)="onSave()">
+    <div class="flex gap-3 justify-end">
+        <p-button label="Salvar Rascunho"  variant="outlined" icon="pi pi-save" (onClick)="onSaveRascunho()">
+        </p-button>
+        
+        <p-button label="Gerar Orçamento" icon="pi pi-save" (onClick)="onSaveGerado()">
         </p-button>
     </div>
 </p-card>

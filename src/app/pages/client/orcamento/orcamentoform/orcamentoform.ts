@@ -78,10 +78,22 @@ export class Orcamentoform {
     this.router.navigate(['/client/orcamento']);
   }
 
-  onSave() {
+  onSaveRascunho() {
+   
+    this.onSave('rascunho');
+  }
+
+  onSaveGerado() {
+   
+    this.onSave('gerar');
+  }
+
+  onSave(url?: string) {
     if (this.validarItens()) {
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      let urlRequisicao =  url ? url : `cadastrar`;
+
+      this.baseService.create(`${this.endpoint}/${urlRequisicao}`, this.objeto).subscribe({
         next: () => {
 
           this.cd.markForCheck();

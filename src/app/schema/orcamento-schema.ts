@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const OrcamentosSchema = z.object({
 
   nuOrcamento: z.string('O Número do Orçamento é obrigatório').min(1, 'O Número do Orçamento é obrigatório'),
+    nuPrazoEntrega: z.number('O Prazo de entrega é obrigatório').min(1, 'O Prazo de entrega é obrigatório'),
   dtEmissao: z.preprocess((val) => {
     if (typeof val === 'string') return new Date(val);
     return val;

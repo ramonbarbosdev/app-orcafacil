@@ -75,6 +75,12 @@ export class Orcamentolist {
       filterType: 'text',
       formatter: (value: any) =>FormatDataParaListagem(value) ,
     },
+     {
+      field: 'tpStatus',
+      header: 'Status',
+      minWidth: '10rem',
+      filterType: 'text',
+    },
 
   ];
 
