@@ -2,10 +2,14 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { OrcamentoVisualizacao } from '../../../../models/orcamento-visualizacao';
 import { BaseService } from '../../../../services/base.service';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CardModule } from 'primeng/card';
+import { AccordionModule } from 'primeng/accordion';
 
 @Component({
   selector: 'app-orcamentoview',
-  imports: [],
+  imports: [CommonModule, FormsModule, CardModule,AccordionModule  ],
   templateUrl: './orcamentoview.html',
   styleUrl: './orcamentoview.scss',
 })

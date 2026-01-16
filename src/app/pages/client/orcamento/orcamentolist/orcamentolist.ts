@@ -66,16 +66,16 @@ export class Orcamentolist {
       header: 'Emissão',
       minWidth: '10rem',
       filterType: 'text',
-      formatter: (value: any) =>FormatDataParaListagem(value) ,
+      formatter: (value: any) => FormatDataParaListagem(value),
     },
     {
       field: 'dtValido',
       header: 'Validade',
       minWidth: '10rem',
       filterType: 'text',
-      formatter: (value: any) =>FormatDataParaListagem(value) ,
+      formatter: (value: any) => FormatDataParaListagem(value),
     },
-     {
+    {
       field: 'tpStatus',
       header: 'Status',
       minWidth: '10rem',
@@ -90,6 +90,13 @@ export class Orcamentolist {
       rounded: true,
       outlined: true,
       onClick: (row) => this.onEdit(row),
+    },
+    {
+      icon: 'pi pi-eye',
+      rounded: true,
+      outlined: true,
+      onClick: (row) => this.onView(row),
+      requiresConfirmation: false
     },
     {
       icon: 'pi pi-trash',
@@ -118,14 +125,24 @@ export class Orcamentolist {
   };
 
   onEdit(item: any) {
-  if (item && item[this.primaryKey]) {
-    const id = item[this.primaryKey];
+    if (item && item[this.primaryKey]) {
+      const id = item[this.primaryKey];
 
-    this.router.navigate(['/client/orcamento', id]);
-  } else {
-    console.error('ID está indefinido');
+      this.router.navigate(['/client/orcamento', id]);
+    } else {
+      console.error('ID está indefinido');
+    }
+  } 
+
+  onView(item: any) {
+    if (item && item[this.primaryKey]) {
+      const id = item[this.primaryKey];
+
+      this.router.navigate(['/client/orcamento/visualizacao', id]);
+    } else {
+      console.error('ID está indefinido');
+    }
   }
-}
 
   onDelete(item: any) {
     this.loading = true;

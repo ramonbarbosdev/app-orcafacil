@@ -17,6 +17,7 @@ import { Condicaopagamentolist } from './pages/dev/condicaopagamento/condicaopag
 import { Orcamentolist } from './pages/client/orcamento/orcamentolist/orcamentolist';
 import { Orcamentoform } from './pages/client/orcamento/orcamentoform/orcamentoform';
 import { Catalogolist } from './pages/client/catalogo/catalogolist/catalogolist';
+import { Orcamentoview } from './pages/client/orcamento/orcamentoview/orcamentoview';
 
 
 export const routes: Routes = [
@@ -53,6 +54,7 @@ export const routes: Routes = [
       { path: 'orcamento', component: Orcamentolist },
       { path: 'orcamento/novo', component: Orcamentoform },
       { path: 'orcamento/:id', component: Orcamentoform },
+      { path: 'orcamento/visualizacao/:id', component: Orcamentoview },
     ],
   },
 ];

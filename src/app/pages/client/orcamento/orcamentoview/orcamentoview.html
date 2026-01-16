@@ -1,1 +1,118 @@
-<p>orcamentoview works!</p>
+
+<!-- CABECALHO + STATUS  -->
+
+<div *ngIf="!loading" class="space-y-6">
+
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-2xl font-semibold">
+        Orçamento {{ orcamento.nuOrcamento }}
+      </h2>
+      <p class="text-sm text-gray-500">
+        Emitido em {{ orcamento.dtEmissao | date:'dd/MM/yyyy' }}
+      </p>
+    </div>
+
+    <span
+      class="px-4 py-1 rounded-full text-sm font-medium"
+      [ngClass]="statusClass(orcamento.status)">
+      {{ orcamento.status }}
+    </span>
+  </div>
+
+  <!-- CLIENTE -->
+
+  <p-card>
+  <h4 class="font-semibold mb-3">Cliente</h4>
+
+  <div class="grid md:grid-cols-2 gap-3 text-sm">
+    <div><strong>Nome:</strong> {{ orcamento.cliente.nome }}</div>
+    <div><strong>Email:</strong> {{ orcamento.cliente.email }}</div>
+    <div><strong>Telefone:</strong> {{ orcamento.cliente.telefone }}</div>
+  </div>
+</p-card>
+
+<!-- iTENS + MATERIAL -->
+
+<p-card>
+  <h4 class="font-semibold mb-4">Itens do Orçamento</h4>
+
+  <p-accordion>
+
+    <p-accordion-panel 
+      *ngFor="let item of orcamento.itens">
+
+       <p-accordion-header>{{item.descricao + ' — ' + (item.subtotal | currency:'BRL')}}</p-accordion-header>
+
+      <!-- Resumo do item -->
+      <div class="grid grid-cols-2 text-sm mb-4">
+        <div>Quantidade: {{ item.quantidade }}</div>
+        <div class="text-right">
+          Subtotal: {{ item.subtotal | currency:'BRL' }}
+        </div>
+      </div>
+
+      <!-- Materiais / ajustes -->
+      <table class="w-full text-sm border-collapse">
+        <thead class="border-b text-gray-500">
+          <tr>
+            <th class="text-left py-2">Composição</th>
+            <th class="text-right py-2">Qtd</th>
+            <th class="text-right py-2">Valor</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let mat of item.materiais"
+              class="border-b last:border-0">
+            <td class="py-2">{{ mat.descricao }}</td>
+            <td class="py-2 text-right">{{ mat.quantidade }}</td>
+            <td class="py-2 text-right">
+              {{ mat.valor | currency:'BRL' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </p-accordion-panel >
+
+  </p-accordion>
+</p-card>
+
+<!-- RESUMO PRECIFICACAO  -->
+
+<p-card class="bg-gray-50">
+  <h4 class="font-semibold mb-3">Resumo da Precificação</h4>
+
+  <div class="flex justify-between text-sm mb-2">
+    <span>Método</span>
+    <span>{{ orcamento.metodoPrecificacao }}</span>
+  </div>
+
+  <div class="flex justify-between text-sm">
+    <span>Valor base</span>
+    <span>{{ orcamento.vlPrecoBase | currency:'BRL' }}</span>
+  </div>
+
+  <div class="flex justify-between text-xl font-bold border-t mt-3 pt-3">
+    <span>Valor final</span>
+    <span>{{ orcamento.vlPrecoFinal | currency:'BRL' }}</span>
+  </div>
+</p-card>
+
+<!-- HISTORICO DE STATUS -->
+<p-card>
+  <h4 class="font-semibold mb-3">Histórico</h4>
+
+  <ul class="space-y-2 text-sm">
+    <li *ngFor="let h of orcamento.historicoStatus">
+      {{ h.statusAnterior }} → {{ h.statusAtual }}
+      • {{ h.dataHora | date:'dd/MM/yyyy HH:mm' }}
+      • {{ h.usuario }}
+    </li>
+  </ul>
+</p-card>
+
+</div>
+
+
