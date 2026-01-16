@@ -6,10 +6,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { AccordionModule } from 'primeng/accordion';
+import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-orcamentoview',
-  imports: [CommonModule, FormsModule, CardModule,AccordionModule  ],
+  imports: [CommonModule, FormsModule, CardModule,AccordionModule, DividerModule  ],
   templateUrl: './orcamentoview.html',
   styleUrl: './orcamentoview.scss',
 })
