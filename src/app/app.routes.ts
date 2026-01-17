@@ -23,6 +23,7 @@ import { Orcamentoview } from './pages/client/orcamento/orcamentoview/orcamentov
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'auth', loadChildren: () => import('../app/pages/auth/auth.routes') },
+  { path: 'public/orcamento/:codigo',component:Orcamentoview},
 
   {
     path: 'dev',

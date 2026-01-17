@@ -15,7 +15,7 @@ import { Divider, DividerModule } from 'primeng/divider';
 })
 export class PartilharOrcamento {
 
-  @Input() idOrcamento!: number ;
+  @Input() cdPublico!: string ;
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
@@ -36,7 +36,7 @@ export class PartilharOrcamento {
 
   showDialog() {
 
-    this.linkOrcamento = `${window.location.origin}/orcamentos/${this.idOrcamento}`;
+    this.linkOrcamento = `${window.location.origin}/orcamentos/${this.cdPublico}`;
     this.visible = true;
   }
 

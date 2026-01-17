@@ -27,7 +27,7 @@ export class Orcamentoview {
   
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('codigo');
 
     this.baseService.findById(`orcamento/visualizacao`, id).subscribe(res => {
       this.orcamento = res;
