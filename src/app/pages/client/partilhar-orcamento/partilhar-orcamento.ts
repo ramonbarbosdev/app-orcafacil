@@ -36,7 +36,7 @@ export class PartilharOrcamento {
 
   showDialog() {
 
-    this.linkOrcamento = `${window.location.origin}/orcamentos/${this.cdPublico}`;
+    this.linkOrcamento = `${window.location.origin}/public/orcamento/${this.cdPublico}`;
     this.visible = true;
   }
 
