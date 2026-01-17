@@ -5,6 +5,7 @@ export class ItemVisualizacao {
     idItem!: number;
     descricao!: string;
     quantidade!: number;
+    precoCusto!: number;
     precoUnitario!: number;
     subtotal!: number;
     materiais!: MaterialVisualizacao[];

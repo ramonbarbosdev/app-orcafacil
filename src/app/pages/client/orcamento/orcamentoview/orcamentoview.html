@@ -1,6 +1,9 @@
 <!-- ORÇAMENTO - VISUALIZAÇÃO (READ ONLY) -->
 
-<div *ngIf="!loading" class="max-w-6xl mx-auto space-y-8">
+<div *ngIf="!loading" class="max-w-6xl mx-auto space-y-8  p-4  rounded-lg "   [ngClass]="{
+    'bg-gray-100 text-gray-900': !layoutService.isDarkTheme(),
+    'bg-black-600 text-gray-100': layoutService.isDarkTheme()
+  }">
 
     <!-- CABEÇALHO + STATUS -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -34,7 +37,7 @@
             </div>
 
             <div>
-                <span class="block text-sm   ">E-mai:</span>
+                <span class="block text-sm   ">E-mail:</span>
                 <span class="font-semibold text-base">{{ orcamento.cliente.email }}</span>
             </div>
 
@@ -48,7 +51,7 @@
     <!-- ITENS DO ORÇAMENTO -->
     <p-card>
         <h4 class="text-base font-semibold  mb-4">
-            Itens do Orçamento
+            Itens / Serviços
         </h4>
 
         <p-accordion>
@@ -71,17 +74,18 @@
                 <p-accordion-content>
 
                     <!-- RESUMO DO ITEM -->
-                    <div class="grid grid-cols-2 gap-4 text-sm    mb-4">
+                    <div class="grid grid-cols-4 gap-4 text-sm    mb-4">
                         <div>
-                            <span class="block text-xs   ">Quantidade</span>
-                            {{ item.quantidade }}
+                            <span class=" text-xs   ">Quantidade: {{ item.quantidade }}</span>
                         </div>
-
+                        <div class="text-left">
+                            <span class="block text-xs   ">Custo: {{ item.precoCusto | currency:'BRL' }}</span>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-xs   ">Materiais: {{ item.precoUnitario | currency:'BRL' }}</span>
+                        </div>
                         <div class="text-right">
-                            <span class="block text-xs   ">Subtotal</span>
-                            <span class="font-medium">
-                                {{ item.subtotal | currency:'BRL' }}
-                            </span>
+                            <span class="block text-xs   ">Total: {{ item.subtotal | currency:'BRL' }}</span>
                         </div>
                     </div>
 
@@ -90,7 +94,7 @@
                         <table class="w-full text-sm">
                             <thead class="bg-gray-50 text-gray-600">
                                 <tr>
-                                    <th class="text-left px-3 py-2">Composição</th>
+                                    <th class="text-left px-3 py-2">Composição do meterial</th>
                                     <!-- <th class="text-right px-3 py-2">Qtd</th> -->
                                     <th class="text-right px-3 py-2">Valor</th>
                                 </tr>
@@ -123,21 +127,21 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <!-- RESUMO DA PRECIFICAÇÃO -->
-        <p-card class="bg-gray-50  h-full">
+        <p-card class="  h-full">
             <h4 class="text-base font-semibold  mb-4">
                 Resumo da Precificação
             </h4>
 
             <div class="flex justify-between text-sm mb-2">
-                <span class="">Método</span>
-                <span class="font-medium">
+                <span class="">Método:</span>
+                <span class="font-medium text-base">
                     {{ orcamento.metodoPrecificacao }}
                 </span>
             </div>
 
             <div class="flex justify-between text-sm mb-2">
-                <span class="">Valor base</span>
-                <span>
+                <span class="">Valor base:</span>
+                <span class="text-base">
                     {{ orcamento.vlPrecoBase | currency:'BRL' }}
                 </span>
             </div>
