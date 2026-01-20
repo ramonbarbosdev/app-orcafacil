@@ -135,10 +135,9 @@ export class Orcamentolist {
   } 
 
   onView(item: any) {
-    if (item && item[this.primaryKey]) {
-      const id = item[this.primaryKey];
-
-      this.router.navigate(['/client/orcamento/visualizacao', id]);
+    if (item && item['cdPublico']) {
+      const codigo = item['cdPublico'];
+      this.router.navigate(['public/orcamento', codigo]);
     } else {
       console.error('ID está indefinido');
     }

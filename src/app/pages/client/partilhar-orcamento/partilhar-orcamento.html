@@ -10,40 +10,48 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
             <!-- WhatsApp -->
-            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
-                (click)="enviarWhatsApp()">
-                <div class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
-                    <i class="pi pi-whatsapp text-white text-2xl"></i>
+            <p-button variant="text" type="button" severity="secondary" (click)="enviarWhatsApp()">
+                <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
+                    <div class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
+                        <i class="pi pi-whatsapp text-white text-2xl"></i>
+                    </div>
+                    <span class="text-sm ">WhatsApp</span>
                 </div>
-                <span class="text-sm ">WhatsApp</span>
-            </button>
+            </p-button>
 
-            <!-- Email -->
-            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
-                (click)="enviarEmail()">
-                <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center">
-                    <i class="pi pi-envelope text-white text-2xl"></i>
+            <p-button variant="text" type="button" severity="secondary" (click)="enviarEmail()">
+                <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
+                    <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center">
+                        <i class="pi pi-envelope text-white text-2xl"></i>
+                    </div>
+                    <span class="text-sm ">E-mail</span>
                 </div>
-                <span class="text-sm ">E-mail</span>
-            </button>
+            </p-button>
 
             <!-- Copiar link -->
-            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
-                (click)="copiarLink()">
-                <div class="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center">
-                    <i class="pi pi-link text-white text-2xl"></i>
+            <p-button variant="text" type="button" severity="secondary" (click)="abrirView()">
+                <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
+
+                    <div class="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center">
+                        <i class="pi pi-link text-white text-2xl"></i>
+                    </div>
+                    <span class="text-sm">Visualizar</span>
+
                 </div>
-                <span class="text-sm">Copiar link</span>
-            </button>
+
+            </p-button>
 
             <!-- PDF -->
-            <button type="button" class="flex flex-col items-center gap-2 p-3 rounded-xl transition"
-                (click)="gerarPdf()">
-                <div class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center">
-                    <i class="pi pi-file-pdf text-white text-2xl"></i>
+            <p-button variant="text" type="button" severity="secondary" (click)="gerarPdf()">
+                <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
+
+                    <div class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center">
+                        <i class="pi pi-file-pdf text-white text-2xl"></i>
+                    </div>
+                    <span class="text-sm ">Gerar PDF</span>
                 </div>
-                <span class="text-sm ">Gerar PDF</span>
-            </button>
+
+            </p-button>
 
         </div>
 

@@ -91,26 +91,28 @@ export class Orcamentoform {
   onSaveGerado() {
 
     this.onSave('gerar');
-    this.partilharVisible = true;
 
   }
 
   onSave(url?: string) {
+
+
     if (this.validarItens()) {
 
       let urlRequisicao = url ? url : `cadastrar`;
 
       this.baseService.create(`${this.endpoint}/${urlRequisicao}`, this.objeto).subscribe({
-        next: () => {
-
+        next: (res) => {
 
           if (urlRequisicao == 'gerar') {
+            this.objeto.cdPublico = res.cdPublico
             this.partilharVisible = true;
-
+          }
+          else {  
+            this.cd.markForCheck();
+            this.onClose()
           }
 
-          this.cd.markForCheck();
-          this.onClose()
         },
         error: (erro) => {
           this.cd.markForCheck();

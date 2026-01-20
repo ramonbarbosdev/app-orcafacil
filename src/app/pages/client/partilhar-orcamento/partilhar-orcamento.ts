@@ -6,16 +6,17 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Divider, DividerModule } from 'primeng/divider';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-partilhar-orcamento',
-  imports: [DialogModule, FormsModule, CommonModule, ButtonModule, InputTextModule, DividerModule],
+  imports: [DialogModule, FormsModule, CommonModule, ButtonModule, InputTextModule, DividerModule, ButtonModule],
   templateUrl: './partilhar-orcamento.html',
   styleUrl: './partilhar-orcamento.scss',
 })
 export class PartilharOrcamento {
 
-  @Input() idOrcamento!: number ;
+  @Input() cdPublico!: string ;
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
@@ -23,9 +24,8 @@ export class PartilharOrcamento {
   @Output() confirmar = new EventEmitter<any>();
 
   linkOrcamento = '';
-
-  private cd = inject(ChangeDetectorRef);
   public baseService = inject(BaseService);
+  router = inject(Router);
 
 
   hideDialog() {
@@ -36,7 +36,7 @@ export class PartilharOrcamento {
 
   showDialog() {
 
-    this.linkOrcamento = `${window.location.origin}/orcamentos/${this.idOrcamento}`;
+    this.linkOrcamento = `${window.location.origin}/public/orcamento/${this.cdPublico}`;
     this.visible = true;
   }
 
@@ -53,6 +53,13 @@ export class PartilharOrcamento {
 
   copiarLink() {
     navigator.clipboard.writeText(this.linkOrcamento);
+
+  }
+
+  abrirView() {
+    // navigator.clipboard.writeText(this.linkOrcamento);
+      this.router.navigate(['public/orcamento', this.cdPublico]);
+
   }
 
   gerarPdf() {

@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { AccordionModule } from 'primeng/accordion';
 import { DividerModule } from 'primeng/divider';
+import { LayoutService } from '../../../../layout/service/layout.service';
 
 @Component({
   selector: 'app-orcamentoview',
@@ -22,9 +23,11 @@ export class Orcamentoview {
   private cd = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   public baseService = inject(BaseService);
+    layoutService = inject(LayoutService);
+  
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('codigo');
 
     this.baseService.findById(`orcamento/visualizacao`, id).subscribe(res => {
       this.orcamento = res;
@@ -34,7 +37,7 @@ export class Orcamentoview {
 
   statusClass(status: string) {
     return {
-      'bg-gray-100 text-gray-700': status === 'RASCUNHO',
+      'bg-gray-300 text-gray-700': status === 'RASCUNHO',
       'bg-blue-100 text-blue-700': status === 'GERADO',
       'bg-yellow-100 text-yellow-700': status === 'ENVIADO',
       'bg-green-100 text-green-700': status === 'APROVADO',
