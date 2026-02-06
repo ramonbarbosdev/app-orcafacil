@@ -1,59 +1,115 @@
-# AppOrcafacil
+# 💼 Sistema de Orçamentos SaaS
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.8.
+Plataforma **SaaS para criação, simulação e gestão de orçamentos**, desenvolvida com foco em **flexibilidade, precificação dinâmica e arquitetura escalável**.
 
-## Development server
+O sistema foi projetado para atender diferentes empresas, permitindo configurar regras de precificação, campos personalizados e simulações em tempo real, mantendo separação clara entre frontend e backend.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## ✨ Visão Geral
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Este projeto tem como objetivo resolver o problema de **orçamentos rígidos e pouco escaláveis**, oferecendo uma solução moderna, extensível e preparada para múltiplos clientes (**multi-tenant**).
 
-## Code scaffolding
+A aplicação segue boas práticas de arquitetura, priorizando:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- escalabilidade
+- manutenibilidade
+- separação de responsabilidades
+- código limpo
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🧩 Funcionalidades Principais
 
-```bash
-ng generate --help
-```
+- 📊 Criação e gestão de orçamentos
+- ⚙️ Precificação dinâmica baseada em regras
+- 🧮 Simulação de valores em tempo real
+- 🏢 Suporte a múltiplas empresas (multi-tenant)
+- 🧱 Arquitetura modular e extensível
+- 🔌 APIs REST bem definidas
+- 📱 Interface moderna e responsiva
 
-## Building
+---
 
-To build the project run:
+## 🏗️ Arquitetura
 
-```bash
-ng build
-```
+O sistema foi dividido em duas camadas principais:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Backend
+- Responsável por regras de negócio e precificação
+- Fonte única da verdade para cálculos
+- APIs REST desacopladas do frontend
 
-## Running unit tests
+### Frontend
+- Interface reativa para criação e simulação de orçamentos
+- Estado compartilhado via services
+- Componentização e reutilização de código
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## 🛠️ Tecnologias Utilizadas
 
-## Running end-to-end tests
+### Backend
+- Java
+- Spring Boot
+- PostgreSQL
+- Docker
 
-For end-to-end (e2e) testing, run:
+### Frontend
+- Angular
+- TypeScript
+- Tailwind CSS
+- PrimeNG
 
-```bash
-ng e2e
-```
+### Infraestrutura
+- Docker
+- Nginx
+- CI/CD com GitHub Actions
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## 📐 Conceitos Técnicos Aplicados
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Arquitetura em camadas
+- Separação entre valor técnico e valor comercial
+- Precificação aplicada exclusivamente no backend
+- Frontend utilizado apenas para simulação
+- APIs REST stateless
+- Componentização e reatividade no Angular
+
+---
+
+## 🚀 Status do Projeto
+
+🟡 **Em desenvolvimento (MVP)**
+
+O projeto está em constante evolução, com foco inicial em consolidar a base arquitetural antes de expandir funcionalidades comerciais.
+
+---
+
+## 📌 Próximos Passos
+
+- Autenticação e autorização
+- Histórico e versionamento de orçamentos
+- Ajustes comerciais sobre o valor final
+- Exportação de orçamentos (PDF)
+- Dashboard com métricas
+
+---
+
+## 👨‍💻 Autor
+
+**Ramon Barbosa**  
+Desenvolvedor Full Stack  
+Foco em Backend, Arquitetura de Sistemas e APIs escaláveis  
+
+🔗 Portfólio: https://ramoncode.com.br  
+🔗 GitHub: https://github.com/ramonbarbosdev  
+🔗 LinkedIn: https://linkedin.com/in/ramon-barbosa-8b9427223  
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.  
+Sinta-se à vontade para estudar, adaptar e evoluir a solução.
