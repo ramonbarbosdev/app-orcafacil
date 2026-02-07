@@ -87,16 +87,6 @@ O projeto está em constante evolução, com foco inicial em consolidar a base a
 
 ---
 
-## 📌 Próximos Passos
-
-- Autenticação e autorização
-- Histórico e versionamento de orçamentos
-- Ajustes comerciais sobre o valor final
-- Exportação de orçamentos (PDF)
-- Dashboard com métricas
-
----
-
 ## 👨‍💻 Autor
 
 **Ramon Barbosa**  
