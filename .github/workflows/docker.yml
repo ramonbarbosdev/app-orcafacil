@@ -7,6 +7,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  HOST_PORT: 4200
+  CONTAINER_PORT: 4200
+  CONTAINER_NAME: app-orcafacil
 
 jobs:
   build-and-push:
@@ -47,13 +50,13 @@ jobs:
 
             docker pull ghcr.io/${{ github.repository }}:latest
 
-            docker stop ${{ secrets.APP_NAME }} || true
-            docker rm ${{ secrets.APP_NAME }} || true
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
 
             docker run -d \
-              --name ${{ secrets.APP_NAME }} \
+              --name ${{ env.CONTAINER_NAME }} \
               --restart unless-stopped \
               --memory=512m \
-              -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
+              -p ${{ env.HOST_PORT }}:${{ env.CONTAINER_PORT }} \
               -e NODE_ENV=production \
               ghcr.io/${{ github.repository }}:latest
