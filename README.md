@@ -87,16 +87,6 @@ O projeto está em constante evolução, com foco inicial em consolidar a base a
 
 ---
 
-## 📌 Próximos Passos
-
-- Autenticação e autorização
-- Histórico e versionamento de orçamentos
-- Ajustes comerciais sobre o valor final
-- Exportação de orçamentos (PDF)
-- Dashboard com métricas
-
----
-
 ## 👨‍💻 Autor
 
 **Ramon Barbosa**  
@@ -106,7 +96,7 @@ Foco em Backend, Arquitetura de Sistemas e APIs escaláveis
 🔗 Portfólio: https://ramoncode.com.br  
 🔗 GitHub: https://github.com/ramonbarbosdev  
 🔗 LinkedIn: https://linkedin.com/in/ramon-barbosa-8b9427223  
-
+🔗 Backend: https://github.com/ramonbarbosdev/api-orcafacil
 ---
 
 ## 📄 Licença
