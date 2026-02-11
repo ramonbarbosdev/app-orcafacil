@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS build
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -7,14 +7,10 @@ RUN npm ci
 
 COPY . .
 
-RUN npx ng build --configuration production
+RUN npm run build -- --configuration production
 
-FROM nginx:alpine
-
-COPY --from=build /app/dist/app-portfolio/browser /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN npm install -g serve
 
 EXPOSE 4200
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "dist/app-orcafacil/browser", "-l", "4200"]
