@@ -4,6 +4,7 @@ import { Catalogocampo } from "./catalogocampo";
 export class Catalogo {
     public idCatalogo!: number;
     public idTenant!: string;
+    public tpItem!: string;
     public cdCatalogo!: string;
     public nmCatalogo!: string;
     public dsCatalogo!: string;
@@ -11,6 +12,5 @@ export class Catalogo {
     public vlPrecoBase!: number;
 
     camposSelecionados!: Campopersonalizado[];
-
     catalogoCampo!: Catalogocampo[];
 }

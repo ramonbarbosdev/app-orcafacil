@@ -18,12 +18,14 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { TabsModule } from 'primeng/tabs';
-import {  Catalogocampoform } from "../catalogocampoform/catalogocampoform";
+import { Catalogocampoform } from "../catalogocampoform/catalogocampoform";
 import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { Catalogocampoajusteform } from "../catalogocampoajusteform/catalogocampoajusteform";
 import { Catalogocampo } from '../../../../models/catalogocampo';
 import { Catalogocamposimulacaoform } from "../catalogocamposimulacaoform/catalogocamposimulacaoform";
 import { Campopersonalizado } from '../../../../models/campopersonalizado';
+import { FlagOption } from '../../../../models/flag-option';
+
 @Component({
   selector: 'app-catalogoform',
   imports: [InputTextModule,
@@ -51,10 +53,11 @@ export class Catalogoform {
   public objeto: Catalogo = new Catalogo();
   public errorValidacao: Record<string, string> = {};
   private endpoint = 'catalogo';
-  private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
   private wizardState = inject(CatalogoWizardStateService);
+
+  public listaTipo: FlagOption[] = [];
 
   carregarDados = false;
 
@@ -71,6 +74,8 @@ export class Catalogoform {
     this.loading = true;
     this.limparFormulario();
     this.carregarDados = true;
+
+    this.obterTipoItem();
 
     if (this.key == 0) {
       this.obterSequencia();
@@ -89,7 +94,6 @@ export class Catalogoform {
       next: (res: any) => {
         this.objeto = res;
 
-        // 1️⃣ hidratar wizard a partir do backend
         this.hidratarWizardState(res);
 
         this.loading = false;
@@ -196,7 +200,7 @@ export class Catalogoform {
       catalogoCampo.idCatalogo = idCatalogo;
       catalogoCampo.idCampoPersonalizado = campo.idCampoPersonalizado;
       catalogoCampo.vlPadrao = ajustes[campo.idCampoPersonalizado] ?? null;
-      catalogoCampo.flEditavel = true; 
+      catalogoCampo.flEditavel = true;
       catalogoCampo.ordem = index + 1;
 
       return catalogoCampo;
@@ -231,9 +235,25 @@ export class Catalogoform {
     }
   }
 
-  processarValorPreco(event: any)
-  {
+  processarValorPreco(event: any) {
     this.objeto.vlPrecoBase = event;
+  }
+
+  obterTipoItem() {
+    this.baseService.findAll(`${this.endpoint}/tipo-item/`).subscribe({
+      next: (res) => {
+        this.listaTipo = (res as any).map((index: any) => {
+          const item = new FlagOption();
+          item.code = index;
+          item.name = index;
+          this.cd.markForCheck();
+          return item;
+        });
+
+        this.objeto.tpItem = String(this.listaTipo[0].code);
+      },
+      error: (err) => { },
+    });
   }
 
 

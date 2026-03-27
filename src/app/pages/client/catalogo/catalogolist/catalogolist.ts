@@ -51,6 +51,12 @@ export class Catalogolist {
       filterType: 'text',
     },
     {
+      field: 'tpItem',
+      header: 'Tipo',
+      minWidth: '15rem',
+      filterType: 'text',
+    },
+    {
       field: 'vlCustoBase',
       header: 'Custo',
       minWidth: '10rem',

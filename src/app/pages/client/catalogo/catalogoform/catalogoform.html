@@ -2,16 +2,23 @@
   (cancel)="hideDialog()" (show)="onShow()" [width]="'900px'" [height]="'500px'">
 
   <div class="flex-row-responsive">
-    <app-layout-campo [error]="errorValidacao['cdCatalogo']" [label]="'Código: (*)'" [width]="'md:w-4/12'"
+    <app-layout-campo [error]="errorValidacao['cdCatalogo']" [label]="'Código: (*)'" [width]="'md:w-2/12'"
       [sublabel]="'Informe o código'" [describedby]="'Informe o código'">
       <input title="cdCatalogo" pInputText id="cdCatalogo" [(ngModel)]="objeto.cdCatalogo" [disabled]="true"
         class="w-full" [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCatalogo'] }" />
     </app-layout-campo>
 
-    <app-layout-campo [error]="errorValidacao['nmCatalogo']" [label]="'Nome: (*)'" [width]="'w-8/12'"
+    <app-layout-campo [error]="errorValidacao['nmCatalogo']" [label]="'Nome: (*)'" [width]="'w-6/12'"
       [sublabel]="'Informe o nome'" [describedby]="'nmCatalogo'">
       <input title="nmCatalogo" pInputText id="nmCatalogo" [(ngModel)]="objeto.nmCatalogo" class="w-full"
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCatalogo'] }" placeholder="Ex: Porta" />
+    </app-layout-campo>
+
+    <app-layout-campo [error]="errorValidacao['tpItem']" [label]="'Tipo: (*)'" [width]="'w-4/12'"
+      [sublabel]="'Informe o tipo'" [describedby]="'tpItem'">
+      <p-select [checkmark]="true" [showClear]="true" name="tpItem" [options]="listaTipo" optionLabel="name"
+        optionValue="code" placeholder="Selecione" class="w-full" [(ngModel)]="objeto.tpItem"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpItem'] }" />
     </app-layout-campo>
   </div>
 
