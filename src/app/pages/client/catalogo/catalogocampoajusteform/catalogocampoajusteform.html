@@ -1,42 +1,48 @@
 <div class="flex flex-col gap-4">
 
-    <div *ngFor="let campo of camposAtivos; trackBy: trackByCampo" class="flex items-center gap-4">
-
-        <label class="w-64 text-sm font-medium">
-            {{ campo.nmCampoPersonalizado }}:
-        </label>
-
-        <ng-container [ngSwitch]="campo.tpCampoPersonalizado">
-
-            <input *ngSwitchCase="'TEXT'" pInputText class="w-full" [ngModel]="uiValores[campo.idCampoPersonalizado]"
-                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)" />
-
-            <p-inputnumber *ngSwitchCase="'PERCENTUAL'" suffix="%" class="w-full"
-                [ngModel]="uiValores[campo.idCampoPersonalizado]" [min]="0" [max]="100"
-                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)">
-            </p-inputnumber>
-
-            <p-inputnumber *ngSwitchCase="'NUMBER'" mode="currency" currency="BRL" locale="pt-BR" class="w-full"
-                [ngModel]="uiValores[campo.idCampoPersonalizado]" inputId="minmax" mode="decimal" [min]="0"
-                [max]="999999" locale="pt-BR" [minFractionDigits]="2" [maxFractionDigits]="4"
-                (ngModelChange)="setValor(campo.idCampoPersonalizado, $event)">
-            </p-inputnumber>
-
-        </ng-container>
-
-        <label class="w-64 text-sm font-medium">
-            {{ campo.tpCampoValor }}
-        </label> 
-
-        <label class="w-64 text-sm font-medium">
-            {{ campo.dsCampoPersonalizado }}
-        </label>    
-
-
+    <!-- TOTAL -->
+    <div class="resumo-card">
+        <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-400">Total atual</span>
+            <span class="text-lg font-semibold text-emerald-400">
+                {{ totalAtual | currency:'BRL' }}
+            </span>
+        </div>
     </div>
 
-    <div *ngIf="camposAtivos.length == 0" class="flex flex-col justify-center items-center h-full">
-        <p>Não existe campos selecionados.</p>
-    </div>
+    <div class="ajuste-scroll">
 
+
+        <!-- LISTA -->
+        <div class="flex flex-col gap-3">
+
+            <div *ngFor="let campo of camposAtivos; trackBy: trackByCampo" class="ajuste-card">
+
+                <div class="flex justify-between items-center gap-3">
+
+                    <!-- INFO -->
+                    <div class="flex flex-col w-6/12">
+                        <span class="font-medium text-sm">
+                            {{ campo.nmCampoPersonalizado }}
+                        </span>
+
+                        <span class="text-xs text-gray-400">
+                            {{ campo.dsCampoPersonalizado || 'Sem descrição' }}
+                        </span>
+                    </div>
+
+                    <!-- INPUT -->
+                    <div class="w-6/12">
+                        <p-inputNumber [(ngModel)]="uiValores[campo.idCampoPersonalizado]"
+                            (onInput)="setValor(campo.idCampoPersonalizado, $event.value)" mode="currency"
+                            currency="BRL" locale="pt-BR" [min]="0" class="w-full"></p-inputNumber>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 </div>

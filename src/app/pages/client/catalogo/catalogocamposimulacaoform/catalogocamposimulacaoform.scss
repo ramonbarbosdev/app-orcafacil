@@ -1,0 +1,56 @@
+.simulacao-card {
+  border-radius: 16px;
+  padding: 16px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.01)
+  );
+
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+}
+
+.simulacao-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+.simulacao-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.linha {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 6px 0;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.valor-final {
+  font-size: 20px;
+  font-weight: bold;
+  color: #10b981;
+
+  text-shadow: 0 0 10px rgba(16,185,129,0.3);
+}

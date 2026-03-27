@@ -1,21 +1,43 @@
-<div class="flex flex-col">
+<div class="flex flex-col gap-4">
 
-    <div class="grid gap-y-3 gap-x-8" [style.gridTemplateRows]="'repeat(5, minmax(0, 1fr))'"
-        [style.gridAutoFlow]="'column'">
+    <!-- HEADER -->
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-400">
+            {{ totalSelecionados }} selecionados
+        </span>
 
-        <div *ngFor="let campo of camposPrecificacao" class="flex items-center gap-3">
-            <p-checkbox [(ngModel)]="campo.ativo" [binary]="true" inputId="campo-{{ campo.idCampoPersonalizado }}"
-                (ngModelChange)="onToggleCampo(campo)"></p-checkbox>
-
-            <label for="campo-{{ campo.idCampoPersonalizado }}" class="cursor-pointer text-sm">
-                {{ campo.nmCampoPersonalizado }}
-            </label>
+        <div class="flex gap-2 flex-wrap">
+            <span *ngFor="let c of camposSelecionados" class="tag">
+                {{ c.nmCampoPersonalizado }}
+            </span>
         </div>
-
     </div>
 
-    <p-divider type="dotted" />
-    <div class="text-xs text-gray-500 mb-2 flex justify-end"> {{totalSelecionados}} campos selecionados
+
+    <div class="campo-scroll">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+
+            <div *ngFor="let campo of camposPrecificacao" (click)="toggleCampo(campo)" class="campo-card"
+                [ngClass]="{ 'ativo': campo.ativo }">
+
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col">
+                        <span class="font-medium text-sm">
+                            {{ campo.nmCampoPersonalizado }}
+                        </span>
+
+                        <span class="text-xs text-gray-400 mt-1">
+                            {{ campo.dsCampoPersonalizado || 'Sem descrição' }}
+                        </span>
+                    </div>
+
+                    <i *ngIf="campo.ativo" class="pi pi-check text-emerald-400 text-sm"></i>
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
 
 </div>

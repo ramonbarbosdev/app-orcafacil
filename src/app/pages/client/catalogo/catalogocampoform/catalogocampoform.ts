@@ -36,6 +36,15 @@ export class Catalogocampoform {
   ngOnInit() {
   }
 
+
+  toggleCampo(campo: any) {
+    campo.ativo = !campo.ativo;
+    this.onToggleCampo(campo);
+  }
+  get camposSelecionados() {
+  return this.camposPrecificacao?.filter(c => c.ativo) ?? [];
+}
+
   obterCampos() {
     this.baseService.findAll('campopersonalizado/obter-por-tenant').subscribe(res => {
       const selecionados = this.wizardState.getCamposSelecionadosSnapshot();
