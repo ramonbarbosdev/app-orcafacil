@@ -1,0 +1,45 @@
+<app-layout-form-simples [(visible)]="isDialog" [title]="'Formulario dos Materiais'" [loading]="loading"
+    (save)="onSave()" (cancel)="hideDialog()" (show)="onShow()" [width]="'700px'" [height]="'400px'">
+
+
+    <div class="flex-row-responsive">
+
+        <app-layout-campo label="Código: (*)" [error]="errorValidacao['cdCampoPersonalizado']" [width]="'w-6/12'">
+            <input pInputText class="w-full" [(ngModel)]="objeto.cdCampoPersonalizado" placeholder="Ex: VIDRO_TEMPERADO"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['cdCampoPersonalizado'] }" disabled />
+        </app-layout-campo>
+
+        <app-layout-campo label="Nome: (*)" [error]="errorValidacao['nmCampoPersonalizado']" [width]="'w-6/12'">
+            <input pInputText class="w-full" [(ngModel)]="objeto.nmCampoPersonalizado" placeholder="Ex: Vidro Temperado"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmCampoPersonalizado'] }"
+                (ngModelChange)="processarNome($event)" />
+        </app-layout-campo>
+    </div>
+
+    <div class="flex-row-responsive">
+
+        <app-layout-campo label="Tipo do valor: (*)" [error]="errorValidacao['tpCampoValor']" [width]="'w-6/12'">
+            <p-select class="w-full" [options]="listaTipoValor" optionLabel="name" optionValue="code"
+                placeholder="Selecione" [(ngModel)]="objeto.tpCampoValor"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoValor'] }"></p-select>
+        </app-layout-campo>
+
+        <app-layout-campo label="Tipo do material: (*)" [error]="errorValidacao['tpCampoPersonalizado']" [width]="'w-6/12'">
+            <p-select class="w-full" [options]="listaTipoCampo" optionLabel="name" optionValue="code"
+                placeholder="Selecione" [(ngModel)]="objeto.tpCampoPersonalizado"
+                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['tpCampoPersonalizado'] }"></p-select>
+        </app-layout-campo>
+
+    </div>
+
+    <div class="flex-row-responsive">
+        <app-layout-campo [label]="'Descrição:'" [width]="'w-12/12'">
+            <textarea pTextarea placeholder="Descrição" [autoResize]="false" rows="3" cols="30"
+                name="dsCampoPersonalizado" id="dsCampoPersonalizado"
+                [(ngModel)]="objeto.dsCampoPersonalizado"></textarea>
+        </app-layout-campo>
+
+    </div>
+
+
+</app-layout-form-simples>

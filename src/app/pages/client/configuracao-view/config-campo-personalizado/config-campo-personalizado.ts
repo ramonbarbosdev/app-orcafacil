@@ -203,7 +203,6 @@ export class ConfigCampoPersonalizado {
 
   formatarNome(nome: string) {
     const valor = nome;
-
     return valor
       .normalize('NFD')                     // separa acentos
       .replace(/[\u0300-\u036f]/g, '')      // remove acentos

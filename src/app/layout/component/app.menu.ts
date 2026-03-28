@@ -105,6 +105,11 @@ export class AppMenu {
               routerLink: ['/client/cliente'],
             },
             {
+              label: 'Materiais',
+              icon: 'pi pi-book',
+              routerLink: ['material'],
+            },
+            {
               label: 'Catalogo',
               icon: 'pi pi-book',
               routerLink: ['catalogo'],

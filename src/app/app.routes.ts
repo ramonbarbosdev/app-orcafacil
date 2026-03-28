@@ -18,6 +18,7 @@ import { Orcamentolist } from './pages/client/orcamento/orcamentolist/orcamentol
 import { Orcamentoform } from './pages/client/orcamento/orcamentoform/orcamentoform';
 import { Catalogolist } from './pages/client/catalogo/catalogolist/catalogolist';
 import { Orcamentoview } from './pages/client/orcamento/orcamentoview/orcamentoview';
+import { Materiallist } from './pages/client/material/materiallist/materiallist';
 
 
 export const routes: Routes = [
@@ -51,6 +52,7 @@ export const routes: Routes = [
       { path: 'cliente', component: Clientelist },
       { path: 'categoriaservico', component: Categoriaservicolist },
       { path: 'servico', component: Servicolist },
+      { path: 'material', component: Materiallist },
       { path: 'catalogo', component: Catalogolist },
       { path: 'orcamento', component: Orcamentolist },
       { path: 'orcamento/novo', component: Orcamentoform },
