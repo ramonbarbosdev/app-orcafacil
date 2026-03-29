@@ -32,17 +32,17 @@
     <p-divider></p-divider>
 
     <app-orcamento-resumo [objeto]="objeto"></app-orcamento-resumo>
-    
+
     <p-divider></p-divider>
     <!-- Ações -->
     <div class="flex gap-3 justify-end">
-        <p-button label="Salvar Rascunho"  variant="outlined" icon="pi pi-save" (onClick)="onSaveRascunho()">
+        <p-button label="Salvar Rascunho" variant="outlined" icon="pi pi-save" (onClick)="onSaveRascunho()">
         </p-button>
-        
+
         <p-button label="Gerar Orçamento" icon="pi pi-send" (onClick)="onSaveGerado()">
         </p-button>
     </div>
 </p-card>
 
-<app-partilhar-orcamento [visible]="partilharVisible" (cancel)="hideDialog()" [cdPublico]="objeto.cdPublico"
-                 ></app-partilhar-orcamento>
+<app-partilhar-orcamento [visible]="partilharVisible" (cancel)="hideDialog()"
+    [cdPublico]="objeto.cdPublico"></app-partilhar-orcamento>

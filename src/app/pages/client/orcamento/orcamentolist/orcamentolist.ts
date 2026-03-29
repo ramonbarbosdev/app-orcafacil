@@ -99,7 +99,7 @@ export class Orcamentolist {
       requiresConfirmation: false
     },
     {
-      icon: 'pi pi-eye',
+      icon: 'pi pi-file-pdf',
       rounded: true,
       outlined: true,
       onClick: (row) => this.onPdf(row),

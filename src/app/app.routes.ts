@@ -25,7 +25,6 @@ export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'auth', loadChildren: () => import('../app/pages/auth/auth.routes') },
   { path: 'public/orcamento/view/:codigo',component:Orcamentoview},
-  { path: 'public/orcamento/gerar/:codigo',component:Orcamentoview},
 
   {
     path: 'dev',

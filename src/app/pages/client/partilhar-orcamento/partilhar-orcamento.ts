@@ -63,7 +63,14 @@ export class PartilharOrcamento {
   }
 
   gerarPdf() {
-    console.log('Gerar PDF');
+    const codigo =this.cdPublico;
+      this.baseService.getPdf('orcamento/relatorio', codigo)
+      .subscribe(blob => {
+
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
+
+      });
   }
 
  
