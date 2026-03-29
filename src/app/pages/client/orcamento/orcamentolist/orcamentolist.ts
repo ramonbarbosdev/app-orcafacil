@@ -99,6 +99,13 @@ export class Orcamentolist {
       requiresConfirmation: false
     },
     {
+      icon: 'pi pi-eye',
+      rounded: true,
+      outlined: true,
+      onClick: (row) => this.onPdf(row),
+      requiresConfirmation: false
+    },
+    {
       icon: 'pi pi-trash',
       severity: 'danger',
       rounded: true,
@@ -137,7 +144,27 @@ export class Orcamentolist {
   onView(item: any) {
     if (item && item['cdPublico']) {
       const codigo = item['cdPublico'];
-      this.router.navigate(['public/orcamento', codigo]);
+      this.router.navigate(['public/orcamento/view', codigo]);
+    } else {
+      console.error('ID está indefinido');
+    }
+  }
+  onPdf(item: any) {
+    if (item && item['cdPublico']) {
+      const codigo = item['cdPublico'];
+      this.baseService.getPdf('orcamento/relatorio', codigo)
+      .subscribe(blob => {
+
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
+        // ou 👉 download automático:
+        // const link = document.createElement('a');
+        // link.href = fileURL;
+        // link.download = 'orcamento.pdf';
+        // link.click();
+
+        this.loading = false;
+      });
     } else {
       console.error('ID está indefinido');
     }

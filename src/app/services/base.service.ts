@@ -205,6 +205,12 @@ export class BaseService {
     );
   }
 
+  getPdf(url: string, id: string) {
+  return this.http.get(`${this.apiUrl}/${url}/${id}`, {
+    responseType: 'blob'
+  });
+}
+
   exibirErros(e: any) {
     this.messageService.add({
       severity: 'error',

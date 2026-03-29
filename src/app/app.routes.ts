@@ -24,7 +24,8 @@ import { Materiallist } from './pages/client/material/materiallist/materiallist'
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'auth', loadChildren: () => import('../app/pages/auth/auth.routes') },
-  { path: 'public/orcamento/:codigo',component:Orcamentoview},
+  { path: 'public/orcamento/view/:codigo',component:Orcamentoview},
+  { path: 'public/orcamento/gerar/:codigo',component:Orcamentoview},
 
   {
     path: 'dev',
@@ -57,7 +58,7 @@ export const routes: Routes = [
       { path: 'orcamento', component: Orcamentolist },
       { path: 'orcamento/novo', component: Orcamentoform },
       { path: 'orcamento/:id', component: Orcamentoform },
-      { path: 'orcamento/visualizacao/:id', component: Orcamentoview },
+      // { path: 'orcamento/visualizacao/:id', component: Orcamentoview },
     ],
   },
 ];
