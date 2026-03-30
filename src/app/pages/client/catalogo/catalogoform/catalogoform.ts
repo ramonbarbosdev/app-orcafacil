@@ -78,6 +78,7 @@ export class Catalogoform {
     this.obterTipoItem();
 
     if (this.key == 0) {
+      this.objeto.vlCustoBase = 0;
       this.obterSequencia();
     } else {
       this.onEdit(this.key);
@@ -230,6 +231,8 @@ export class Catalogoform {
     this.objeto = new Catalogo();
     this.errorValidacao = {};
     this.carregarDados = false;
+
+     this.wizardState.reset();
 
   }
 
