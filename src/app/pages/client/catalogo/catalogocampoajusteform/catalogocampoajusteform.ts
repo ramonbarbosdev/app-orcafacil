@@ -15,7 +15,7 @@ import { TextareaModule } from 'primeng/textarea';
     FormsModule,
     InputNumberModule,
     InputTextModule,
-  TextareaModule],
+    TextareaModule],
   templateUrl: './catalogocampoajusteform.html',
   styleUrl: './catalogocampoajusteform.scss',
 })
@@ -23,7 +23,7 @@ export class Catalogocampoajusteform {
 
   @Input() objeto: any;
   @Input() carregarDados = false;
- 
+
   private wizardState = inject(CatalogoWizardStateService);
 
   camposAtivos: Campopersonalizado[] = [];
@@ -31,8 +31,54 @@ export class Catalogocampoajusteform {
 
   totalAtual = 0;
   private sub = new Subscription();
+  private eventService = inject(EventService);
 
   ngOnInit() {
+    this.limpar()
+
+    this.processar();
+
+    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
+      this.processar();
+    });
+  }
+
+  setValor(idCampo: number, valor: any) {
+    const novoValor = Number(valor) || 0;
+    const descricao = this.uiValores[idCampo]?.descricao ?? '';
+
+    this.uiValores[idCampo] = {
+      valor: novoValor,
+      descricao
+    };
+
+    this.wizardState.setAjustePadrao(idCampo, {
+      valor: novoValor,
+      descricao
+    });
+
+    this.objeto.vlPrecoBase = this.totalAtual;
+  }
+
+  setDescricao(idCampo: number, descricao: string) {
+    const valor = this.uiValores[idCampo]?.valor ?? 0;
+
+    this.uiValores[idCampo] = {
+      valor,
+      descricao
+    };
+
+    this.wizardState.setAjustePadrao(idCampo, {
+      valor,
+      descricao
+    });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
+
+  processar() {
     this.sub.add(
       combineLatest([
         this.wizardState.camposSelecionados$,
@@ -53,37 +99,10 @@ export class Catalogocampoajusteform {
     );
   }
 
-  setValor(idCampo: number, valor: any) {
-    const novoValor = Number(valor) || 0;
-    const descricao = this.uiValores[idCampo]?.descricao ?? '';
 
-    this.uiValores[idCampo] = {
-      valor: novoValor,
-      descricao
-    };
-
-    this.wizardState.setAjustePadrao(idCampo, {
-      valor: novoValor,
-      descricao
-    });
-  }
-
-  setDescricao(idCampo: number, descricao: string) {
-    const valor = this.uiValores[idCampo]?.valor ?? 0;
-
-    this.uiValores[idCampo] = {
-      valor,
-      descricao
-    };
-
-    this.wizardState.setAjustePadrao(idCampo, {
-      valor,
-      descricao
-    });
-  }
-
-  ngOnDestroy() {
-    this.sub.unsubscribe();
+  limpar() {
+    this.wizardState.reset();
+    this.uiValores = []
   }
 
 

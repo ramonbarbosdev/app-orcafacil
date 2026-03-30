@@ -71,6 +71,8 @@ export class Catalogoform {
   }
 
   onShow() {
+     this.wizardState.reset();
+
     this.loading = true;
     this.limparFormulario();
     this.carregarDados = true;
@@ -231,9 +233,6 @@ export class Catalogoform {
     this.objeto = new Catalogo();
     this.errorValidacao = {};
     this.carregarDados = false;
-
-     this.wizardState.reset();
-
   }
 
   onTabChange(event: any) {
