@@ -4,6 +4,7 @@ export class Catalogocampo {
     public idCampoPersonalizado!: number;
     public nmCampoPersonalizado!: string;
     public vlPadrao!: number;
+    public dsDescricao!: string;
     public flEditavel!: boolean;
     public ordem!: number;
 

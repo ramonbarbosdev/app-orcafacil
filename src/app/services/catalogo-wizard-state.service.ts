@@ -1,9 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Campopersonalizado } from '../models/campopersonalizado';
 
-export interface CatalogoDraft {
+export interface AjusteCampo {
+  valor: number;
+  descricao: string;
+}
 
+export interface CatalogoDraft {
   cdCatalogo?: string;
   nmCatalogo?: string;
   dsCatalogo?: string;
@@ -12,9 +16,7 @@ export interface CatalogoDraft {
 
   camposSelecionados: Campopersonalizado[];
 
-  ajustesPadrao: {
-    [idCampoPersonalizado: number]: any;
-  };
+  ajustesPadrao: Record<number, AjusteCampo>;
 }
 
 @Injectable({
@@ -26,21 +28,19 @@ export class CatalogoWizardStateService {
     new BehaviorSubject<Campopersonalizado[]>([]);
 
   private ajustesPadraoSubject =
-    new BehaviorSubject<Record<number, any>>({});
+    new BehaviorSubject<Record<number, AjusteCampo>>({});
 
   camposSelecionados$ = this.camposSelecionadosSubject.asObservable();
   ajustesPadrao$ = this.ajustesPadraoSubject.asObservable();
 
-  setCamposSelecionados(novosCampos: any[]) {
-
-    const camposAtuais = this.camposSelecionadosSubject.value;
+  setCamposSelecionados(novosCampos: Campopersonalizado[]) {
     const ajustesAtuais = this.ajustesPadraoSubject.value;
 
     const novosIds = new Set(
       novosCampos.map(c => c.idCampoPersonalizado)
     );
 
-    const ajustesReconstruidos: Record<number, any> = {};
+    const ajustesReconstruidos: Record<number, AjusteCampo> = {};
 
     for (const id of Object.keys(ajustesAtuais)) {
       const idNum = Number(id);
@@ -53,12 +53,15 @@ export class CatalogoWizardStateService {
     this.ajustesPadraoSubject.next(ajustesReconstruidos);
   }
 
-  setAjustePadrao(idCampo: number, valor: any) {
+  setAjustePadrao(idCampo: number, payload: { valor: number; descricao?: string }) {
     const atual = this.ajustesPadraoSubject.value;
 
     this.ajustesPadraoSubject.next({
       ...atual,
-      [idCampo]: valor,
+      [idCampo]: {
+        valor: payload.valor,
+        descricao: payload.descricao ?? atual[idCampo]?.descricao ?? ''
+      }
     });
   }
 
@@ -66,23 +69,20 @@ export class CatalogoWizardStateService {
     return this.camposSelecionadosSubject.value;
   }
 
-  getAjustesPadraoSnapshot(): Record<number, any> {
+  getAjustesPadraoSnapshot(): Record<number, AjusteCampo> {
     return this.ajustesPadraoSubject.value;
   }
 
   hidratar(
     campos: Campopersonalizado[],
-    ajustes: Record<number, any>
+    ajustes: Record<number, AjusteCampo>
   ): void {
     this.camposSelecionadosSubject.next(campos);
     this.ajustesPadraoSubject.next(ajustes);
   }
 
-
   reset(): void {
     this.camposSelecionadosSubject.next([]);
     this.ajustesPadraoSubject.next({});
   }
-
-
 }

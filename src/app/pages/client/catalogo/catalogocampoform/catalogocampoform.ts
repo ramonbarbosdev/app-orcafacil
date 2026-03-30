@@ -21,107 +21,73 @@ export class Catalogocampoform {
 
   private baseService = inject(BaseService);
   private wizardState = inject(CatalogoWizardStateService);
-  camposPrecificacao: Campopersonalizado[] = [
-  ];
 
+  camposPrecificacao: Campopersonalizado[] = [];
   totalSelecionados = 0;
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.limpar()
     if (this.carregarDados) {
       this.obterCampos();
     }
   }
-
-  ngOnInit() {
-  }
-
 
   toggleCampo(campo: any) {
     campo.ativo = !campo.ativo;
     this.onToggleCampo(campo);
   }
   get camposSelecionados() {
-  return this.camposPrecificacao?.filter(c => c.ativo) ?? [];
-}
+    return this.camposPrecificacao?.filter(c => c.ativo) ?? [];
+  }
 
   obterCampos() {
-    this.baseService.findAll('campopersonalizado/obter-por-tenant').subscribe(res => {
-      const selecionados = this.wizardState.getCamposSelecionadosSnapshot();
+    this.baseService.findAll('campopersonalizado/obter-por-tenant')
+      .subscribe(res => {
 
-      this.camposPrecificacao = res.map((campo: any) => ({
-        idCampoPersonalizado: campo.idCampoPersonalizado,
-        nmCampoPersonalizado: campo.nmCampoPersonalizado,
-        tpCampoPersonalizado: campo.tpCampoPersonalizado,
-        tpCampoValor: campo.tpCampoValor,
-        dsCampoPersonalizado: campo.dsCampoPersonalizado,
-        ativo: selecionados.some(
-          s => s.idCampoPersonalizado === campo.idCampoPersonalizado
-        ),
-      }));
-    });
+        const selecionados = this.wizardState.getCamposSelecionadosSnapshot();
+
+        this.camposPrecificacao = res.map((campo: any) => ({
+          ...campo,
+          ativo: selecionados.some(
+            s => s.idCampoPersonalizado === campo.idCampoPersonalizado
+          ),
+        }));
+      });
   }
 
   continuar() {
     const selecionados = this.camposPrecificacao
       .filter(c => c.ativo)
-      .map(c => ({
-        idCampoPersonalizado: c.idCampoPersonalizado,
-        nmCampoPersonalizado: c.nmCampoPersonalizado,
-        dsCampoPersonalizado: c.dsCampoPersonalizado,
-        tpCampoPersonalizado: c.tpCampoPersonalizado,
-        tpCampoValor: c.tpCampoValor,
-      }));
+      .map(c => ({ ...c }));
 
-    const atuais = this.wizardState.getCamposSelecionadosSnapshot();
-
-    if (!this.saoIguais(atuais, selecionados)) {
-      this.wizardState.setCamposSelecionados(selecionados);
-    }
+    this.wizardState.setCamposSelecionados(selecionados);
   }
 
-  private saoIguais(
-    a: any[],
-    b: any[]
-  ): boolean {
-
-    if (a.length !== b.length) return false;
-
-    return a.every((campo, i) =>
-      campo.idCampoPersonalizado === b[i].idCampoPersonalizado &&
-      campo.tpCampoPersonalizado === b[i].tpCampoPersonalizado
-    );
-  }
-
-
-
-  onToggleCampo(campo?: any) {
+  onToggleCampo(campo: any) {
 
     const ajustes = this.wizardState.getAjustesPadraoSnapshot();
-    const valorCampo = Number(ajustes[campo.idCampoPersonalizado] ?? 0);
 
     if (!campo.ativo) {
-      delete ajustes[campo.idCampoPersonalizado];
+      const novo = { ...ajustes };
+      delete novo[campo.idCampoPersonalizado];
+      this.wizardState.hidratar(
+        this.wizardState.getCamposSelecionadosSnapshot(),
+        novo
+      );
     } else {
-      ajustes[campo.idCampoPersonalizado] ??= 0;
+      this.wizardState.setAjustePadrao(campo.idCampoPersonalizado, {
+        valor: 0,
+        descricao: ''
+      });
     }
 
-    const total = Object.values(ajustes)
-      .map(v => Number(v))
-      .filter(v => !isNaN(v))
+    const total = Object.values(this.wizardState.getAjustesPadraoSnapshot())
+      .map(v => Number(v?.valor))
       .reduce((soma, v) => soma + v, 0);
 
-    this.wizardState.setAjustePadrao(campo.idCampoPersonalizado, 0);
     this.valorPreco.emit(total);
 
     this.totalSelecionados =
       this.camposPrecificacao.filter(c => c.ativo).length;
-  }
-
-
-  limpar() {
-    this.wizardState.reset();
-    this.camposPrecificacao = []
   }
 
 

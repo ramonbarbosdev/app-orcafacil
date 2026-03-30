@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, Input, SimpleChanges } from '@angular/core';
-import { CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
+import { AjusteCampo, CatalogoWizardStateService } from '../../../../services/catalogo-wizard-state.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -21,39 +21,18 @@ import { TextareaModule } from 'primeng/textarea';
 })
 export class Catalogocampoajusteform {
 
+  @Input() objeto: any;
+  @Input() carregarDados = false;
+ 
   private wizardState = inject(CatalogoWizardStateService);
 
   camposAtivos: Campopersonalizado[] = [];
-  uiValores: Record<number, any> = {};
-  @Input() objeto: any;
-  @Input() carregarDados = false;
-
-  private sub = new Subscription();
-  private eventService = inject(EventService);
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.carregarDados && changes['objeto']) {
-
-    }
-  }
+  uiValores: Record<number, AjusteCampo> = {};
 
   totalAtual = 0;
-  valoresAnteriores: Record<number, number> = {};
-
+  private sub = new Subscription();
 
   ngOnInit() {
-    this.limpar()
-
-    this.processar();
-
-    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
-      this.processar();
-    });
-
-  }
-
-  processar() {
-
     this.sub.add(
       combineLatest([
         this.wizardState.camposSelecionados$,
@@ -68,47 +47,44 @@ export class Catalogocampoajusteform {
         };
 
         this.totalAtual = Object.values(this.uiValores)
-          .map(v => Number(v))
-          .filter(v => !isNaN(v))
+          .map(v => Number(v?.valor))
           .reduce((soma, v) => soma + v, 0);
-
-        this.valoresAnteriores = { ...this.uiValores };
-
-        if (this.objeto == null) {
-          this.objeto.vlPrecoBase = this.totalAtual;
-        }
-
       })
     );
   }
 
-  public setValor(idCampo: number, valor: any) {
-
+  setValor(idCampo: number, valor: any) {
     const novoValor = Number(valor) || 0;
-    const valorAnterior = this.valoresAnteriores[idCampo] ?? 0;
+    const descricao = this.uiValores[idCampo]?.descricao ?? '';
 
-    this.totalAtual = this.totalAtual - valorAnterior + novoValor;
-    this.valoresAnteriores[idCampo] = novoValor;
+    this.uiValores[idCampo] = {
+      valor: novoValor,
+      descricao
+    };
 
-    this.objeto.vlPrecoBase = this.totalAtual;
-    this.uiValores[idCampo] = valor;
-    this.wizardState.setAjustePadrao(idCampo, novoValor);
+    this.wizardState.setAjustePadrao(idCampo, {
+      valor: novoValor,
+      descricao
+    });
+  }
 
+  setDescricao(idCampo: number, descricao: string) {
+    const valor = this.uiValores[idCampo]?.valor ?? 0;
+
+    this.uiValores[idCampo] = {
+      valor,
+      descricao
+    };
+
+    this.wizardState.setAjustePadrao(idCampo, {
+      valor,
+      descricao
+    });
   }
 
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
-
-  trackByCampo(index: number, campo: Campopersonalizado): number {
-    return campo.idCampoPersonalizado;
-  }
-
-  limpar() {
-    this.wizardState.reset();
-    this.uiValores = []
-  }
-
 
 
 }

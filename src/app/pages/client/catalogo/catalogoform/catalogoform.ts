@@ -126,7 +126,10 @@ export class Catalogoform {
     const ajustesPadrao: Record<number, any> = {};
 
     for (const cc of ordenados) {
-      ajustesPadrao[cc.idCampoPersonalizado] = cc.vlPadrao;
+      ajustesPadrao[cc.idCampoPersonalizado] = {
+        valor: cc.vlPadrao,
+        descricao: cc.dsDescricao ?? ''
+      };
     }
 
     this.wizardState.setCamposSelecionados(camposSelecionados);
@@ -142,7 +145,6 @@ export class Catalogoform {
 
       const campos = this.wizardState.getCamposSelecionadosSnapshot();
       const ajustes = this.wizardState.getAjustesPadraoSnapshot();
-
       const catalogoCampos = this.buildCatalogoCampos(
         this.objeto.idCatalogo,
         campos,
@@ -200,7 +202,8 @@ export class Catalogoform {
 
       catalogoCampo.idCatalogo = idCatalogo;
       catalogoCampo.idCampoPersonalizado = campo.idCampoPersonalizado;
-      catalogoCampo.vlPadrao = ajustes[campo.idCampoPersonalizado] ?? null;
+      catalogoCampo.vlPadrao = ajustes[campo.idCampoPersonalizado]?.valor ?? null;
+      catalogoCampo.dsDescricao = ajustes[campo.idCampoPersonalizado]?.descricao ?? null;
       catalogoCampo.flEditavel = true;
       catalogoCampo.ordem = index + 1;
 
