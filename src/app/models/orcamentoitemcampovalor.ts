@@ -5,6 +5,7 @@ export class Orcamentoitemcampovalor {
     public idCampoPersonalizado: number = 0;
     public nmCampoPersonalizado!: string;
     public vlInformado: number = 0;
+    public dsDescricao!: string;
     public tpValor!: string;
 
 

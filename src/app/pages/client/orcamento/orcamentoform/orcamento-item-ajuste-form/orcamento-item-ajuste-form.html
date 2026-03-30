@@ -1,4 +1,4 @@
-<p-dialog header="Ajustes e Precificação" [modal]="true" [(visible)]="visible" [style]="{ width: '60rem' }"
+<p-dialog header="Ajustes e Precificação" [modal]="true" [(visible)]="visible" [style]="{ width: '80rem' }"
   (onHide)="hideDialog()" (onShow)="showDialog()">
 
   <div *ngIf="itemEditavel" class="">
@@ -31,6 +31,11 @@
         </app-layout-campo>
 
         <app-layout-campo [width]="'md:w-6/12'">
+         <input pInputText class="w-full"
+            [(ngModel)]="campo.dsDescricao"  disabled   />
+        </app-layout-campo>
+
+        <app-layout-campo [width]="'md:w-4/12'">
           <input pInputText class="w-full"
             [(ngModel)]="campo.tpValor"  disabled   />
 

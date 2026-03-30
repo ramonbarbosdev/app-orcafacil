@@ -232,6 +232,7 @@ export class OrcamentoItemForm {
         idOrcamentoItem: idOrcamentoItem ?? 0,
         idCampoPersonalizado: campo.idCampoPersonalizado,
         vlInformado: campo.vlPadrao ?? 0,
+        dsDescricao: campo.dsDescricao ?? '',
         tpValor: campo.tpCampoValor
       } as Orcamentoitemcampovalor;
     });
