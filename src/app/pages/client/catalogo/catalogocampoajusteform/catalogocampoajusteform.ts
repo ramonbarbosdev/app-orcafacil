@@ -8,7 +8,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { EventService } from '../../../../services/event.service';
 import { Campopersonalizado } from '../../../../models/campopersonalizado';
 import { TextareaModule } from 'primeng/textarea';
-
+import { startWith } from 'rxjs';
 @Component({
   selector: 'app-catalogocampoajusteform',
   imports: [CommonModule,
@@ -32,15 +32,30 @@ export class Catalogocampoajusteform {
   totalAtual = 0;
   private sub = new Subscription();
   private eventService = inject(EventService);
+  private cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    this.limpar()
+    this.sub.add(
+      combineLatest([
+        this.wizardState.camposSelecionados$,
+        this.wizardState.ajustesPadrao$,
+        this.eventService.atualizarCampoPersonalizado$.pipe(startWith(null))
+      ]).subscribe(([campos, ajustes]) => {
 
-    this.processar();
+        this.camposAtivos = campos;
+        this.uiValores = { ...ajustes };
 
-    this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
-      this.processar();
-    });
+        this.totalAtual = Object.values(this.uiValores)
+          .map(v => Number(v?.valor) || 0)
+          .reduce((soma, v) => soma + v, 0);
+
+        if (this.objeto) {
+          this.objeto.vlPrecoBase = this.totalAtual;
+        }
+
+        this.cd.detectChanges();
+      })
+    );
   }
 
   setValor(idCampo: number, valor: any) {
@@ -88,7 +103,7 @@ export class Catalogocampoajusteform {
         this.camposAtivos = campos;
 
         this.uiValores = { ...ajustes };
-        
+
         this.totalAtual = Object.values(this.uiValores)
           .map(v => Number(v?.valor))
           .reduce((soma, v) => soma + v, 0);
