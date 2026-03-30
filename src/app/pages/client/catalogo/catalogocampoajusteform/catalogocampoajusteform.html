@@ -7,38 +7,49 @@
             <span class="text-lg font-semibold text-emerald-400">
                 {{ totalAtual | currency:'BRL' }}
             </span>
+
         </div>
     </div>
 
     <div class="ajuste-scroll">
 
+        <div class="flex flex-col gap-4">
 
-        <!-- LISTA -->
-        <div class="flex flex-col gap-3">
+            <div *ngFor="let campo of camposAtivos; trackBy: trackByCampo"
+                class="ajuste-card p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
 
-            <div *ngFor="let campo of camposAtivos; trackBy: trackByCampo" class="ajuste-card">
+                <!-- NOME -->
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-zinc-200">
+                        {{ campo.nmCampoPersonalizado }}
+                    </span>
 
-                <div class="flex justify-between items-center gap-3">
+                    <span class="text-xs text-gray-400">
+                        {{'Ajuste manual' }}
+                    </span>
+                </div>
 
-                    <!-- INFO -->
-                    <div class="flex flex-col w-6/12">
-                        <span class="font-medium text-sm">
-                            {{ campo.nmCampoPersonalizado }}
-                        </span>
+                <!-- LINHA INPUT -->
+                <div class="flex gap-3 items-center">
 
-                        <span class="text-xs text-gray-400">
-                            {{ campo.dsCampoPersonalizado || 'Sem descrição' }}
-                        </span>
-                    </div>
-
-                    <!-- INPUT -->
-                    <div class="w-6/12">
+                    <!-- VALOR -->
+                    <div class="w-1/3">
                         <p-inputNumber [(ngModel)]="uiValores[campo.idCampoPersonalizado]"
                             (onInput)="setValor(campo.idCampoPersonalizado, $event.value)" mode="currency"
-                            currency="BRL" locale="pt-BR" [min]="0" class="w-full"></p-inputNumber>
+                            currency="BRL" locale="pt-BR" [min]="0" class="w-full">
+                        </p-inputNumber>
                     </div>
 
+                    <div class="flex-1">
+                        <!-- <textarea pTextarea placeholder="Descrição do material" rows="1" class="w-full text-sm"
+                            [(ngModel)]="descricoes[campo.idCampoPersonalizado]"
+                            (ngModelChange)="setDescricao(campo.idCampoPersonalizado, $event)" maxlength="255">
+</textarea> -->
+
+                    </div>
                 </div>
+
+
 
             </div>
 

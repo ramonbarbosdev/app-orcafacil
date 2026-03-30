@@ -42,7 +42,7 @@
 
   <div class="flex-row-responsive">
     <app-layout-campo [label]="'Descrição:'" [width]="'w-12/12'">
-      <textarea pTextarea placeholder="Descrição do Matéria " [autoResize]="false" rows="3" cols="30" name="dsCatalogo"
+      <textarea pTextarea placeholder="Descrição do Serviço ou Produto " [autoResize]="false" rows="3" cols="30" name="dsCatalogo"
         id="dsCatalogo" [(ngModel)]="objeto.dsCatalogo"
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsCatalogo'] }" maxlength="255"></textarea>
     </app-layout-campo>

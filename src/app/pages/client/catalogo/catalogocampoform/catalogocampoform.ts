@@ -68,9 +68,9 @@ export class Catalogocampoform {
       .map(c => ({
         idCampoPersonalizado: c.idCampoPersonalizado,
         nmCampoPersonalizado: c.nmCampoPersonalizado,
+        dsCampoPersonalizado: c.dsCampoPersonalizado,
         tpCampoPersonalizado: c.tpCampoPersonalizado,
         tpCampoValor: c.tpCampoValor,
-        dsCampoPersonalizado: c.dsCampoPersonalizado,
       }));
 
     const atuais = this.wizardState.getCamposSelecionadosSnapshot();

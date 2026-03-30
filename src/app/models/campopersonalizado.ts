@@ -1,10 +1,10 @@
 export class Campopersonalizado {
 
     public idCampoPersonalizado!: number;
-    public cdCampoPersonalizado!: string; // ENUM
-    public nmCampoPersonalizado!: string; // ENUM
-    public dsCampoPersonalizado!: string; // ENUM
-    public tpCampoPersonalizado!: string; // ENUM
-    public tpCampoValor!: string; // ENUM
+    public cdCampoPersonalizado!: string; 
+    public nmCampoPersonalizado!: string; 
+    public dsCampoPersonalizado!: string; 
+    public tpCampoPersonalizado!: string; 
+    public tpCampoValor!: string; 
     public ativo!: boolean;
 }

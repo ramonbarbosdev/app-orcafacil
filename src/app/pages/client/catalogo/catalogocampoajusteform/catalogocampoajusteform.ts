@@ -7,13 +7,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { combineLatest, Subscription } from 'rxjs';
 import { EventService } from '../../../../services/event.service';
 import { Campopersonalizado } from '../../../../models/campopersonalizado';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-catalogocampoajusteform',
   imports: [CommonModule,
     FormsModule,
     InputNumberModule,
-    InputTextModule],
+    InputTextModule,
+  TextareaModule],
   templateUrl: './catalogocampoajusteform.html',
   styleUrl: './catalogocampoajusteform.scss',
 })

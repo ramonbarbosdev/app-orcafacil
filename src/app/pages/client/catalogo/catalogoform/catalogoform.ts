@@ -118,9 +118,9 @@ export class Catalogoform {
     const camposSelecionados: any[] = ordenados.map(cc => ({
       idCampoPersonalizado: cc.idCampoPersonalizado,
       nmCampoPersonalizado: cc.campoPersonalizado?.nmCampoPersonalizado,
+      dsCampoPersonalizado: cc.campoPersonalizado?.dsCampoPersonalizado,
       tpCampoPersonalizado: cc.campoPersonalizado?.tpCampoPersonalizado,
       tpCampoValor: cc.campoPersonalizado?.tpCampoValor,
-      dsCampoPersonalizado: cc.campoPersonalizado?.dsCampoPersonalizado
     }));
 
     const ajustesPadrao: Record<number, any> = {};
@@ -148,6 +148,7 @@ export class Catalogoform {
         campos,
         ajustes
       );
+
 
       this.objeto.catalogoCampo = catalogoCampos;
 
