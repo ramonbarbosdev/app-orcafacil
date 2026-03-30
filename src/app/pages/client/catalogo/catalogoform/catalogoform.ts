@@ -135,11 +135,8 @@ export class Catalogoform {
       };
     }
 
-    this.wizardState.setCamposSelecionados(camposSelecionados);
-
-    for (const [idCampo, valor] of Object.entries(ajustesPadrao)) {
-      this.wizardState.setAjustePadrao(Number(idCampo), valor);
-    }
+    
+   this.wizardState.hidratar(camposSelecionados, ajustesPadrao);
   }
 
   onSave() {

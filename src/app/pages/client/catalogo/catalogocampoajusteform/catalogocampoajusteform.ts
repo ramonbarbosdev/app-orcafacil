@@ -87,11 +87,8 @@ export class Catalogocampoajusteform {
 
         this.camposAtivos = campos;
 
-        this.uiValores = {
-          ...this.uiValores,
-          ...ajustes
-        };
-
+        this.uiValores = { ...ajustes };
+        
         this.totalAtual = Object.values(this.uiValores)
           .map(v => Number(v?.valor))
           .reduce((soma, v) => soma + v, 0);
