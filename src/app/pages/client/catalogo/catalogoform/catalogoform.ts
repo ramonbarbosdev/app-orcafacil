@@ -100,11 +100,11 @@ export class Catalogoform {
         this.hidratarWizardState(res);
 
         this.loading = false;
-        this.cd.markForCheck();
+        this.cd.detectChanges();
       },
       error: (err) => {
         this.loading = false;
-        this.cd.markForCheck();
+        this.cd.detectChanges();
       },
     });
   }
