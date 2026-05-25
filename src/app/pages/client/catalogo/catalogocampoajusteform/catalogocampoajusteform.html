@@ -11,11 +11,20 @@
         </div>
     </div>
 
+    <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <input pInputText type="text" class="w-full md:w-6/12" placeholder="Pesquisar ajuste..."
+            [(ngModel)]="termoBusca" (ngModelChange)="onBuscar()" />
+
+        <span class="text-xs text-gray-400">
+            {{ camposFiltrados.length }} encontrados
+        </span>
+    </div>
+
     <div class="ajuste-scroll">
 
         <div class="flex flex-col gap-4">
 
-            <div *ngFor="let campo of camposAtivos"    class="ajuste-card p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+            <div *ngFor="let campo of camposPaginados"    class="ajuste-card p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
              
 
                 <!-- NOME -->
@@ -56,4 +65,8 @@
         </div>
 
     </div>
+
+    <p-paginator [first]="first" [rows]="rows" [totalRecords]="camposFiltrados.length"
+        [rowsPerPageOptions]="rowsPerPageOptions" (onPageChange)="onPageChange($event)">
+    </p-paginator>
 </div>

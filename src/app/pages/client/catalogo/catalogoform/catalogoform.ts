@@ -143,6 +143,8 @@ export class Catalogoform {
 
     if (this.validarItens()) {
 
+      this.camposForm?.continuar();
+
       const campos = this.wizardState.getCamposSelecionadosSnapshot();
       const ajustes = this.wizardState.getAjustesPadraoSnapshot();
       const catalogoCampos = this.buildCatalogoCampos(

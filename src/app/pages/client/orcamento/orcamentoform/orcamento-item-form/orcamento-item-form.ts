@@ -59,6 +59,18 @@ export class OrcamentoItemForm {
     return this.colunas.map(c => c.width).join(' ');
   }
 
+  getCatalogosDisponiveis(indexAtual: number): FlagOption[] {
+    const catalogosSelecionados = new Set(
+      (this.itens ?? [])
+        .map((item, index) => index === indexAtual ? null : Number(item.idCatalogo))
+        .filter(id => !!id)
+    );
+
+    return this.listaCatalogo.filter(catalogo =>
+      !catalogosSelecionados.has(Number(catalogo.code))
+    );
+  }
+
   hideDialog() {
     this.ajusteVisible = false;
   }

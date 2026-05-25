@@ -14,10 +14,19 @@
     </div>
 
 
+    <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <input pInputText type="text" class="w-full md:w-6/12" placeholder="Pesquisar material..."
+            [(ngModel)]="termoBusca" (ngModelChange)="onBuscar()" />
+
+        <span class="text-xs text-gray-400">
+            {{ camposFiltrados.length }} encontrados
+        </span>
+    </div>
+
     <div class="campo-scroll">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
 
-            <div *ngFor="let campo of camposPrecificacao" (click)="toggleCampo(campo)" class="campo-card"
+            <div *ngFor="let campo of camposPaginados" (click)="toggleCampo(campo)" class="campo-card"
                 [ngClass]="{ 'ativo': campo.ativo }">
 
                 <div class="flex justify-between items-start">
@@ -38,6 +47,10 @@
 
         </div>
     </div>
+
+    <p-paginator [first]="first" [rows]="rows" [totalRecords]="camposFiltrados.length"
+        [rowsPerPageOptions]="rowsPerPageOptions" (onPageChange)="onPageChange($event)">
+    </p-paginator>
 
 
 </div>

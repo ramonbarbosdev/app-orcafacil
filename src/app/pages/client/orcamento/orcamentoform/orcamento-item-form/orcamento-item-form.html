@@ -29,7 +29,7 @@
             <!-- ITEM -->
             <div *ngIf="col.tipo === 'select'">
                 <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
-                <p-select [options]="listaCatalogo" optionLabel="name" optionValue="code" class="w-full" filter="true"
+                <p-select [options]="getCatalogosDisponiveis(i)" optionLabel="name" optionValue="code" class="w-full" filter="true"
                     [(ngModel)]="item.idCatalogo" (ngModelChange)="processarCatalogo($event, i)"
                     placeholder="Selecione um item">
                 </p-select>

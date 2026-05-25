@@ -9,13 +9,15 @@ import { EventService } from '../../../../services/event.service';
 import { Campopersonalizado } from '../../../../models/campopersonalizado';
 import { TextareaModule } from 'primeng/textarea';
 import { startWith } from 'rxjs';
+import { PaginatorModule } from 'primeng/paginator';
 @Component({
   selector: 'app-catalogocampoajusteform',
   imports: [CommonModule,
     FormsModule,
     InputNumberModule,
     InputTextModule,
-    TextareaModule],
+    TextareaModule,
+    PaginatorModule],
   templateUrl: './catalogocampoajusteform.html',
   styleUrl: './catalogocampoajusteform.scss',
 })
@@ -28,6 +30,10 @@ export class Catalogocampoajusteform {
 
   camposAtivos: Campopersonalizado[] = [];
   uiValores: Record<number, AjusteCampo> = {};
+  termoBusca = '';
+  first = 0;
+  rows = 5;
+  rowsPerPageOptions = [5, 10, 15, 20];
 
   totalAtual = 0;
   private sub = new Subscription();
@@ -56,6 +62,31 @@ export class Catalogocampoajusteform {
         this.cd.detectChanges();
       })
     );
+  }
+
+  get camposFiltrados() {
+    const termo = this.normalizar(this.termoBusca);
+
+    if (!termo) {
+      return this.camposAtivos;
+    }
+
+    return this.camposAtivos.filter(campo => {
+      const texto = this.normalizar([
+        campo.nmCampoPersonalizado,
+        campo.dsCampoPersonalizado,
+        campo.cdCampoPersonalizado,
+        campo.tpCampoPersonalizado,
+        campo.tpCampoValor,
+        this.uiValores[campo.idCampoPersonalizado]?.descricao
+      ].filter(Boolean).join(' '));
+
+      return texto.includes(termo);
+    });
+  }
+
+  get camposPaginados() {
+    return this.camposFiltrados.slice(this.first, this.first + this.rows);
   }
 
   setValor(idCampo: number, valor: any) {
@@ -115,6 +146,23 @@ export class Catalogocampoajusteform {
   limpar() {
     this.wizardState.reset();
     this.uiValores = []
+  }
+
+  onBuscar(): void {
+    this.first = 0;
+  }
+
+  onPageChange(event: any): void {
+    this.first = event.first;
+    this.rows = event.rows;
+  }
+
+  private normalizar(valor: string): string {
+    return String(valor ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
   }
 
 

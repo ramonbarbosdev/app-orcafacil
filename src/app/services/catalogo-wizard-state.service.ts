@@ -42,11 +42,11 @@ export class CatalogoWizardStateService {
 
     const ajustesReconstruidos: Record<number, AjusteCampo> = {};
 
-    for (const id of Object.keys(ajustesAtuais)) {
-      const idNum = Number(id);
-      if (novosIds.has(idNum)) {
-        ajustesReconstruidos[idNum] = ajustesAtuais[idNum];
-      }
+    for (const id of novosIds) {
+      ajustesReconstruidos[id] = ajustesAtuais[id] ?? {
+        valor: 0,
+        descricao: ''
+      };
     }
 
     this.camposSelecionadosSubject.next([...novosCampos]);
