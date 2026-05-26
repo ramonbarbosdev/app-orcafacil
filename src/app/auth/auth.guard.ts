@@ -18,7 +18,6 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // OBS: lembrar de configurar o papel nas rotas
   const userRole = ConverterNomeRoleMinusculo(user.role);
-
   if(userRole === '')
   {
     console.error('Não existe formatação equivalente para o ' + user.role);
