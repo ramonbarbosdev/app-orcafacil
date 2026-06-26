@@ -8,6 +8,7 @@ import {
   LoginRequest,
   LoginResponse,
   MeResponse,
+  OrganizacaoResumo,
   SelecionarOrgRequest,
   SelecionarOrgResponse,
   SessionUser,
@@ -28,10 +29,7 @@ export class AuthService {
   user$ = this.userSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    const userJson = sessionStorage.getItem(STORAGE_KEY);
-    if (userJson) {
-      this.userSubject.next(JSON.parse(userJson));
-    }
+    this.restoreSessionFromStorage();
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -41,7 +39,7 @@ export class AuthService {
         if (!res?.token) {
           throw new Error('Token não recebido no login');
         }
-        this.persistPartialSession(res.token, res.tipoGlobal ?? 'DEFAULT');
+        this.persistPartialSession(res.token, res.tipoGlobal ?? 'DEFAULT', res.organizacoes ?? []);
       }),
       catchError((e) => {
         this.exibirErros(e);
@@ -70,6 +68,7 @@ export class AuthService {
             role: res.role,
             permissoes: res.permissoes ?? [],
             idUsuario: this.getUser()?.idUsuario,
+            organizacoesPendentes: undefined,
           });
         }),
         catchError((e) => {
@@ -84,24 +83,27 @@ export class AuthService {
       return of(null);
     }
 
-    return this.http.get<MeResponse | ApiEnvelope<MeResponse>>(`${this.apiUrl}/auth/me`).pipe(
-      map((res) => this.unwrapAuth(res)),
-      tap((me) => {
-        const current = this.getUser();
-        if (current?.token) {
-          this.persistSession({
-            token: current.token,
-            tipoGlobal: (me.tipoGlobal as SessionUser['tipoGlobal']) ?? 'DEFAULT',
-            idOrganizacao: me.idOrganizacao ?? undefined,
-            role: me.role ?? undefined,
-            permissoes: me.permissoes ?? [],
-            idUsuario: me.idUsuario,
-          });
-        }
-      }),
+    return this.refreshPermissoes().pipe(
       catchError((error) => {
         this.clearSession();
         return throwError(() => error);
+      })
+    );
+  }
+
+  refreshPermissoes(): Observable<MeResponse> {
+    return this.http.get<MeResponse | ApiEnvelope<MeResponse>>(`${this.apiUrl}/auth/me`).pipe(
+      map((res) => this.unwrapAuth(res)),
+      tap((me) => this.aplicarPermissoes(me)),
+      catchError((e) => {
+        if (!isAuthHandledStatus(e.status ?? 0)) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Não foi possível atualizar',
+            detail: 'Não foi possível recarregar suas permissões. Tente novamente.',
+          });
+        }
+        return throwError(() => e);
       })
     );
   }
@@ -112,29 +114,39 @@ export class AuthService {
   }
 
   getUser(): SessionUser | null {
-    return this.userSubject.value;
+    return this.getSessionUser();
   }
 
-  getUserSubbject(): SessionUser | null {
-    return this.userSubject.value;
+  getToken(): string | null {
+    const token = this.getSessionUser()?.token?.trim();
+    return token || null;
+  }
+
+  getOrganizacoesPendentes(): OrganizacaoResumo[] {
+    return this.getSessionUser()?.organizacoesPendentes ?? [];
   }
 
   isAuthenticated(): boolean {
-    return !!this.userSubject.value?.token;
+    return !!this.getToken();
   }
 
   isSuperAdmin(): boolean {
-    const user = this.getUser();
+    const user = this.getSessionUser();
     return user?.tipoGlobal === 'SUPER_ADMIN' && !user?.idOrganizacao;
   }
 
   hasOrgSelected(): boolean {
-    const user = this.getUser();
+    const user = this.getSessionUser();
     return user?.tipoGlobal === 'SUPER_ADMIN' || !!user?.idOrganizacao;
   }
 
+  needsOrgSelection(): boolean {
+    const user = this.getSessionUser();
+    return !!user?.token && user.tipoGlobal === 'DEFAULT' && !user.idOrganizacao;
+  }
+
   hasPermission(chave: string): boolean {
-    const permissoes = this.getUser()?.permissoes ?? [];
+    const permissoes = this.getSessionUser()?.permissoes ?? [];
     return permissoes.includes(chave);
   }
 
@@ -142,7 +154,6 @@ export class AuthService {
     return chaves.some((c) => this.hasPermission(c));
   }
 
-  /** Controle de exibição no menu lateral (permissão {modulo}.exibir no plano/papel). */
   canShowInMenu(modulo: string): boolean {
     return this.hasPermission(`${modulo}.exibir`);
   }
@@ -152,19 +163,67 @@ export class AuthService {
     sessionStorage.removeItem(STORAGE_KEY);
   }
 
-  private persistPartialSession(token: string, tipoGlobal: SessionUser['tipoGlobal']): void {
+  private restoreSessionFromStorage(): void {
+    const userJson = sessionStorage.getItem(STORAGE_KEY);
+    if (!userJson) {
+      return;
+    }
+    try {
+      const user = JSON.parse(userJson) as SessionUser;
+      if (user?.token?.trim()) {
+        this.userSubject.next(user);
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+    } catch {
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  private getSessionUser(): SessionUser | null {
+    const fromMemory = this.userSubject.value;
+    if (fromMemory?.token?.trim()) {
+      return fromMemory;
+    }
+    this.restoreSessionFromStorage();
+    return this.userSubject.value;
+  }
+
+  private persistPartialSession(
+    token: string,
+    tipoGlobal: SessionUser['tipoGlobal'],
+    organizacoes: OrganizacaoResumo[]
+  ): void {
     this.persistSession({
       token,
       tipoGlobal,
       permissoes: [],
-      idOrganizacao: undefined,
-      role: undefined,
+      organizacoesPendentes: organizacoes,
     });
   }
 
   private persistSession(user: SessionUser): void {
+    if (!user.token?.trim()) {
+      return;
+    }
     this.userSubject.next(user);
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  }
+
+  private aplicarPermissoes(me: MeResponse): void {
+    const current = this.getSessionUser();
+    if (!current?.token) {
+      return;
+    }
+    this.persistSession({
+      ...current,
+      token: current.token,
+      tipoGlobal: (me.tipoGlobal as SessionUser['tipoGlobal']) ?? current.tipoGlobal,
+      idOrganizacao: me.idOrganizacao ?? undefined,
+      role: me.role ?? undefined,
+      permissoes: me.permissoes ?? [],
+      idUsuario: me.idUsuario,
+    });
   }
 
   private unwrapAuth<T>(body: T | ApiEnvelope<T>): T {

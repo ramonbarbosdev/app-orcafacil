@@ -7,7 +7,6 @@ import { AuthService } from '../auth/auth.service';
 import { parseHttpError } from '../utils/http-error.util';
 
 const SESSION_INVALID_CODES = new Set([
-  'UNAUTHORIZED',
   'INVALID_TOKEN',
   'INVALID_VINCULO',
   'ORGANIZATION_UNAVAILABLE',
@@ -27,7 +26,9 @@ export const Error401Interceptor: HttpInterceptorFn = (req, next) => {
       const code = err.error?.error ?? '';
       const parsed = parseHttpError(401, err.error);
       const shouldResetSession =
-        req.url.includes('/auth/me') || SESSION_INVALID_CODES.has(code) || !auth.hasOrgSelected();
+        req.url.includes('/auth/me') ||
+        SESSION_INVALID_CODES.has(code) ||
+        (code === 'UNAUTHORIZED' && !auth.getToken());
 
       if (shouldResetSession) {
         auth.clearSession();
@@ -40,9 +41,9 @@ export const Error401Interceptor: HttpInterceptorFn = (req, next) => {
         life: 8000,
       });
 
-      if (shouldResetSession && !req.url.includes('/auth/me')) {
+      if (shouldResetSession || req.url.includes('/auth/me')) {
         router.navigate(['/auth/login']);
-      } else if (req.url.includes('/auth/me')) {
+      } else if (auth.needsOrgSelection()) {
         router.navigate(['/auth/login']);
       }
 

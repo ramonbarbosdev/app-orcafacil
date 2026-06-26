@@ -91,25 +91,15 @@ export class Login {
           return;
         }
 
-        if (res.organizacoes.length === 1) {
-          this.auth.selecionarOrganizacao(res.organizacoes[0].idOrganizacao).subscribe({
-            next: () => this.router.navigate(['/client/home']),
-            error: () => this.auth.clearSession(),
-          });
-          return;
-        }
-
-        if (res.precisaSelecionarOrganizacao) {
-          this.visibleOrganizacao = true;
-          this.listaEmpresa = res.organizacoes.map((org) => {
-            const item = new FlagOption();
-            item.code = String(org.idOrganizacao);
-            item.name = org.nmOrganizacao;
-            return item;
-          });
-          if (this.listaEmpresa.length > 0) {
-            this.objeto.idOrganizacao = Number(this.listaEmpresa[0].code);
-          }
+        this.visibleOrganizacao = true;
+        this.listaEmpresa = res.organizacoes.map((org) => {
+          const item = new FlagOption();
+          item.code = String(org.idOrganizacao);
+          item.name = org.nmOrganizacao;
+          return item;
+        });
+        if (this.listaEmpresa.length > 0) {
+          this.objeto.idOrganizacao = Number(this.listaEmpresa[0].code);
         }
       },
       error: () => {
@@ -143,11 +133,32 @@ export class Login {
         if (!me) return;
         if (this.auth.isSuperAdmin()) {
           this.router.navigate(['/admin/home']);
-        } else if (this.auth.hasOrgSelected()) {
+          return;
+        }
+        if (this.auth.hasOrgSelected()) {
           this.router.navigate(['/client/home']);
+          return;
+        }
+        if (this.auth.needsOrgSelection()) {
+          this.abrirSelecaoOrganizacao();
         }
       },
       error: () => {},
     });
+  }
+
+  private abrirSelecaoOrganizacao() {
+    const organizacoes = this.auth.getOrganizacoesPendentes();
+    if (!organizacoes.length) {
+      return;
+    }
+    this.listaEmpresa = organizacoes.map((org) => {
+      const item = new FlagOption();
+      item.code = String(org.idOrganizacao);
+      item.name = org.nmOrganizacao;
+      return item;
+    });
+    this.objeto.idOrganizacao = Number(this.listaEmpresa[0]?.code);
+    this.visibleOrganizacao = true;
   }
 }

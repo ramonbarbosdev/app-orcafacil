@@ -56,6 +56,7 @@ export interface SessionUser {
   role?: string;
   permissoes: string[];
   idUsuario?: number;
+  organizacoesPendentes?: OrganizacaoResumo[];
 }
 
 export type StatusOrcamento = 'RASCUNHO' | 'GERADO' | 'ENVIADO' | 'APROVADO' | 'REJEITADO';

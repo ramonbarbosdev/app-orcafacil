@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
@@ -49,6 +49,18 @@ import { AvatarModule } from 'primeng/avatar';
 
     <div class="layout-topbar-actions">
       <div class="layout-config-menu">
+        <button
+          type="button"
+          class="layout-topbar-action"
+          title="Atualizar permissões"
+          [disabled]="recarregandoPermissoes"
+          (click)="recarregarPermissoes()"
+        >
+          <i
+            class="pi"
+            [ngClass]="recarregandoPermissoes ? 'pi-spin pi-spinner' : 'pi-refresh'"
+          ></i>
+        </button>
         <button
           type="button"
           class="layout-topbar-action"
@@ -125,9 +137,11 @@ export class AppTopbar {
   private router = inject(Router);
   auth = inject(AuthService);
   private cd = inject(ChangeDetectorRef);
+  private messageService = inject(MessageService);
 
   public avatarImg: string = '';
   public avatarNome: string = '';
+  recarregandoPermissoes = false;
 
   ngOnInit() {
     this.auth.user$.subscribe((user) => {
@@ -162,12 +176,43 @@ export class AppTopbar {
   logout() {
     this.auth.logout();
   }
+
+  recarregarPermissoes() {
+    if (this.recarregandoPermissoes || !this.auth.isAuthenticated()) {
+      return;
+    }
+
+    this.recarregandoPermissoes = true;
+    this.auth.refreshPermissoes().subscribe({
+      next: () => {
+        this.recarregandoPermissoes = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Permissões atualizadas',
+          detail: 'Menu e acessos foram sincronizados com o servidor.',
+        });
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.recarregandoPermissoes = false;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
   menuPerfil = [
     {
       label: 'Perfil',
       icon: 'pi pi-fw pi-user',
       command: () => {
         this.router.navigate(['client/perfil']);
+      },
+    },
+    {
+      label: 'Atualizar permissões',
+      icon: 'pi pi-fw pi-refresh',
+      command: () => {
+        this.recarregarPermissoes();
       },
     },
     // {

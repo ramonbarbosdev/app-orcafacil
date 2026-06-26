@@ -43,6 +43,7 @@ export const routes: Routes = [
   {
     path: 'client',
     component: AppLayout,
+    canActivate: [authGuard, orgSelectedGuard],
     canActivateChild: [authGuard, orgSelectedGuard],
     children: [
       { path: 'home', component: HomeClient },

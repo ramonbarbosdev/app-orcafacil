@@ -16,7 +16,7 @@ export const orgSelectedGuard: CanActivateFn = () => {
     return false;
   }
 
-  if (!auth.hasOrgSelected()) {
+  if (auth.needsOrgSelection()) {
     router.navigate(['/auth/login']);
     return false;
   }
