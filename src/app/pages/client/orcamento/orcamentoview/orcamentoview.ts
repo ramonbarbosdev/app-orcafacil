@@ -8,6 +8,7 @@ import { CardModule } from 'primeng/card';
 import { AccordionModule } from 'primeng/accordion';
 import { DividerModule } from 'primeng/divider';
 import { LayoutService } from '../../../../layout/service/layout.service';
+import { OrganizacaoLogoService } from '../../../../services/organizacao-logo.service';
 
 @Component({
   selector: 'app-orcamentoview',
@@ -23,6 +24,9 @@ export class Orcamentoview {
   private route = inject(ActivatedRoute);
   public baseService = inject(BaseService);
   layoutService = inject(LayoutService);
+  private logoService = inject(OrganizacaoLogoService);
+
+  logoPublicaUrl: string | null = null;
 
   ngOnInit() {
     const codigo = this.route.snapshot.paramMap.get('codigo');
@@ -30,6 +34,7 @@ export class Orcamentoview {
     this.baseService.getPublic<OrcamentoVisualizacao>(`orcamentos/visualizacao/${codigo}`).subscribe({
       next: (res) => {
         this.orcamento = res;
+        this.logoPublicaUrl = this.logoService.urlImagemPublica(res.logoUrl);
         this.loading = false;
         this.cd.markForCheck();
       },

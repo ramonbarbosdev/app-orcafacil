@@ -7,6 +7,7 @@ import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { Menu } from 'primeng/menu';
 import { AuthService } from '../../auth/auth.service';
+import { OrganizacaoLogoService } from '../../services/organizacao-logo.service';
 import { AvatarModule } from 'primeng/avatar';
 
 @Component({
@@ -28,21 +29,16 @@ import { AvatarModule } from 'primeng/avatar';
         <i class="pi pi-bars"></i>
       </button>
       <a class="layout-topbar-logo" [routerLink]="auth.isSuperAdmin() ? '/admin/home' : '/client/home'">
-        <span class="ml-10">
+        <span class="layout-topbar-brand-slot">
           <img
-            *ngIf="!layoutService.isDarkTheme()"
-            src="/logo.png"
-            alt=""
-            srcset=""
-            class="w-40 "
+            *ngIf="logoOrganizacaoUrl; else logoPadrao"
+            [src]="logoOrganizacaoUrl"
+            alt="Logo da empresa"
+            class="layout-topbar-brand-logo"
           />
-          <img
-            *ngIf="layoutService.isDarkTheme()"
-            src="/logo.png"
-            alt=""
-            srcset=""
-            class="w-40 "
-          />
+          <ng-template #logoPadrao>
+            <img src="/logo.png" alt="OrçaFácil" class="layout-topbar-brand-logo" />
+          </ng-template>
         </span>
       </a>
     </div>
@@ -136,21 +132,52 @@ export class AppTopbar {
   constructor(public layoutService: LayoutService) {}
   private router = inject(Router);
   auth = inject(AuthService);
+  private logoService = inject(OrganizacaoLogoService);
   private cd = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);
 
   public avatarImg: string = '';
   public avatarNome: string = '';
+  public logoOrganizacaoUrl: string | null = null;
   recarregandoPermissoes = false;
 
   ngOnInit() {
     this.auth.user$.subscribe((user) => {
       if (user?.tipoGlobal === 'SUPER_ADMIN') {
         this.avatarNome = 'Super Admin';
+        this.logoOrganizacaoUrl = null;
       } else {
         this.avatarNome = user?.role === 'ADMIN' ? 'Administrador' : user?.role === 'USER' ? 'Usuário' : 'Usuário';
+        if (user?.idOrganizacao) {
+          this.carregarLogoOrganizacao();
+        } else {
+          this.logoOrganizacaoUrl = null;
+        }
       }
       this.cd.markForCheck();
+    });
+
+    this.logoService.atualizacao$.subscribe(() => {
+      if (!this.auth.isSuperAdmin() && this.auth.hasOrgSelected()) {
+        this.carregarLogoOrganizacao();
+      }
+    });
+  }
+
+  private carregarLogoOrganizacao(): void {
+    if (!this.auth.hasPermission('organizacao.ler')) {
+      this.logoOrganizacaoUrl = null;
+      return;
+    }
+    this.logoService.obterBlobPreviewAutenticado().subscribe({
+      next: (url) => {
+        this.logoOrganizacaoUrl = url;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.logoOrganizacaoUrl = null;
+        this.cd.markForCheck();
+      },
     });
   }
 

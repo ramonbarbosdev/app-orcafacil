@@ -11,11 +11,12 @@ import { ConfigNotificacao } from "./config-notificacao/config-notificacao";
 import { ConfigMetodoPrecificacao } from "./config-metodo-precificacao/config-metodo-precificacao";
 import { ConfigCampoPersonalizado } from "./config-campo-personalizado/config-campo-personalizado";
 import { ConfigMetodoAjuste } from "./config-metodo-ajuste/config-metodo-ajuste";
+import { ConfigOrganizacaoLogo } from "./config-organizacao-logo/config-organizacao-logo";
 
 
 @Component({
   selector: 'app-configuracao-view',
-  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigOrcamento, ConfigNotificacao, ConfigMetodoPrecificacao, ConfigCampoPersonalizado, ConfigMetodoAjuste],
+  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigOrcamento, ConfigNotificacao, ConfigMetodoPrecificacao, ConfigCampoPersonalizado, ConfigMetodoAjuste, ConfigOrganizacaoLogo, ConfigEmpresa],
   templateUrl: './configuracao-view.html',
   styleUrl: './configuracao-view.scss',
 })

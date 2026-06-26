@@ -32,6 +32,7 @@
     "@stomp/stompjs": "^7.1.1",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/socket.io-client": "^1.4.36",
+    "ngx-image-cropper": "^9.1.6",
     "ngx-mask": "^19.0.7",
     "postcss": "^8.5.6",
     "primeicons": "^7.0.0",

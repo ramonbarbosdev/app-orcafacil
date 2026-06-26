@@ -153,6 +153,40 @@ export class BaseService {
     return this.unwrap(this.http.get<ApiResponse<T>>(`${this.apiUrl}/${endpoint}`));
   }
 
+  uploadFile(endpoint: string, file: File, fieldName = 'file'): Observable<any> {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    return this.unwrap(this.http.post<ApiResponse<any>>(`${this.apiUrl}/${endpoint}`, formData)).pipe(
+      catchError((e) => {
+        this.exibirErros(e);
+        return throwError(() => e);
+      })
+    );
+  }
+
+  deleteEndpoint(endpoint: string): Observable<any> {
+    return this.unwrap(this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${endpoint}`)).pipe(
+      tap(() => this.exibirSucesso('Operação realizada com sucesso')),
+      catchError((e) => {
+        this.exibirErros(e);
+        return throwError(() => e);
+      })
+    );
+  }
+
+  getBlob(endpoint: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${endpoint}`, { responseType: 'blob' }).pipe(
+      catchError((e) => {
+        this.exibirErros(e);
+        return throwError(() => e);
+      })
+    );
+  }
+
+  getPublicBlob(endpoint: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${endpoint}`, { responseType: 'blob' });
+  }
+
   exibirErros(e: HttpErrorResponse | { error?: { message?: string; error?: string; hint?: string }; status?: number }): void {
     if ('status' in e && isAuthHandledStatus(e.status ?? 0)) {
       return;

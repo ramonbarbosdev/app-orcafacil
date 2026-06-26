@@ -1,6 +1,9 @@
 @use 'mixins' as *;
 
 .layout-topbar {
+    --topbar-logo-width: clamp(5.5rem, 18vw, 9.5rem);
+    --topbar-logo-height: clamp(1.75rem, 4.5vw, 2.5rem);
+
     position: fixed;
     height: 4rem;
     z-index: 997;
@@ -14,9 +17,12 @@
     align-items: center;
 
     .layout-topbar-logo-container {
-        width: 20rem;
+        width: auto;
+        max-width: min(14rem, 42vw);
+        min-width: 0;
         display: flex;
         align-items: center;
+        flex: 0 1 auto;
     }
 
     .layout-topbar-logo {
@@ -27,9 +33,30 @@
         color: var(--text-color);
         font-weight: 500;
         gap: 0.5rem;
+        min-width: 0;
+        max-width: 100%;
 
         svg {
             width: 3rem;
+        }
+
+        .layout-topbar-brand-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: var(--topbar-logo-width);
+            height: var(--topbar-logo-height);
+            max-height: calc(4rem - 1rem);
+            min-width: 0;
+            flex-shrink: 1;
+        }
+
+        img.layout-topbar-brand-logo {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: left center;
         }
 
         &:focus-visible {
@@ -99,10 +126,12 @@
 
 @media (max-width: 991px) {
     .layout-topbar {
-        padding: 0 2rem;
+        padding: 0 1rem;
+        --topbar-logo-width: clamp(4.5rem, 32vw, 7rem);
+        --topbar-logo-height: clamp(1.5rem, 8vw, 2rem);
 
         .layout-topbar-logo-container {
-            width: auto;
+            max-width: min(7.5rem, 38vw);
         }
 
         .layout-menu-button {

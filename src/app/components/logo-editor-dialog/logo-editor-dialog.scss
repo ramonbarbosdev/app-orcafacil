@@ -1,0 +1,11 @@
+.logo-editor-dialog__cropper {
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: var(--surface-100);
+}
+
+.logo-editor-dialog__cropper image-cropper {
+  max-height: 58vh;
+}

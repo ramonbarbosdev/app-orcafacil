@@ -1,0 +1,57 @@
+<p-dialog
+  [header]="titulo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '920px', maxWidth: '96vw' }"
+  [contentStyle]="{ overflow: 'auto' }"
+  (onHide)="fechar()"
+>
+  <p class="text-sm text-color-secondary mt-0 mb-3">
+    Recorte bem próximo da logo (evite espaço em branco ao redor), gire e ajuste o zoom antes de enviar.
+    Tamanho final entre 200×80 e 2000×1000 px, proporção de 1:1 a 5:1.
+  </p>
+
+  <div class="flex flex-wrap items-center gap-2 mb-3">
+    <span class="text-sm font-medium">Proporção:</span>
+    <p-selectButton
+      [options]="proporcoes"
+      [(ngModel)]="proporcaoSelecionada"
+      optionLabel="label"
+      dataKey="label"
+      (ngModelChange)="onProporcaoChange($event)"
+    />
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-3">
+    <p-button label="Girar esquerda" icon="pi pi-undo" styleClass="p-button-outlined p-button-sm" (onClick)="girarEsquerda()" />
+    <p-button label="Girar direita" icon="pi pi-refresh" styleClass="p-button-outlined p-button-sm" (onClick)="girarDireita()" />
+    <p-button label="Zoom +" icon="pi pi-search-plus" styleClass="p-button-outlined p-button-sm" (onClick)="zoom(0.1)" />
+    <p-button label="Zoom -" icon="pi pi-search-minus" styleClass="p-button-outlined p-button-sm" (onClick)="zoom(-0.1)" />
+  </div>
+
+  <div class="logo-editor-dialog__cropper" *ngIf="imageFile">
+    <image-cropper
+      [imageFile]="imageFile"
+      [maintainAspectRatio]="manterProporcao"
+      [aspectRatio]="aspectRatio"
+      [format]="formatoSaida"
+      output="blob"
+      [resizeToWidth]="1200"
+      [(transform)]="transform"
+      [allowMoveImage]="true"
+      (imageCropped)="imageCropped($event)"
+      (loadImageFailed)="loadImageFailed()"
+    />
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" class="p-button-text" (onClick)="fechar()" />
+    <p-button
+      label="Usar esta logo"
+      icon="pi pi-check"
+      [loading]="aplicando"
+      [disabled]="!imageFile"
+      (onClick)="aplicar()"
+    />
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,89 @@
+<app-layout-card-config
+  [title]="'Logo da empresa'"
+  [subtitle]="'Uma única imagem é redimensionada automaticamente no sistema. Recorte horizontal (2:1 ou 3:1), sem espaço em branco.'"
+  [icon]="'pi pi-image'"
+  [showSalvar]="false"
+>
+  <div *ngIf="loading" class="flex justify-center py-6">
+    <p-progressSpinner styleClass="w-10 h-10" />
+  </div>
+
+  <div *ngIf="!loading && !auth.hasPermission('organizacao.ler')" class="text-color-secondary py-4">
+    Você não possui permissão para visualizar a logo da organização.
+  </div>
+
+  <div *ngIf="!loading && auth.hasPermission('organizacao.ler')" class="flex flex-col gap-4">
+    <div
+      class="flex flex-col sm:flex-row items-center justify-center gap-4 border border-dashed border-surface-300 rounded-lg bg-surface-50 dark:bg-surface-800 p-4"
+    >
+      <ng-container *ngIf="previewUrl; else semLogo">
+        <div class="logo-preview-slot logo-preview-slot--desktop">
+          <span class="logo-preview-slot__label">Desktop</span>
+          <img [src]="previewUrl" alt="Prévia desktop" class="logo-preview-slot__img" />
+        </div>
+        <div class="logo-preview-slot logo-preview-slot--mobile">
+          <span class="logo-preview-slot__label">Mobile</span>
+          <img [src]="previewUrl" alt="Prévia mobile" class="logo-preview-slot__img" />
+        </div>
+      </ng-container>
+      <ng-template #semLogo>
+        <div class="text-center text-color-secondary w-full py-4">
+          <i class="pi pi-image text-3xl mb-2 block"></i>
+          <span>Nenhuma logo personalizada cadastrada</span>
+        </div>
+      </ng-template>
+    </div>
+
+    <div *ngIf="metadados?.possuiLogo" class="text-sm text-color-secondary grid grid-cols-2 md:grid-cols-4 gap-2">
+      <span *ngIf="metadados?.largura && metadados?.altura">
+        Dimensões: {{ metadados?.largura }}×{{ metadados?.altura }} px
+      </span>
+      <span *ngIf="metadados?.tamanhoBytes">
+        Tamanho: {{ (metadados!.tamanhoBytes! / 1024) | number:'1.0-0' }} KB
+      </span>
+      <span *ngIf="metadados?.atualizadaEm">
+        Atualizada: {{ metadados?.atualizadaEm | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+    </div>
+
+    <input
+      #fileInput
+      type="file"
+      class="hidden"
+      accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+      (change)="onArquivoSelecionado($event)"
+      [disabled]="enviando"
+    />
+
+    <div class="flex flex-wrap gap-2">
+      <p-button
+        *ngIf="podeEnviar"
+        [label]="possuiLogo ? 'Substituir logo' : 'Enviar e editar logo'"
+        icon="pi pi-upload"
+        [loading]="enviando"
+        styleClass="p-button-outlined"
+        (onClick)="fileInput.click()"
+      ></p-button>
+
+      <p-button
+        *ngIf="podeRemover && possuiLogo"
+        label="Remover logo"
+        icon="pi pi-trash"
+        severity="danger"
+        styleClass="p-button-outlined"
+        [loading]="removendo"
+        (onClick)="remover()"
+      ></p-button>
+    </div>
+
+    <p *ngIf="!podeEnviar" class="text-sm text-color-secondary m-0">
+      Apenas usuários autorizados podem alterar a logo. Solicite ao administrador da organização se precisar de acesso.
+    </p>
+  </div>
+</app-layout-card-config>
+
+<app-logo-editor-dialog
+  [(visible)]="editorVisible"
+  [arquivo]="arquivoParaEditar"
+  (confirmar)="onLogoEditada($event)"
+></app-logo-editor-dialog>

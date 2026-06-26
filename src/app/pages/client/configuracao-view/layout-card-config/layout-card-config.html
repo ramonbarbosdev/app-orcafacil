@@ -28,7 +28,7 @@
         <p-divider></p-divider>
 
         <!-- Ações -->
-        <div class="flex justify-end">
+        <div class="flex justify-end" *ngIf="showSalvar">
             <p-button label="Salvar Alteração" icon="pi pi-save" (onClick)="onSalvar()">
             </p-button>
         </div>

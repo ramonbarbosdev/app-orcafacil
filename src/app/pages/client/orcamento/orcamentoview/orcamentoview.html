@@ -8,13 +8,22 @@
     <!-- CABEÇALHO + STATUS -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <div>
-            <h2 class="text-2xl font-semibold ">
-                Orçamento {{ orcamento.nuOrcamento }}
-            </h2>
-            <p class="text-sm   ">
-                Emitido em {{ orcamento.dtEmissao | date:'dd/MM/yyyy' }}
-            </p>
+        <div class="flex items-center gap-4">
+            <img
+                *ngIf="logoPublicaUrl"
+                [src]="logoPublicaUrl"
+                alt="Logo da empresa"
+                class="h-16 sm:h-20 w-auto max-w-[9.5rem] object-contain object-left"
+            />
+            <div>
+                <p *ngIf="orcamento.nmEmpresa" class="text-sm text-color-secondary mb-1">{{ orcamento.nmEmpresa }}</p>
+                <h2 class="text-2xl font-semibold ">
+                    Orçamento {{ orcamento.nuOrcamento }}
+                </h2>
+                <p class="text-sm   ">
+                    Emitido em {{ orcamento.dtEmissao | date:'dd/MM/yyyy' }}
+                </p>
+            </div>
         </div>
 
         <span class="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium tracking-wide"

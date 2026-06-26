@@ -17,4 +17,12 @@ export class OrcamentoVisualizacao {
     cliente!: ClienteVisualizacao;
     itens!: ItemVisualizacao[];
     historicoStatus!: StatusHistoricoVisualizacao[];
+
+    nmEmpresa?: string;
+    possuiLogo?: boolean;
+    logoUrl?: string;
+    condicaoPagamento?: string;
+    nuPrazoEntrega?: number;
+    observacoes?: string;
+    totalDesconto?: number;
 }
