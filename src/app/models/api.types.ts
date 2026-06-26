@@ -41,12 +41,28 @@ export interface SelecionarOrgResponse {
   permissoes: string[];
 }
 
+export interface LimitePlano {
+  nmChaveLimite: string;
+  nmLimite: string;
+  nuValor: number | null;
+  nuConsumo: number;
+}
+
+export interface PoliticaPlanoResumo {
+  idPlanoAssinatura: number;
+  nmPlanoAssinatura: string;
+  tpStatusAssinatura: string;
+  assinaturaAtiva: boolean;
+  limites: LimitePlano[];
+}
+
 export interface MeResponse {
   idUsuario: number;
   tipoGlobal: string;
   idOrganizacao: number | null;
   role: string | null;
   permissoes: string[];
+  politicaPlano?: PoliticaPlanoResumo | null;
 }
 
 export interface SessionUser {

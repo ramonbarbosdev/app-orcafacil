@@ -1,0 +1,47 @@
+<p-dialog
+  [header]="titulo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px', maxWidth: '95vw' }"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+>
+  <p-table [value]="limites" *ngIf="!loading; else loadingTpl">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Limite</th>
+        <th style="width: 180px">Valor máximo</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td>{{ nomeLimite(item.nmChaveLimite) }}</td>
+        <td>
+          <p-inputNumber
+            [(ngModel)]="item.nuValor"
+            [min]="0"
+            [useGrouping]="false"
+            placeholder="Ilimitado"
+            styleClass="w-full"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-template #loadingTpl>
+    <p class="text-center py-4">Carregando...</p>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Cancelar" class="p-button-text" (click)="onHide()"></button>
+    <button
+      pButton
+      type="button"
+      label="Salvar limites"
+      icon="pi pi-check"
+      [loading]="saving"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

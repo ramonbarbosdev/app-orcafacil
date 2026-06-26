@@ -14,6 +14,7 @@ import {
 import { Planoassinatura } from '../../../../models/planoassinatura';
 import { Planoassinaturaform } from "../planoassinaturaform/planoassinaturaform";
 import { PermissoesEditorDialog } from '../../../../components/permissoes-editor-dialog/permissoes-editor-dialog';
+import { LimitesEditorDialog } from '../../../../components/limites-editor-dialog/limites-editor-dialog';
 
 
 @Component({
@@ -27,6 +28,7 @@ import { PermissoesEditorDialog } from '../../../../components/permissoes-editor
     HeaderListGenerico,
     Planoassinaturaform,
     PermissoesEditorDialog,
+    LimitesEditorDialog,
   ],
   templateUrl: './planoassinaturalist.html',
   styleUrl: './planoassinaturalist.scss',
@@ -40,9 +42,12 @@ export class Planoassinaturalist {
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
   isPermissoesDialog = false;
+  isLimitesDialog = false;
   idEdicao!: number;
   idPlanoPermissoes = 0;
+  idPlanoLimites = 0;
   nmPlanoPermissoes = '';
+  nmPlanoLimites = '';
   constructor(private cd: ChangeDetectorRef) { }
 
   columns: ColumnConfig[] = [
@@ -72,6 +77,14 @@ export class Planoassinaturalist {
   ];
 
   actions: ActionConfig[] = [
+    {
+      icon: 'pi pi-sliders-h',
+      label: 'Limites',
+      rounded: true,
+      outlined: true,
+      requiresConfirmation: false,
+      onClick: (row) => this.onEditarLimites(row),
+    },
     {
       icon: 'pi pi-key',
       label: 'Recursos',
@@ -119,6 +132,12 @@ export class Planoassinaturalist {
     } else {
       console.error('ID está indefinido');
     }
+  }
+
+  onEditarLimites(item: Planoassinatura) {
+    this.idPlanoLimites = item.idPlanoAssinatura;
+    this.nmPlanoLimites = item.nmPlanoAssinatura;
+    this.isLimitesDialog = true;
   }
 
   onEditarPermissoes(item: Planoassinatura) {

@@ -14,6 +14,7 @@ import {
 import { Empresaform } from '../empresaform/empresaform';
 import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 import { OrganizacaoUsuariosDialog } from '../../../admin/organizacao-usuarios-dialog/organizacao-usuarios-dialog';
+import { OrganizacaoPlanoDialog } from '../../../../components/organizacao-plano-dialog/organizacao-plano-dialog';
 
 @Component({
   selector: 'app-empresalist',
@@ -26,6 +27,7 @@ import { OrganizacaoUsuariosDialog } from '../../../admin/organizacao-usuarios-d
     HeaderListGenerico,
     Empresaform,
     OrganizacaoUsuariosDialog,
+    OrganizacaoPlanoDialog,
   ],
   templateUrl: './empresalist.html',
   styleUrl: './empresalist.scss',
@@ -38,9 +40,12 @@ export class Empresalist {
 
   isDialog = false;
   isUsuariosDialog = false;
+  isPlanoDialog = false;
   idEdicao = 0;
   idOrganizacaoUsuarios = 0;
+  idOrganizacaoPlano = 0;
   nmOrganizacaoUsuarios = '';
+  nmOrganizacaoPlano = '';
 
   columns: ColumnConfig[] = [
     {
@@ -60,6 +65,14 @@ export class Empresalist {
   ];
 
   actions: ActionConfig[] = [
+    {
+      icon: 'pi pi-credit-card',
+      label: 'Plano',
+      rounded: true,
+      outlined: true,
+      requiresConfirmation: false,
+      onClick: (row) => this.onGerenciarPlano(row),
+    },
     {
       icon: 'pi pi-users',
       label: 'Usuários',
@@ -108,6 +121,14 @@ export class Empresalist {
     }
     this.idEdicao = id;
     this.isDialog = true;
+  }
+
+  onGerenciarPlano(item: Record<string, unknown>) {
+    const id = this.getOrganizacaoId(item);
+    if (!id) return;
+    this.idOrganizacaoPlano = id;
+    this.nmOrganizacaoPlano = String(item['nmOrganizacao'] ?? item['nmEmpresa'] ?? '');
+    this.isPlanoDialog = true;
   }
 
   onGerenciarUsuarios(item: Record<string, unknown>) {
