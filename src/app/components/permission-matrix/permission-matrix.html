@@ -1,0 +1,57 @@
+<div class="permission-matrix" *ngIf="!loading; else skeleton">
+  <div class="permission-matrix__toolbar">
+    <span class="text-sm text-surface-500">{{ selectedCount }} de {{ totalCount }} selecionadas</span>
+    <div class="flex gap-2">
+      <button pButton type="button" label="Marcar todas" class="p-button-text p-button-sm" (click)="marcarTodas()"></button>
+      <button pButton type="button" label="Limpar" class="p-button-text p-button-sm" (click)="limparTodas()"></button>
+    </div>
+  </div>
+
+  <p-accordion [multiple]="true" [value]="activePanels">
+    <p-accordion-panel *ngFor="let grupo of catalogo" [value]="grupo.modulo">
+      <p-accordion-header>
+        <div class="flex align-items-center justify-content-between w-full pr-3">
+          <span>{{ grupo.nmModulo }} &nbsp; </span>
+          <span class="text-sm text-surface-500">
+            {{ contarSelecionadasModulo(grupo) }}/{{ grupo.permissoes.length }}
+          </span>
+        </div>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="flex gap-2 mb-3">
+          <button
+            pButton
+            type="button"
+            label="Módulo inteiro"
+            class="p-button-outlined p-button-sm"
+            (click)="marcarModulo(grupo, true)"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Desmarcar módulo"
+            class="p-button-outlined p-button-sm p-button-secondary"
+            (click)="marcarModulo(grupo, false)"
+          ></button>
+        </div>
+        <div class="permission-matrix__grid">
+          <label *ngFor="let item of grupo.permissoes" class="permission-matrix__item">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="isSelected(item.nmChave)"
+              (ngModelChange)="toggle(item.nmChave, $event)"
+            />
+            <span>
+              <strong>{{ rotuloAcao(item.acao) }}</strong>
+              <small>{{ item.nmPermissao }}</small>
+            </span>
+          </label>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+</div>
+
+<ng-template #skeleton>
+  <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="4" />
+</ng-template>

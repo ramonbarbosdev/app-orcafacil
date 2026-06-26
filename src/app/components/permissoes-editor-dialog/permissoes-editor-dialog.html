@@ -1,0 +1,23 @@
+<p-dialog
+  [header]="titulo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '900px', maxWidth: '95vw' }"
+  [contentStyle]="{ overflow: 'auto', maxHeight: '75vh' }"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+>
+  <app-permission-matrix *ngIf="visible" [(chaves)]="chavesSelecionadas" [active]="visible" />
+
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Cancelar" class="p-button-text" (click)="onHide()"></button>
+    <button
+      pButton
+      type="button"
+      label="Salvar permissões"
+      icon="pi pi-check"
+      [loading]="saving"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

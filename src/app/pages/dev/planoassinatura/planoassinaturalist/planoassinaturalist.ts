@@ -13,6 +13,7 @@ import {
 } from '../../../../components/header-list-generico/header-list-generico';
 import { Planoassinatura } from '../../../../models/planoassinatura';
 import { Planoassinaturaform } from "../planoassinaturaform/planoassinaturaform";
+import { PermissoesEditorDialog } from '../../../../components/permissoes-editor-dialog/permissoes-editor-dialog';
 
 
 @Component({
@@ -25,6 +26,7 @@ import { Planoassinaturaform } from "../planoassinaturaform/planoassinaturaform"
     ButtonModule,
     HeaderListGenerico,
     Planoassinaturaform,
+    PermissoesEditorDialog,
   ],
   templateUrl: './planoassinaturalist.html',
   styleUrl: './planoassinaturalist.scss',
@@ -37,7 +39,10 @@ export class Planoassinaturalist {
   router = inject(Router);
   private route = inject(ActivatedRoute);
   isDialog: boolean = false;
+  isPermissoesDialog = false;
   idEdicao!: number;
+  idPlanoPermissoes = 0;
+  nmPlanoPermissoes = '';
   constructor(private cd: ChangeDetectorRef) { }
 
   columns: ColumnConfig[] = [
@@ -67,6 +72,14 @@ export class Planoassinaturalist {
   ];
 
   actions: ActionConfig[] = [
+    {
+      icon: 'pi pi-key',
+      label: 'Recursos',
+      rounded: true,
+      outlined: true,
+      requiresConfirmation: false,
+      onClick: (row) => this.onEditarPermissoes(row),
+    },
     {
       icon: 'pi pi-pencil',
       rounded: true,
@@ -106,6 +119,12 @@ export class Planoassinaturalist {
     } else {
       console.error('ID está indefinido');
     }
+  }
+
+  onEditarPermissoes(item: Planoassinatura) {
+    this.idPlanoPermissoes = item.idPlanoAssinatura;
+    this.nmPlanoPermissoes = item.nmPlanoAssinatura;
+    this.isPermissoesDialog = true;
   }
 
   onDelete(item: any) {

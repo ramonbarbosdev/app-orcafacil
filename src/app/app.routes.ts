@@ -5,6 +5,7 @@ import { orgSelectedGuard } from './auth/org-selected.guard';
 import { adminGuard } from './auth/admin.guard';
 import { permissionGuard } from './auth/permission.guard';
 import { HomeAdmin } from './pages/admin/home-admin/home-admin';
+import { Papellist } from './pages/admin/papeis/papellist/papellist';
 import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinaturalist/planoassinaturalist';
 import { Empresalist } from './pages/dev/empresa/empresalist/empresalist';
 import { HomeClient } from './pages/client/home-client/home-client';
@@ -28,11 +29,13 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AppLayout,
+    canActivate: [adminGuard],
     canActivateChild: [adminGuard],
     children: [
       { path: 'home', component: HomeAdmin },
       { path: 'organizacoes', component: Empresalist },
       { path: 'planos-assinatura', component: Planoassinaturalist },
+      { path: 'papeis', component: Papellist },
     ],
   },
   {

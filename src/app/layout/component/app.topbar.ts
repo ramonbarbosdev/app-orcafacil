@@ -129,9 +129,13 @@ export class AppTopbar {
   public avatarImg: string = '';
   public avatarNome: string = '';
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.auth.user$.subscribe((user) => {
-      this.avatarNome = user?.role ?? 'Usuário';
+      if (user?.tipoGlobal === 'SUPER_ADMIN') {
+        this.avatarNome = 'Super Admin';
+      } else {
+        this.avatarNome = user?.role === 'ADMIN' ? 'Administrador' : user?.role === 'USER' ? 'Usuário' : 'Usuário';
+      }
       this.cd.markForCheck();
     });
   }

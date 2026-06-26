@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, Observable, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MessageService } from 'primeng/api';
 import {
@@ -34,8 +34,14 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
-      tap((res) => this.persistPartialSession(res.token, res.tipoGlobal)),
+    return this.http.post<LoginResponse | ApiEnvelope<LoginResponse>>(`${this.apiUrl}/auth/login`, credentials).pipe(
+      map((res) => this.unwrapAuth(res)),
+      tap((res) => {
+        if (!res?.token) {
+          throw new Error('Token não recebido no login');
+        }
+        this.persistPartialSession(res.token, res.tipoGlobal ?? 'DEFAULT');
+      }),
       catchError((e) => {
         this.exibirErros(e);
         return throwError(() => e);
@@ -49,14 +55,13 @@ export class AuthService {
       .post<SelecionarOrgResponse>(`${this.apiUrl}/auth/selecionar-organizacao`, body)
       .pipe(
         tap((res) => {
-          const current = this.getUser();
           this.persistSession({
             token: res.token,
-            tipoGlobal: current?.tipoGlobal ?? 'DEFAULT',
+            tipoGlobal: 'DEFAULT',
             idOrganizacao: res.idOrganizacao,
             role: res.role,
             permissoes: res.permissoes,
-            idUsuario: current?.idUsuario,
+            idUsuario: this.getUser()?.idUsuario,
           });
         }),
         catchError((e) => {
@@ -71,7 +76,8 @@ export class AuthService {
       return of(null);
     }
 
-    return this.http.get<MeResponse>(`${this.apiUrl}/auth/me`).pipe(
+    return this.http.get<MeResponse | ApiEnvelope<MeResponse>>(`${this.apiUrl}/auth/me`).pipe(
+      map((res) => this.unwrapAuth(res)),
       tap((me) => {
         const current = this.getUser();
         if (current?.token) {
@@ -110,7 +116,8 @@ export class AuthService {
   }
 
   isSuperAdmin(): boolean {
-    return this.getUser()?.tipoGlobal === 'SUPER_ADMIN';
+    const user = this.getUser();
+    return user?.tipoGlobal === 'SUPER_ADMIN' && !user?.idOrganizacao;
   }
 
   hasOrgSelected(): boolean {
@@ -137,12 +144,21 @@ export class AuthService {
       token,
       tipoGlobal,
       permissoes: [],
+      idOrganizacao: undefined,
+      role: undefined,
     });
   }
 
   private persistSession(user: SessionUser): void {
     this.userSubject.next(user);
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  }
+
+  private unwrapAuth<T>(body: T | ApiEnvelope<T>): T {
+    if (body && typeof body === 'object' && 'data' in (body as ApiEnvelope<T>)) {
+      return (body as ApiEnvelope<T>).data;
+    }
+    return body as T;
   }
 
   exibirErros(e: { error?: ApiErrorShape }): void {
@@ -158,4 +174,9 @@ export class AuthService {
 interface ApiErrorShape {
   message?: string;
   error?: string;
+}
+
+interface ApiEnvelope<T> {
+  message?: string;
+  data: T;
 }

@@ -1,0 +1,16 @@
+<app-header-list-generico
+  [title]="'Papéis'"
+  [columns]="columns"
+  [actions]="actions"
+  [endpoint]="endpoint"
+  [loading]="loading"
+>
+</app-header-list-generico>
+
+<app-permissoes-editor-dialog
+  [(visible)]="isPermissoesDialog"
+  mode="papel"
+  [entityId]="idPapelEdicao"
+  [entityNome]="nmPapelEdicao"
+  [onSuccess]="onShow"
+/>
