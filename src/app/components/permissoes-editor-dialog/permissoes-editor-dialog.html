@@ -7,9 +7,30 @@
   (onShow)="onShow()"
   (onHide)="onHide()"
 >
-  <app-permission-matrix *ngIf="visible" [(chaves)]="chavesSelecionadas" [active]="visible" />
+  <div class="flex flex-wrap gap-2 mb-3" *ngIf="!loading">
+    <button
+      pButton
+      type="button"
+      label="Exportar"
+      icon="pi pi-download"
+      class="p-button-outlined p-button-sm"
+      (click)="exportar()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Importar"
+      icon="pi pi-upload"
+      class="p-button-outlined p-button-sm"
+      (click)="importar()"
+    ></button>
+  </div>
+
+  <app-permission-matrix *ngIf="visible && !loading" [(chaves)]="chavesSelecionadas" [active]="visible" />
+  <p *ngIf="loading" class="text-center py-4">Carregando...</p>
 
   <ng-template pTemplate="footer">
+    <div class="flex w-full justify-end gap-2">
     <button pButton type="button" label="Cancelar" class="p-button-text" (click)="onHide()"></button>
     <button
       pButton
@@ -19,5 +40,6 @@
       [loading]="saving"
       (click)="onSave()"
     ></button>
+    </div>
   </ng-template>
 </p-dialog>

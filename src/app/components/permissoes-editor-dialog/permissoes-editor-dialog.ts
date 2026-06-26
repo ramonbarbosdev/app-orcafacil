@@ -13,6 +13,13 @@ import { MessageService } from 'primeng/api';
 import { BaseService } from '../../services/base.service';
 import { PermissionMatrix } from '../permission-matrix/permission-matrix';
 import { PapelDetalhe } from '../../models/permissao';
+import {
+  dataArquivo,
+  downloadJson,
+  extrairChavesPermissoes,
+  selectJsonFile,
+  slugArquivo,
+} from '../../utils/config-import-export.util';
 
 export type PermissoesEditorMode = 'papel' | 'plano';
 
@@ -110,5 +117,53 @@ export class PermissoesEditorDialog {
         this.cd.markForCheck();
       },
     });
+  }
+
+  exportar() {
+    const tipo = this.mode === 'papel' ? 'permissoes-papel' : 'recursos-plano';
+    const prefixo = this.mode === 'papel' ? 'permissoes-papel' : 'recursos-plano';
+    const payload = {
+      tipo,
+      versao: 1,
+      nome: this.entityNome,
+      id: this.entityId,
+      chaves: [...this.chavesSelecionadas].sort(),
+      exportadoEm: new Date().toISOString(),
+    };
+    downloadJson(`${prefixo}-${slugArquivo(this.entityNome)}-${dataArquivo()}.json`, payload);
+  }
+
+  importar() {
+    selectJsonFile()
+      .then((payload) => {
+        const chaves = extrairChavesPermissoes(payload);
+        if (!chaves) {
+          throw new Error('Formato inválido. Use um JSON com a lista "chaves".');
+        }
+        const tipoEsperado = this.mode === 'papel' ? 'permissoes-papel' : 'recursos-plano';
+        if (
+          payload &&
+          typeof payload === 'object' &&
+          'tipo' in (payload as object) &&
+          (payload as { tipo?: string }).tipo &&
+          (payload as { tipo?: string }).tipo !== tipoEsperado
+        ) {
+          throw new Error(`Arquivo incompatível. Esperado tipo "${tipoEsperado}".`);
+        }
+        this.chavesSelecionadas = [...new Set(chaves)].sort();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Importação concluída',
+          detail: `${this.chavesSelecionadas.length} permissão(ões) carregada(s). Salve para aplicar.`,
+        });
+        this.cd.markForCheck();
+      })
+      .catch((erro: Error) => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Não foi possível importar',
+          detail: erro.message || 'Arquivo inválido',
+        });
+      });
   }
 }

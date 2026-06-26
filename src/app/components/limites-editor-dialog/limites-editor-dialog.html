@@ -6,6 +6,25 @@
   (onShow)="onShow()"
   (onHide)="onHide()"
 >
+  <div class="flex flex-wrap gap-2 mb-3" *ngIf="!loading">
+    <button
+      pButton
+      type="button"
+      label="Exportar"
+      icon="pi pi-download"
+      class="p-button-outlined p-button-sm"
+      (click)="exportar()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Importar"
+      icon="pi pi-upload"
+      class="p-button-outlined p-button-sm"
+      (click)="importar()"
+    ></button>
+  </div>
+
   <p-table [value]="limites" *ngIf="!loading; else loadingTpl">
     <ng-template pTemplate="header">
       <tr>
@@ -34,6 +53,7 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
+    <div class="flex w-full justify-end gap-2">
     <button pButton type="button" label="Cancelar" class="p-button-text" (click)="onHide()"></button>
     <button
       pButton
@@ -43,5 +63,6 @@
       [loading]="saving"
       (click)="onSave()"
     ></button>
+    </div>
   </ng-template>
 </p-dialog>

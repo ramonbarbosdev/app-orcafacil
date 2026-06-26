@@ -14,6 +14,13 @@ import { MessageService } from 'primeng/api';
 import { BaseService } from '../../services/base.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
+import {
+  dataArquivo,
+  downloadJson,
+  extrairLimites,
+  selectJsonFile,
+  slugArquivo,
+} from '../../utils/config-import-export.util';
 
 export interface TipoLimite {
   nmChave: string;
@@ -114,6 +121,70 @@ export class LimitesEditorDialog {
           this.saving = false;
           this.cd.markForCheck();
         },
+      });
+  }
+
+  exportar() {
+    const payload = {
+      tipo: 'limites-plano',
+      versao: 1,
+      nome: this.entityNome,
+      id: this.entityId,
+      limites: this.limites.map((l) => ({
+        nmChaveLimite: l.nmChaveLimite,
+        nmLimite: this.nomeLimite(l.nmChaveLimite),
+        nuValor: l.nuValor,
+      })),
+      exportadoEm: new Date().toISOString(),
+    };
+    downloadJson(`limites-plano-${slugArquivo(this.entityNome)}-${dataArquivo()}.json`, payload);
+  }
+
+  importar() {
+    selectJsonFile()
+      .then((payload) => {
+        const importados = extrairLimites(payload);
+        if (!importados?.length) {
+          throw new Error('Formato inválido. Use um JSON com a lista "limites".');
+        }
+        if (
+          payload &&
+          typeof payload === 'object' &&
+          'tipo' in (payload as object) &&
+          (payload as { tipo?: string }).tipo &&
+          (payload as { tipo?: string }).tipo !== 'limites-plano'
+        ) {
+          throw new Error('Arquivo incompatível. Esperado tipo "limites-plano".');
+        }
+
+        const chavesValidas = new Set(this.tiposLimite.map((t) => t.nmChave));
+        const desconhecidas = importados
+          .map((l) => l.nmChaveLimite)
+          .filter((chave) => !chavesValidas.has(chave));
+        if (desconhecidas.length) {
+          throw new Error(`Limites desconhecidos: ${desconhecidas.join(', ')}`);
+        }
+
+        for (const item of importados) {
+          const alvo = this.limites.find((l) => l.nmChaveLimite === item.nmChaveLimite);
+          if (alvo) {
+            alvo.nuValor = item.nuValor;
+          }
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Importação concluída',
+          detail: `${importados.length} limite(s) carregado(s). Salve para aplicar.`,
+        });
+        this.cd.markForCheck();
+      })
+      .catch((erro: Error) => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Não foi possível importar',
+          detail: erro.message || 'Arquivo inválido',
+        });
       });
   }
 }
