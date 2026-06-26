@@ -1,0 +1,78 @@
+<p-dialog
+  [header]="titulo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '52rem' }"
+  [breakpoints]="{ '960px': '95vw' }"
+  (onShow)="onDialogShow()"
+  (onHide)="onDialogHide()"
+>
+  <div class="flex justify-between items-center mb-4 gap-2 flex-wrap">
+    <span class="text-color-secondary text-sm">
+      Usuários com acesso a esta organização
+    </span>
+    <button pButton label="Novo usuário" icon="pi pi-user-plus" class="p-button-outlined" (click)="onNovo()"></button>
+  </div>
+
+  <p-table
+    [value]="usuarios"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="8"
+    dataKey="idUsuario"
+    [rowHover]="true"
+    responsiveLayout="scroll"
+    stripedRows
+  >
+    <ng-template #header>
+      <tr>
+        <th style="min-width: 8rem">Ações</th>
+        <th pSortableColumn="nuCpf">CPF <p-sortIcon field="nuCpf" /></th>
+        <th pSortableColumn="nmUsuario">Nome <p-sortIcon field="nmUsuario" /></th>
+        <th pSortableColumn="dsRole">Perfil <p-sortIcon field="dsRole" /></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-row>
+      <tr>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [outlined]="true"
+            class="mr-2"
+            (click)="onEditar(row)"
+          />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [rounded]="true"
+            [outlined]="true"
+            (click)="onExcluir(row)"
+          />
+        </td>
+        <td>{{ formatarCpf(row.nuCpf) }}</td>
+        <td>{{ row.nmUsuario }}</td>
+        <td>{{ formatarRole(row.dsRole) }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="4" class="text-center py-6 text-color-secondary">
+          Nenhum usuário vinculado a esta organização.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<app-organizacao-vinculo-form
+  [(isDialog)]="isFormDialog"
+  [idOrganizacao]="idOrganizacao"
+  [nmOrganizacao]="nmOrganizacao"
+  [idUsuario]="idUsuarioEdicao"
+  [onSuccess]="onFormSuccess"
+></app-organizacao-vinculo-form>
+
+<p-confirmDialog />

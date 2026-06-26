@@ -6,11 +6,14 @@
   (cancel)="hideDialog()"
   (show)="onShow()"
 >
-  <p class="text-color-secondary mb-4 text-sm">
+  <p class="text-color-secondary mb-4 text-sm" *ngIf="!isEdicao">
     Cadastra o usuário (se ainda não existir) e vincula à organização selecionada.
   </p>
+  <p class="text-color-secondary mb-4 text-sm" *ngIf="isEdicao">
+    Altere nome, perfil ou senha. Deixe a senha em branco para mantê-la.
+  </p>
 
-  <div class="flex-row-responsive">
+  <div class="flex-row-responsive" *ngIf="!isEdicao">
     <app-layout-campo
       [error]="errorValidacao['nuCpf']"
       [label]="'CPF: (*)'"
@@ -30,7 +33,15 @@
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpf'] }"
       />
     </app-layout-campo>
+  </div>
 
+  <div class="flex-row-responsive" *ngIf="isEdicao">
+    <app-layout-campo [label]="'CPF:'" [width]="'md:w-6/12'" [sublabel]="'Não editável'">
+      <input title="nuCpf" pInputText class="w-full" [value]="objeto.nuCpf" disabled />
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive">
     <app-layout-campo
       [error]="errorValidacao['nmUsuario']"
       [label]="'Nome: (*)'"
@@ -48,14 +59,12 @@
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmUsuario'] }"
       />
     </app-layout-campo>
-  </div>
 
-  <div class="flex-row-responsive">
     <app-layout-campo
       [error]="errorValidacao['dsSenha']"
-      [label]="'Senha: (*)'"
+      [label]="isEdicao ? 'Nova senha:' : 'Senha: (*)'"
       [width]="'md:w-6/12'"
-      [sublabel]="'Senha de acesso ao sistema'"
+      [sublabel]="isEdicao ? 'Opcional — em branco mantém a atual' : 'Senha de acesso ao sistema'"
       [describedby]="'dsSenha'"
     >
       <p-password
@@ -69,7 +78,9 @@
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsSenha'] }"
       ></p-password>
     </app-layout-campo>
+  </div>
 
+  <div class="flex-row-responsive">
     <app-layout-campo
       [error]="errorValidacao['dsRole']"
       [label]="'Perfil na organização: (*)'"

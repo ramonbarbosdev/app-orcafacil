@@ -9,9 +9,8 @@
 
 <app-empresaform [(isDialog)]="isDialog" [onReloadList]="onShow" [key]="idEdicao"></app-empresaform>
 
-<app-organizacao-vinculo-form
-  [(isDialog)]="isVinculoDialog"
-  [idOrganizacao]="idOrganizacaoVinculo"
-  [nmOrganizacao]="nmOrganizacaoVinculo"
-  [onSuccess]="onVinculoSuccess"
-></app-organizacao-vinculo-form>
+<app-organizacao-usuarios-dialog
+  [(visible)]="isUsuariosDialog"
+  [idOrganizacao]="idOrganizacaoUsuarios"
+  [nmOrganizacao]="nmOrganizacaoUsuarios"
+></app-organizacao-usuarios-dialog>

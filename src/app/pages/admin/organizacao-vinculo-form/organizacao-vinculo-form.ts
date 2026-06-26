@@ -16,9 +16,13 @@ import { ZodError } from 'zod';
 import { LayoutFormSimples } from '../../../components/layouts/layout-form-simples/layout-form-simples';
 import { LayoutCampo } from '../../../components/layout-campo/layout-campo';
 import { BaseService } from '../../../services/base.service';
-import { VinculoOrganizacao } from '../../../models/vinculo-organizacao';
-import { VinculoOrganizacaoArraySchema } from '../../../schema/vinculo-organizacao-schema';
+import { VinculoOrganizacao, VinculoOrganizacaoListItem } from '../../../models/vinculo-organizacao';
+import {
+  VinculoOrganizacaoArraySchema,
+  VinculoOrganizacaoEditArraySchema,
+} from '../../../schema/vinculo-organizacao-schema';
 import { FlagOption } from '../../../models/flag-option';
+import { FormatCpfCnpj } from '../../../format/FormatarCpfCnpj';
 
 @Component({
   selector: 'app-organizacao-vinculo-form',
@@ -40,6 +44,7 @@ export class OrganizacaoVinculoForm {
   @Output() isDialogChange = new EventEmitter<boolean>();
   @Input() idOrganizacao!: number;
   @Input() nmOrganizacao = '';
+  @Input() idUsuario?: number;
   @Input() onSuccess: () => void = () => {};
 
   loading = false;
@@ -54,9 +59,13 @@ export class OrganizacaoVinculoForm {
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
 
+  get isEdicao(): boolean {
+    return !!this.idUsuario;
+  }
+
   get titulo(): string {
     const nome = this.nmOrganizacao ? ` — ${this.nmOrganizacao}` : '';
-    return `Vincular usuário${nome}`;
+    return this.isEdicao ? `Editar usuário${nome}` : `Vincular usuário${nome}`;
   }
 
   hideDialog() {
@@ -66,6 +75,10 @@ export class OrganizacaoVinculoForm {
   }
 
   onShow() {
+    if (this.isEdicao && this.idUsuario) {
+      this.carregarVinculo();
+      return;
+    }
     this.limparFormulario();
     this.loading = false;
   }
@@ -75,6 +88,28 @@ export class OrganizacaoVinculoForm {
     if (!this.validarItens()) return;
 
     this.loading = true;
+
+    if (this.isEdicao && this.idUsuario) {
+      const payload: Record<string, string> = {
+        nmUsuario: this.objeto.nmUsuario.trim(),
+        dsRole: this.objeto.dsRole,
+      };
+      if (this.objeto.dsSenha?.trim()) {
+        payload['dsSenha'] = this.objeto.dsSenha;
+      }
+
+      this.baseService
+        .update(`admin/organizacoes/${this.idOrganizacao}/vinculos/${this.idUsuario}`, payload)
+        .subscribe({
+          next: () => this.finalizarSucesso(),
+          error: () => {
+            this.loading = false;
+            this.cd.markForCheck();
+          },
+        });
+      return;
+    }
+
     const payload = {
       nuCpf: this.objeto.nuCpf.replace(/\D/g, ''),
       nmUsuario: this.objeto.nmUsuario.trim(),
@@ -82,25 +117,59 @@ export class OrganizacaoVinculoForm {
       dsRole: this.objeto.dsRole,
     };
 
-    this.baseService
-      .post(`admin/organizacoes/${this.idOrganizacao}/vinculos`, payload)
-      .subscribe({
-        next: () => {
-          this.loading = false;
-          this.hideDialog();
-          this.onSuccess();
-          this.cd.markForCheck();
-        },
-        error: () => {
-          this.loading = false;
-          this.cd.markForCheck();
-        },
-      });
+    this.baseService.post(`admin/organizacoes/${this.idOrganizacao}/vinculos`, payload).subscribe({
+      next: () => this.finalizarSucesso(),
+      error: () => {
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private carregarVinculo() {
+    this.loading = true;
+    this.baseService.findAll(`admin/organizacoes/${this.idOrganizacao}/vinculos`).subscribe({
+      next: (lista: VinculoOrganizacaoListItem[]) => {
+        const item = lista.find((v) => v.idUsuario === this.idUsuario);
+        if (item) {
+          this.objeto = {
+            idUsuario: item.idUsuario,
+            nuCpf: FormatCpfCnpj(item.nuCpf),
+            nmUsuario: item.nmUsuario,
+            dsSenha: '',
+            dsRole: item.dsRole,
+          };
+        }
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private finalizarSucesso() {
+    this.loading = false;
+    this.hideDialog();
+    this.onSuccess();
+    this.cd.markForCheck();
   }
 
   private validarItens(): boolean {
     try {
-      VinculoOrganizacaoArraySchema.parse([this.objeto]);
+      if (this.isEdicao) {
+        VinculoOrganizacaoEditArraySchema.parse([
+          {
+            nmUsuario: this.objeto.nmUsuario,
+            dsSenha: this.objeto.dsSenha,
+            dsRole: this.objeto.dsRole,
+          },
+        ]);
+      } else {
+        VinculoOrganizacaoArraySchema.parse([this.objeto]);
+      }
       this.errorValidacao = {};
       return true;
     } catch (error) {

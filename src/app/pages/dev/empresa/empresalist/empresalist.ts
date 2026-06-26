@@ -13,8 +13,7 @@ import {
 } from '../../../../components/header-list-generico/header-list-generico';
 import { Empresaform } from '../empresaform/empresaform';
 import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
-import { OrganizacaoVinculoForm } from '../../../admin/organizacao-vinculo-form/organizacao-vinculo-form';
-import { MessageService } from 'primeng/api';
+import { OrganizacaoUsuariosDialog } from '../../../admin/organizacao-usuarios-dialog/organizacao-usuarios-dialog';
 
 @Component({
   selector: 'app-empresalist',
@@ -26,7 +25,7 @@ import { MessageService } from 'primeng/api';
     ButtonModule,
     HeaderListGenerico,
     Empresaform,
-    OrganizacaoVinculoForm,
+    OrganizacaoUsuariosDialog,
   ],
   templateUrl: './empresalist.html',
   styleUrl: './empresalist.scss',
@@ -34,15 +33,14 @@ import { MessageService } from 'primeng/api';
 export class Empresalist {
   loading = false;
   baseService = inject(BaseService);
-  messageService = inject(MessageService);
   endpoint = 'admin/organizacoes';
   router = inject(Router);
 
   isDialog = false;
-  isVinculoDialog = false;
+  isUsuariosDialog = false;
   idEdicao = 0;
-  idOrganizacaoVinculo = 0;
-  nmOrganizacaoVinculo = '';
+  idOrganizacaoUsuarios = 0;
+  nmOrganizacaoUsuarios = '';
 
   columns: ColumnConfig[] = [
     {
@@ -63,12 +61,12 @@ export class Empresalist {
 
   actions: ActionConfig[] = [
     {
-      icon: 'pi pi-user-plus',
-      label: 'Usuário',
+      icon: 'pi pi-users',
+      label: 'Usuários',
       rounded: true,
       outlined: true,
       requiresConfirmation: false,
-      onClick: (row) => this.onVincularUsuario(row),
+      onClick: (row) => this.onGerenciarUsuarios(row),
     },
     {
       icon: 'pi pi-pencil',
@@ -112,23 +110,15 @@ export class Empresalist {
     this.isDialog = true;
   }
 
-  onVincularUsuario(item: Record<string, unknown>) {
+  onGerenciarUsuarios(item: Record<string, unknown>) {
     const id = this.getOrganizacaoId(item);
     if (!id) {
       console.error('ID da organização indefinido');
       return;
     }
-    this.idOrganizacaoVinculo = id;
-    this.nmOrganizacaoVinculo = String(item['nmOrganizacao'] ?? item['nmEmpresa'] ?? '');
-    this.isVinculoDialog = true;
-  }
-
-  onVinculoSuccess() {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Usuário vinculado',
-      detail: 'O usuário foi cadastrado e vinculado à organização.',
-    });
+    this.idOrganizacaoUsuarios = id;
+    this.nmOrganizacaoUsuarios = String(item['nmOrganizacao'] ?? item['nmEmpresa'] ?? '');
+    this.isUsuariosDialog = true;
   }
 
   onDelete(item: Record<string, unknown>) {
