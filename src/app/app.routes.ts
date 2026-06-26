@@ -20,6 +20,7 @@ import { Orcamentoform } from './pages/client/orcamento/orcamentoform/orcamentof
 import { Catalogolist } from './pages/client/catalogo/catalogolist/catalogolist';
 import { Orcamentoview } from './pages/client/orcamento/orcamentoview/orcamentoview';
 import { Materiallist } from './pages/client/material/materiallist/materiallist';
+import { SemPermissao } from './pages/client/sem-permissao/sem-permissao';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
@@ -47,6 +48,7 @@ export const routes: Routes = [
     canActivateChild: [authGuard, orgSelectedGuard],
     children: [
       { path: 'home', component: HomeClient },
+      { path: 'sem-permissao', component: SemPermissao },
       {
         path: 'configuracao',
         component: ConfiguracaoView,

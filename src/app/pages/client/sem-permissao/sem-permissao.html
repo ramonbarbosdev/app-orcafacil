@@ -1,0 +1,23 @@
+<div class="flex justify-center p-4">
+  <p-card styleClass="w-full max-w-2xl shadow-2">
+    <div class="flex flex-col items-center text-center gap-4 py-6 px-2">
+      <div
+        class="flex justify-center items-center border-2 border-orange-500 rounded-full"
+        style="width: 4rem; height: 4rem"
+      >
+        <i class="text-orange-500 pi pi-lock text-3xl"></i>
+      </div>
+
+      <h1 class="text-surface-900 dark:text-surface-0 font-bold text-2xl m-0">{{ titulo }}</h1>
+
+      <p class="text-muted-color m-0 leading-relaxed">
+        {{ mensagem }}
+        <br />
+        O item permanece visível no menu, mas você precisa da permissão de consulta para visualizar os dados.
+        Entre em contato com o administrador da organização se precisar de acesso.
+      </p>
+
+      <p-button label="Voltar ao painel" icon="pi pi-home" severity="warn" (onClick)="voltarPainel()" />
+    </div>
+  </p-card>
+</div>

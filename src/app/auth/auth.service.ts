@@ -158,6 +158,24 @@ export class AuthService {
     return this.hasPermission(`${modulo}.exibir`);
   }
 
+  canShowConfiguracaoMenu(): boolean {
+    return (
+      this.canShowInMenu('configuracao-orcamento') ||
+      this.canShowInMenu('metodos-precificacao') ||
+      this.canShowInMenu('campos-personalizados') ||
+      this.canShowInMenu('metodos-ajuste') ||
+      this.canShowInMenu('empresa-metodos-precificacao')
+    );
+  }
+
+  hasMenuVisibilityForPermission(permission: string): boolean {
+    const modulo = permission.slice(0, permission.lastIndexOf('.'));
+    if (modulo === 'configuracao-orcamento') {
+      return this.canShowConfiguracaoMenu();
+    }
+    return this.canShowInMenu(modulo);
+  }
+
   clearSession(): void {
     this.userSubject.next(null);
     sessionStorage.removeItem(STORAGE_KEY);

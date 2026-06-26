@@ -74,13 +74,7 @@ export class AppMenu implements OnInit, OnDestroy {
         routerLink: ['/client/condicoes-pagamento'],
       });
     }
-    if (
-      this.auth.canShowInMenu('configuracao-orcamento') ||
-      this.auth.canShowInMenu('metodos-precificacao') ||
-      this.auth.canShowInMenu('campos-personalizados') ||
-      this.auth.canShowInMenu('metodos-ajuste') ||
-      this.auth.canShowInMenu('empresa-metodos-precificacao')
-    ) {
+    if (this.auth.canShowConfiguracaoMenu()) {
       items.push({ label: 'Configuração', icon: 'pi pi-cog', routerLink: ['/client/configuracao'] });
     }
 
