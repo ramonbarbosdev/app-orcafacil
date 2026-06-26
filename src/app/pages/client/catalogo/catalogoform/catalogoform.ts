@@ -217,6 +217,7 @@ export class Catalogoform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
+        console.log(res)
         this.objeto.cdCatalogo = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
@@ -245,7 +246,7 @@ export class Catalogoform {
   }
 
   obterTipoItem() {
-    this.baseService.findAll(`${this.endpoint}/tipo-item/`).subscribe({
+    this.baseService.findAll(`${this.endpoint}/tipo-item`).subscribe({
       next: (res) => {
         this.listaTipo = (res as any).map((index: any) => {
           const item = new FlagOption();

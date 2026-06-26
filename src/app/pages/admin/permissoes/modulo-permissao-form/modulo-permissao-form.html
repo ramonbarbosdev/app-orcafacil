@@ -1,0 +1,65 @@
+<app-layout-form-simples
+  [(visible)]="isDialog"
+  [title]="titulo"
+  [loading]="loading"
+  (save)="onSave()"
+  (cancel)="hideDialog()"
+  (show)="onShow()"
+>
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [error]="errorValidacao['codigoModulo']"
+      [label]="'Código do módulo: (*)'"
+      [width]="'w-6/12'"
+      [sublabel]="'Igual ao prefixo da API (ex: fornecedores, tipo-item)'"
+      [describedby]="'codigoModulo'"
+    >
+      <input
+        title="codigoModulo"
+        pInputText
+        id="codigoModulo"
+        name="codigoModulo"
+        class="w-full"
+        [(ngModel)]="codigoModulo"
+        [disabled]="isEdicao"
+        placeholder="fornecedores"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['codigoModulo'] }"
+      />
+    </app-layout-campo>
+
+    <app-layout-campo
+      [error]="errorValidacao['nmModulo']"
+      [label]="'Nome do recurso: (*)'"
+      [width]="'w-6/12'"
+      [sublabel]="'Nome exibido na matriz de permissões'"
+      [describedby]="'nmModulo'"
+    >
+      <input
+        title="nmModulo"
+        pInputText
+        id="nmModulo"
+        name="nmModulo"
+        class="w-full"
+        [(ngModel)]="nmModulo"
+        placeholder="Fornecedores"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmModulo'] }"
+      />
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive" *ngIf="isEdicao">
+    <app-layout-campo
+      [label]="'Ativo'"
+      [width]="'w-6/12'"
+      [sublabel]="'Recursos inativos não aparecem na matriz de Planos/Papéis'"
+      [describedby]="'flAtivo'"
+    >
+      <p-toggleswitch id="flAtivo" name="flAtivo" [(ngModel)]="flAtivo" />
+    </app-layout-campo>
+  </div>
+
+  <div class="text-sm text-muted-color mt-2" *ngIf="!isEdicao">
+  Ao salvar, serão criadas automaticamente as permissões:
+  <strong>ler</strong>, <strong>criar</strong>, <strong>editar</strong> e <strong>deletar</strong>.
+  </div>
+</app-layout-form-simples>

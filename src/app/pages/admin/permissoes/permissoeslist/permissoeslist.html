@@ -1,0 +1,15 @@
+<app-header-list-generico
+  [title]="'Recursos e permissões'"
+  [columns]="columns"
+  [actions]="actions"
+  [endpoint]="endpoint"
+  [loading]="loading"
+  (add)="onAdd()"
+>
+</app-header-list-generico>
+
+<app-modulo-permissao-form
+  [(isDialog)]="isDialog"
+  [key]="moduloEdicao"
+  [onReloadList]="onShow"
+/>

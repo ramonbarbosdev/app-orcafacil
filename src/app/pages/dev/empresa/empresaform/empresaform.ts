@@ -100,6 +100,8 @@ export class Empresaform {
         this.objeto.cdEmpresa = FormatCpfCnpj(res.dsDocumento ?? res.cdEmpresa ?? '');
         this.loading = false;
         this.cd.markForCheck();
+
+
       },
       error: () => {
         this.loading = false;
@@ -181,6 +183,7 @@ export class Empresaform {
           this.cd.markForCheck();
           return item;
         });
+
       },
       error: (err) => { },
     });

@@ -6,6 +6,7 @@ import { adminGuard } from './auth/admin.guard';
 import { permissionGuard } from './auth/permission.guard';
 import { HomeAdmin } from './pages/admin/home-admin/home-admin';
 import { Papellist } from './pages/admin/papeis/papellist/papellist';
+import { Permissoeslist } from './pages/admin/permissoes/permissoeslist/permissoeslist';
 import { Planoassinaturalist } from './pages/dev/planoassinatura/planoassinaturalist/planoassinaturalist';
 import { Empresalist } from './pages/dev/empresa/empresalist/empresalist';
 import { HomeClient } from './pages/client/home-client/home-client';
@@ -36,6 +37,7 @@ export const routes: Routes = [
       { path: 'organizacoes', component: Empresalist },
       { path: 'planos-assinatura', component: Planoassinaturalist },
       { path: 'papeis', component: Papellist },
+      { path: 'permissoes', component: Permissoeslist },
     ],
   },
   {

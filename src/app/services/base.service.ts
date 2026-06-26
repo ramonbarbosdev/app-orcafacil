@@ -123,7 +123,7 @@ export class BaseService {
     return this.create(endpoint, data);
   }
 
-  deleteById(endpoint: string, id: number): Observable<any> {
+  deleteById(endpoint: string, id: number | string): Observable<any> {
     return this.unwrap(this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${endpoint}/${id}`)).pipe(
       tap(() => this.exibirSucesso('Registro excluído com sucesso')),
       catchError((e) => {

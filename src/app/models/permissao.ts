@@ -23,3 +23,21 @@ export interface PapelDetalhe {
   nmPapel: string;
   chaves: string[];
 }
+
+export interface ModuloPermissaoAdmin {
+  modulo: string;
+  nmModulo: string;
+  flAtivo: boolean;
+  totalPermissoes: number;
+  permissoes: PermissaoItem[];
+}
+
+export interface ModuloPermissaoRequest {
+  codigoModulo: string;
+  nmModulo: string;
+}
+
+export interface ModuloPermissaoUpdate {
+  nmModulo: string;
+  flAtivo: boolean;
+}

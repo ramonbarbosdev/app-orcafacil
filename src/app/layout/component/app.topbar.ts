@@ -38,7 +38,7 @@ import { AvatarModule } from 'primeng/avatar';
           />
           <img
             *ngIf="layoutService.isDarkTheme()"
-            src="/logo-light.png"
+            src="/logo.png"
             alt=""
             srcset=""
             class="w-40 "
