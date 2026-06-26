@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { LayoutCardConfig } from "../layout-card-config/layout-card-config";
-import { LayoutCampo } from "../../../../components/layout-campo/layout-campo";
+import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
+import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { Empresa } from '../../../../models/empresa';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { EmpresaSchema } from '../../../../schema/empresa-schema';
 import { ZodError } from 'zod';
 import { BaseService } from '../../../../services/base.service';
-import { AuthService } from '../../../../auth/auth.service';
 import { NgxMaskDirective } from 'ngx-mask';
 import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 
@@ -19,55 +18,52 @@ import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
   styleUrl: './config-empresa.scss',
 })
 export class ConfigEmpresa {
-
   public errorValidacao: Record<string, string> = {};
   public objeto: Empresa = new Empresa();
-  loading: boolean = true;
-  private endpoint = 'admin/organizacoes';
+  loading = true;
+  private readonly endpoint = 'configuracao-orcamento/empresa';
   private baseService = inject(BaseService);
-
-
 
   ngAfterViewInit(): void {
     this.onEdit();
   }
 
-  onEdit() {
-
-    this.baseService.findAll(`${this.endpoint}/obter-por-tenant`).subscribe({
-      next: (res: any) => {
-
-        this.objeto = res;
-        this.objeto.cdEmpresa = FormatCpfCnpj(this.objeto.cdEmpresa);
-
+  onEdit(): void {
+    this.baseService.findAll(this.endpoint).subscribe({
+      next: (res: Empresa) => {
+        this.objeto = { ...new Empresa(), ...res };
+        this.objeto.cdEmpresa = FormatCpfCnpj(this.objeto.cdEmpresa ?? '');
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
       },
     });
   }
 
-  onSave() {
-    if (this.validarItens()) {
-      this.loading = true;
-
-
-      const payload = {
-        ...this.objeto,
-        cdEmpresa: this.objeto.cdEmpresa.replace(/\D/g, '')
-      };
-
-      this.baseService.create(`${this.endpoint}/cadastrar`, payload).subscribe({
-        next: () => {
-          this.loading = false;
-
-        },
-        error: (erro) => {
-          this.loading = false;
-        },
-      });
+  onSave(): void {
+    if (!this.validarItens()) {
+      return;
     }
+    this.loading = true;
+
+    const payload = {
+      cdEmpresa: this.objeto.cdEmpresa.replace(/\D/g, ''),
+      nmEmpresa: this.objeto.nmEmpresa,
+      dsEmail: this.objeto.dsEmail,
+      nuTelefone: this.objeto.nuTelefone,
+    };
+
+    this.baseService.update(this.endpoint, payload).subscribe({
+      next: (res: Empresa) => {
+        this.objeto = { ...this.objeto, ...res };
+        this.objeto.cdEmpresa = FormatCpfCnpj(this.objeto.cdEmpresa ?? '');
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
   }
 
   validarItens(): boolean {
@@ -88,15 +84,10 @@ export class ConfigEmpresa {
     }
   }
 
-
-  processarMascaraCpfCnpj(event: any): void {
-    let valor = event.target.value || '';
-
+  processarMascaraCpfCnpj(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    let valor = target.value || '';
     valor = valor.replace(/\D/g, '');
-
     this.objeto.cdEmpresa = FormatCpfCnpj(valor);
-
   }
-
-
 }

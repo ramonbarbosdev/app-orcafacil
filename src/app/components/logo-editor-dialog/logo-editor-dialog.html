@@ -7,11 +7,11 @@
   (onHide)="fechar()"
 >
   <p class="text-sm text-color-secondary mt-0 mb-3">
-    Recorte bem próximo da logo (evite espaço em branco ao redor), gire e ajuste o zoom antes de enviar.
-    Tamanho final entre 200×80 e 2000×1000 px, proporção de 1:1 a 5:1.
+    A logo deve ser horizontal em <strong>2:1</strong>, <strong>3:1</strong> ou <strong>4:1</strong>,
+    entre 200×80 e 2000×1000 px. Recorte bem próximo da marca, sem espaço em branco ao redor.
   </p>
 
-  <div class="flex flex-wrap items-center gap-2 mb-3">
+  <div class="flex flex-wrap items-center gap-2 mb-3" *ngIf="!preparando">
     <span class="text-sm font-medium">Proporção:</span>
     <p-selectButton
       [options]="proporcoes"
@@ -20,23 +20,30 @@
       dataKey="label"
       (ngModelChange)="onProporcaoChange($event)"
     />
+    <span class="text-xs text-color-secondary" *ngIf="proporcaoDetectadaLabel">
+      Sugerida automaticamente: {{ proporcaoDetectadaLabel }}
+    </span>
   </div>
 
-  <div class="flex flex-wrap gap-2 mb-3">
+  <div class="flex flex-wrap gap-2 mb-3" *ngIf="imageFile && !preparando">
     <p-button label="Girar esquerda" icon="pi pi-undo" styleClass="p-button-outlined p-button-sm" (onClick)="girarEsquerda()" />
     <p-button label="Girar direita" icon="pi pi-refresh" styleClass="p-button-outlined p-button-sm" (onClick)="girarDireita()" />
     <p-button label="Zoom +" icon="pi pi-search-plus" styleClass="p-button-outlined p-button-sm" (onClick)="zoom(0.1)" />
     <p-button label="Zoom -" icon="pi pi-search-minus" styleClass="p-button-outlined p-button-sm" (onClick)="zoom(-0.1)" />
   </div>
 
-  <div class="logo-editor-dialog__cropper" *ngIf="imageFile">
+  <div class="logo-editor-dialog__loading flex justify-content-center py-6" *ngIf="preparando">
+    <p-progressSpinner strokeWidth="4" styleClass="w-3rem h-3rem" />
+  </div>
+
+  <div class="logo-editor-dialog__cropper" *ngIf="imageFile && !preparando">
     <image-cropper
       [imageFile]="imageFile"
       [maintainAspectRatio]="manterProporcao"
       [aspectRatio]="aspectRatio"
       [format]="formatoSaida"
       output="blob"
-      [resizeToWidth]="1200"
+      [resizeToWidth]="480"
       [(transform)]="transform"
       [allowMoveImage]="true"
       (imageCropped)="imageCropped($event)"
@@ -50,7 +57,7 @@
       label="Usar esta logo"
       icon="pi pi-check"
       [loading]="aplicando"
-      [disabled]="!imageFile"
+      [disabled]="!imageFile || preparando"
       (onClick)="aplicar()"
     />
   </ng-template>

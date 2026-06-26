@@ -79,6 +79,14 @@ export function parseHttpError(status: number, body: unknown): ParsedHttpError {
             'A organização selecionada não está disponível. Selecione outra ou contate o suporte.',
           severity: 'warn',
         };
+      case 'SUBSCRIPTION_INACTIVE':
+        return {
+          summary: 'Assinatura inativa',
+          detail:
+            composed ||
+            'A assinatura da organização não está ativa. Regularize o plano ou entre em contato com o suporte.',
+          severity: 'warn',
+        };
       case 'UNAUTHORIZED':
       default:
         return {

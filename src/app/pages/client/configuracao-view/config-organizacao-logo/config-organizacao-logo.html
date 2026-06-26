@@ -1,6 +1,6 @@
 <app-layout-card-config
   [title]="'Logo da empresa'"
-  [subtitle]="'Uma única imagem é redimensionada automaticamente no sistema. Recorte horizontal (2:1 ou 3:1), sem espaço em branco.'"
+  [subtitle]="'A logo é redimensionada automaticamente no menu. Use imagem horizontal e recorte sem espaço em branco.'"
   [icon]="'pi pi-image'"
   [showSalvar]="false"
 >
@@ -72,7 +72,7 @@
         severity="danger"
         styleClass="p-button-outlined"
         [loading]="removendo"
-        (onClick)="remover()"
+        (onClick)="confirmarRemocao()"
       ></p-button>
     </div>
 

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -37,7 +37,7 @@ import { AvatarModule } from 'primeng/avatar';
             class="layout-topbar-brand-logo"
           />
           <ng-template #logoPadrao>
-            <img src="/logo.png" alt="OrçaFácil" class="layout-topbar-brand-logo" />
+            <img src="/logo.svg" alt="OrçaFácil" class="layout-topbar-brand-logo" />
           </ng-template>
         </span>
       </a>
@@ -126,7 +126,7 @@ import { AvatarModule } from 'primeng/avatar';
     /> -->
   </div>`,
 })
-export class AppTopbar {
+export class AppTopbar implements OnInit, OnDestroy {
   items!: MenuItem[];
 
   constructor(public layoutService: LayoutService) {}
@@ -140,42 +140,68 @@ export class AppTopbar {
   public avatarNome: string = '';
   public logoOrganizacaoUrl: string | null = null;
   recarregandoPermissoes = false;
+  private logoCarregamentoPendente = false;
 
   ngOnInit() {
+    this.auth.whenSessionReady().subscribe(() => {
+      this.sincronizarUsuario(this.auth.getUser());
+    });
+
     this.auth.user$.subscribe((user) => {
-      if (user?.tipoGlobal === 'SUPER_ADMIN') {
-        this.avatarNome = 'Super Admin';
-        this.logoOrganizacaoUrl = null;
-      } else {
-        this.avatarNome = user?.role === 'ADMIN' ? 'Administrador' : user?.role === 'USER' ? 'Usuário' : 'Usuário';
-        if (user?.idOrganizacao) {
-          this.carregarLogoOrganizacao();
-        } else {
-          this.logoOrganizacaoUrl = null;
-        }
+      if (!this.auth.isSessionReady()) {
+        return;
       }
-      this.cd.markForCheck();
+      this.sincronizarUsuario(user);
     });
 
     this.logoService.atualizacao$.subscribe(() => {
-      if (!this.auth.isSuperAdmin() && this.auth.hasOrgSelected()) {
-        this.carregarLogoOrganizacao();
+      if (!this.auth.isSessionReady() || this.auth.isSuperAdmin() || !this.auth.hasOrgSelected()) {
+        return;
       }
+      this.carregarLogoOrganizacao();
     });
   }
 
+  ngOnDestroy(): void {
+    this.logoService.revogarPreview();
+  }
+
+  private sincronizarUsuario(user: ReturnType<AuthService['getUser']>): void {
+    if (user?.tipoGlobal === 'SUPER_ADMIN') {
+      this.avatarNome = 'Super Admin';
+      this.logoOrganizacaoUrl = null;
+    } else {
+      this.avatarNome = user?.role === 'ADMIN' ? 'Administrador' : user?.role === 'USER' ? 'Usuário' : 'Usuário';
+      if (user?.idOrganizacao) {
+        this.carregarLogoOrganizacao();
+      } else {
+        this.logoOrganizacaoUrl = null;
+      }
+    }
+    this.cd.markForCheck();
+  }
+
   private carregarLogoOrganizacao(): void {
+    if (!this.auth.isSessionReady() || !this.auth.getToken()) {
+      return;
+    }
     if (!this.auth.hasPermission('organizacao.ler')) {
       this.logoOrganizacaoUrl = null;
       return;
     }
+    if (this.logoCarregamentoPendente) {
+      return;
+    }
+    this.logoCarregamentoPendente = true;
     this.logoService.obterBlobPreviewAutenticado().subscribe({
       next: (url) => {
         this.logoOrganizacaoUrl = url;
+        this.logoCarregamentoPendente = false;
         this.cd.markForCheck();
       },
       error: () => {
         this.logoOrganizacaoUrl = null;
+        this.logoCarregamentoPendente = false;
         this.cd.markForCheck();
       },
     });

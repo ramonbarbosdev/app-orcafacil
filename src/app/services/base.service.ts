@@ -164,8 +164,8 @@ export class BaseService {
     );
   }
 
-  deleteEndpoint(endpoint: string): Observable<any> {
-    return this.unwrap(this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${endpoint}`)).pipe(
+  deleteEndpoint<T = void>(endpoint: string): Observable<T> {
+    return this.unwrap(this.http.delete<ApiResponse<T>>(`${this.apiUrl}/${endpoint}`)).pipe(
       tap(() => this.exibirSucesso('Operação realizada com sucesso')),
       catchError((e) => {
         this.exibirErros(e);

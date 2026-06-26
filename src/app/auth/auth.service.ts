@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, map, Observable, of, take, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MessageService } from 'primeng/api';
 import {
@@ -26,6 +26,8 @@ export class AuthService {
   private messageService = inject(MessageService);
 
   private userSubject = new BehaviorSubject<SessionUser | null>(null);
+  private readonly sessionReadySubject = new BehaviorSubject<boolean>(false);
+  private readonly sessionValidatedSubject = new BehaviorSubject<boolean>(false);
   user$ = this.userSubject.asObservable();
 
   constructor(private http: HttpClient) {
@@ -70,6 +72,8 @@ export class AuthService {
             idUsuario: this.getUser()?.idUsuario,
             organizacoesPendentes: undefined,
           });
+          this.markSessionReady();
+          this.markSessionValidated();
         }),
         catchError((e) => {
           this.exibirErros(e);
@@ -83,12 +87,20 @@ export class AuthService {
       return of(null);
     }
 
-    return this.refreshPermissoes().pipe(
-      catchError((error) => {
-        this.clearSession();
-        return throwError(() => error);
-      })
-    );
+    return this.refreshPermissoes();
+  }
+
+  bootstrapSessionFromCache(): void {
+    this.tryMarkSessionReadyFromCache();
+  }
+
+  refreshPermissoesEmSegundoPlano(): void {
+    if (!this.getToken()) {
+      return;
+    }
+    this.refreshPermissoes().subscribe({
+      error: () => undefined,
+    });
   }
 
   refreshPermissoes(): Observable<MeResponse> {
@@ -145,6 +157,29 @@ export class AuthService {
     return !!user?.token && user.tipoGlobal === 'DEFAULT' && !user.idOrganizacao;
   }
 
+  isSessionReady(): boolean {
+    return this.sessionReadySubject.value;
+  }
+
+  isSessionValidated(): boolean {
+    return this.sessionValidatedSubject.value;
+  }
+
+  needsSessionValidation(): boolean {
+    return this.isSessionReady() && !this.isSessionValidated();
+  }
+
+  whenSessionReady(): Observable<void> {
+    if (this.sessionReadySubject.value) {
+      return of(undefined);
+    }
+    return this.sessionReadySubject.pipe(
+      filter((ready) => ready),
+      take(1),
+      map(() => undefined)
+    );
+  }
+
   hasPermission(chave: string): boolean {
     const permissoes = this.getSessionUser()?.permissoes ?? [];
     return permissoes.includes(chave);
@@ -178,6 +213,8 @@ export class AuthService {
 
   clearSession(): void {
     this.userSubject.next(null);
+    this.sessionReadySubject.next(false);
+    this.sessionValidatedSubject.next(false);
     sessionStorage.removeItem(STORAGE_KEY);
   }
 
@@ -190,6 +227,7 @@ export class AuthService {
       const user = JSON.parse(userJson) as SessionUser;
       if (user?.token?.trim()) {
         this.userSubject.next(user);
+        this.tryMarkSessionReadyFromCache();
       } else {
         sessionStorage.removeItem(STORAGE_KEY);
       }
@@ -242,6 +280,28 @@ export class AuthService {
       permissoes: me.permissoes ?? [],
       idUsuario: me.idUsuario,
     });
+    this.markSessionReady();
+    this.markSessionValidated();
+  }
+
+  private markSessionValidated(): void {
+    this.sessionValidatedSubject.next(true);
+  }
+
+  private markSessionReady(): void {
+    if (this.getToken() && (this.hasOrgSelected() || this.isSuperAdmin())) {
+      this.sessionReadySubject.next(true);
+    }
+  }
+
+  private tryMarkSessionReadyFromCache(): void {
+    const user = this.userSubject.value;
+    if (!user?.token?.trim()) {
+      return;
+    }
+    if (this.isSuperAdmin() || !!user.idOrganizacao) {
+      this.sessionReadySubject.next(true);
+    }
   }
 
   private unwrapAuth<T>(body: T | ApiEnvelope<T>): T {

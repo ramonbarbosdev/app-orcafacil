@@ -27,6 +27,14 @@ export class SemPermissao implements OnInit {
   acao = '';
 
   ngOnInit() {
+    const reason = this.route.snapshot.queryParamMap.get('reason') ?? '';
+    if (reason === 'assinatura') {
+      this.titulo = 'Assinatura inativa';
+      this.mensagem =
+        'A assinatura da sua organização não está ativa. Entre em contato com o suporte ou com o administrador da plataforma para regularizar o plano.';
+      return;
+    }
+
     const permission =
       (this.route.snapshot.queryParamMap.get('permission') ?? '').trim() ||
       this.montarPermissionFromQuery();

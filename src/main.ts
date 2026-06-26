@@ -3,8 +3,6 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { TokenInterceptor } from './app/auth/token-interceptor.interceptor';
-import { provideRouter } from '@angular/router';
-import { routes } from './app/app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Error403Interceptor } from './app/interceptor/error403.interceptor';
 import { Error401Interceptor } from './app/interceptor/error401.interceptor';
@@ -23,8 +21,6 @@ bootstrapApplication(App, {
     provideHttpClient(
       withInterceptors([TokenInterceptor, Error403Interceptor, Error401Interceptor])
     ),
-    provideRouter(routes),
-
     ...appConfig.providers,
   ],
 }).catch((err) => console.error(err));
