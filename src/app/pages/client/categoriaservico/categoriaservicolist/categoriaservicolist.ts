@@ -30,7 +30,7 @@ import { Categoriaservicoform } from "../categoriaservicoform/categoriaservicofo
 export class Categoriaservicolist {
   loading: boolean = true;
   public baseService = inject(BaseService);
-  endpoint = 'categoriaservico';
+  endpoint = 'categorias-servico';
   primaryKey = 'idCategoriaservico';
   router = inject(Router);
   private route = inject(ActivatedRoute);

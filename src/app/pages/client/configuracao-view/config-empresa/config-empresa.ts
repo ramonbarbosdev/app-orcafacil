@@ -23,7 +23,7 @@ export class ConfigEmpresa {
   public errorValidacao: Record<string, string> = {};
   public objeto: Empresa = new Empresa();
   loading: boolean = true;
-  private endpoint = 'empresa';
+  private endpoint = 'admin/organizacoes';
   private baseService = inject(BaseService);
 
 

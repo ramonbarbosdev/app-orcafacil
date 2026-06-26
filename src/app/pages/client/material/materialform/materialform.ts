@@ -35,7 +35,7 @@ export class Materialform {
   loading: boolean = true;
   public objeto: Campopersonalizado = new Campopersonalizado();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'campopersonalizado';
+  private endpoint = 'campos-personalizados';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -86,7 +86,7 @@ export class Materialform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idCampoPersonalizado).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();

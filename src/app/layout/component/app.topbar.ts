@@ -27,7 +27,7 @@ import { AvatarModule } from 'primeng/avatar';
       >
         <i class="pi pi-bars"></i>
       </button>
-      <a class="layout-topbar-logo" routerLink="/client/home">
+      <a class="layout-topbar-logo" [routerLink]="auth.isSuperAdmin() ? '/admin/home' : '/client/home'">
         <span class="ml-10">
           <img
             *ngIf="!layoutService.isDarkTheme()"
@@ -123,7 +123,7 @@ export class AppTopbar {
 
   constructor(public layoutService: LayoutService) {}
   private router = inject(Router);
-  private auth = inject(AuthService);
+  auth = inject(AuthService);
   private cd = inject(ChangeDetectorRef);
 
   public avatarImg: string = '';
@@ -131,8 +131,7 @@ export class AppTopbar {
 
   ngOnInit(): void {
     this.auth.user$.subscribe((user) => {
-      this.avatarImg = user?.img || '';
-      this.avatarNome = user?.nome || '';
+      this.avatarNome = user?.role ?? 'Usuário';
       this.cd.markForCheck();
     });
   }

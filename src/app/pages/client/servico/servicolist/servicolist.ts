@@ -32,7 +32,7 @@ import { Servicoform } from "../servicoform/servicoform";
 export class Servicolist {
   loading: boolean = true;
   public baseService = inject(BaseService);
-  endpoint = 'servico';
+  endpoint = 'servicos';
   primaryKey = 'idServico';
   router = inject(Router);
   private route = inject(ActivatedRoute);

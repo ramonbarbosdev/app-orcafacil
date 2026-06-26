@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
 import { BaseService } from '../../services/base.service';
+import { AuthService } from '../../auth/auth.service';
 
 export interface ColumnConfig {
   field: string;
@@ -35,6 +36,7 @@ export interface ActionConfig {
   outlined?: boolean;
   onClick: (row: any) => void;
   requiresConfirmation?: boolean;
+  permission?: string;
 }
 
 @Component({
@@ -58,6 +60,7 @@ export class HeaderListGenerico {
   @Input() actions: ActionConfig[] = [];
   @Input() loading = false;
   @Input() endpoint = '';
+  @Input() createPermission = '';
 
   @Output() add = new EventEmitter<void>();
   @Output() clearFilters = new EventEmitter<void>();
@@ -67,23 +70,27 @@ export class HeaderListGenerico {
 
   private confirmationService = inject(ConfirmationService);
   private baseService = inject(BaseService);
+  private auth = inject(AuthService);
   private cd = inject(ChangeDetectorRef);
 
   @ViewChild('filter') filter!: ElementRef;
   @ViewChild('dt') tabela!: Table;
+
+  get canCreate(): boolean {
+    if (!this.createPermission) return true;
+    return this.auth.hasPermission(this.createPermission);
+  }
+
+  get visibleActions(): ActionConfig[] {
+    return this.actions.filter((a) => !a.permission || this.auth.hasPermission(a.permission));
+  }
 
   ngOnInit() {
     this.globalFilterFields = this.columns.map((c) => c.field);
   }
 
   ngAfterViewInit() {
-    // Executar carregamento inicial automaticamente
-    const initEvent = {
-      first: 0, // início
-      rows: 10, // quantidade padrão
-    };
-
-    this.carregarLazy(initEvent);
+    this.carregarDados();
   }
 
   onGlobalFilter(table: any, event: any) {
@@ -102,13 +109,8 @@ export class HeaderListGenerico {
   }
 
   get listaFiltrada(): any[] {
-    return this.tabela?.filteredValue ?? [];
+    return this.tabela?.filteredValue ?? this.value;
   }
-
-  //TIPO FORMATACAO
-  //  formatter: (value) => value ? 'Sim' : 'Não'
-  //  formatter: (value) => `R$ ${value.toFixed(2)}`
-  //    formatter: (value) => new Date(value).toLocaleDateString('pt-BR')
 
   executarAcao(row: any, acao: ActionConfig) {
     const isEditAction =
@@ -124,67 +126,31 @@ export class HeaderListGenerico {
         header: 'Confirmação',
         icon: 'pi pi-exclamation-triangle',
         accept: () => acao.onClick(row),
-        reject: () => { },
+        reject: () => {},
       });
     } else {
       acao.onClick(row);
     }
   }
 
-  carregarLazy(event: any) {
-    this.loading = true;
-
-    const pagina = event.first / event.rows;
-    const tamanho = event.rows;
-
-    const search = this.filter?.nativeElement?.value?.trim() ?? '';
-
-    // filtros por coluna
-    const columnFilters: any = {};
-
-    if (event.filters) {
-      Object.keys(event.filters).forEach((campo) => {
-        const filtroArray = event.filters[campo];
-
-        if (Array.isArray(filtroArray) && filtroArray.length > 0) {
-          const filtro = filtroArray[0];
-
-          if (filtro.value !== null && filtro.value !== undefined && filtro.value !== '') {
-            columnFilters[campo] = filtro.value;
-          }
-        }
-      });
-    }
-
-    let sortParams: string[] = [];
-    if (event.multiSortMeta && event.multiSortMeta.length > 0) {
-      sortParams = event.multiSortMeta.map((s: any) => {
-        const dir = s.order === 1 ? 'asc' : 'desc';
-        return `${s.field},${dir}`;
-      });
-    }
-
-    this.baseService
-      .listarPaginado(
-        this.endpoint,
-        pagina,
-        tamanho,
-        search,
-        columnFilters,
-        sortParams  
-      )
-      .subscribe({
-        next: (res) => {
-          this.value = res.content;
-          this.totalRegistro = res.totalElements;
-          this.loading = false;
-          this.cd.markForCheck();
-        },
-        error: (err) => {
-          console.error('Erro ao carregar dados:', err);
-          this.loading = false;
-        },
-      });
+  carregarLazy(_event?: unknown) {
+    this.carregarDados();
   }
 
+  carregarDados() {
+    if (!this.endpoint) return;
+    this.loading = true;
+
+    this.baseService.listarPaginado(this.endpoint).subscribe({
+      next: (res) => {
+        this.value = Array.isArray(res) ? res : [];
+        this.totalRegistro = this.value.length;
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
+  }
 }

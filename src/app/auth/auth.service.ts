@@ -1,160 +1,161 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { LoadingService } from '../services/loading.service';
-import { BaseService } from '../services/base.service';
 import { MessageService } from 'primeng/api';
+import {
+  LoginRequest,
+  LoginResponse,
+  MeResponse,
+  SelecionarOrgRequest,
+  SelecionarOrgResponse,
+  SessionUser,
+} from '../models/api.types';
+
+const STORAGE_KEY = 'user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = `${environment.apiUrl}`;
-
+  private readonly apiUrl = environment.apiUrl;
   private router = inject(Router);
   private messageService = inject(MessageService);
 
-  private userSubject = new BehaviorSubject<any | null>(null);
+  private userSubject = new BehaviorSubject<SessionUser | null>(null);
   user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient, private loadingService: LoadingService) {
-    const userJson = sessionStorage.getItem('user');
+  constructor(private http: HttpClient) {
+    const userJson = sessionStorage.getItem(STORAGE_KEY);
     if (userJson) {
-      const user = JSON.parse(userJson);
-      this.userSubject.next(user);
+      this.userSubject.next(JSON.parse(userJson));
     }
   }
 
-  findByLogin(login: string): Observable<any> {
-    const url = `${this.apiUrl}/usuario/obter-login/${login}`;
-
-    return this.http.get<any>(url).pipe(
-      tap((res) => {
-        return res;
-      }),
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
+      tap((res) => this.persistPartialSession(res.token, res.tipoGlobal)),
       catchError((e) => {
-        console.log(e);
-
-        return throwError(() => e);
-      })
-    );
-  }
-
-  obterOrganizacao(credenciais: any): Observable<any> {
-
-    return this.http
-      .post(`${this.apiUrl}/auth/obter-organizacao`, credenciais, { withCredentials: true })
-      .pipe(
-        tap((user) => {
-         
-        }),
-        catchError((e) => {
-          console.log(e);
-          this.exibirErros(e);
-          return throwError(() => e);
-        })
-      );
-  }
-
-  login(credenciais: any): Observable<any> {
-
-    return this.http.post(`${this.apiUrl}/auth/login`, credenciais, { withCredentials: true }).pipe(
-      tap((user) => {
-        this.userSubject.next(user);
-        sessionStorage.setItem('user', JSON.stringify(user));
-      }),
-      catchError((e) => {
-        console.log(e);
         this.exibirErros(e);
         return throwError(() => e);
       })
     );
   }
 
-  checkAuth(): Observable<any> {
-    const userJson = sessionStorage.getItem('user');
-    if (!userJson) return of();
+  selecionarOrganizacao(idOrganizacao: number): Observable<SelecionarOrgResponse> {
+    const body: SelecionarOrgRequest = { idOrganizacao };
+    return this.http
+      .post<SelecionarOrgResponse>(`${this.apiUrl}/auth/selecionar-organizacao`, body)
+      .pipe(
+        tap((res) => {
+          const current = this.getUser();
+          this.persistSession({
+            token: res.token,
+            tipoGlobal: current?.tipoGlobal ?? 'DEFAULT',
+            idOrganizacao: res.idOrganizacao,
+            role: res.role,
+            permissoes: res.permissoes,
+            idUsuario: current?.idUsuario,
+          });
+        }),
+        catchError((e) => {
+          this.exibirErros(e);
+          return throwError(() => e);
+        })
+      );
+  }
 
+  checkAuth(): Observable<MeResponse | null> {
+    if (!sessionStorage.getItem(STORAGE_KEY)) {
+      return of(null);
+    }
 
-    return this.http.get(`${this.apiUrl}/auth/me`, { withCredentials: true }).pipe(
-      tap((user) => {
-       
+    return this.http.get<MeResponse>(`${this.apiUrl}/auth/me`).pipe(
+      tap((me) => {
+        const current = this.getUser();
+        if (current?.token) {
+          this.persistSession({
+            token: current.token,
+            tipoGlobal: (me.tipoGlobal as SessionUser['tipoGlobal']) ?? 'DEFAULT',
+            idOrganizacao: me.idOrganizacao ?? undefined,
+            role: me.role ?? undefined,
+            permissoes: me.permissoes ?? [],
+            idUsuario: me.idUsuario,
+          });
+        }
       }),
       catchError((error) => {
-        this.userSubject.next(null);
-        sessionStorage.removeItem('user');
+        this.clearSession();
         return throwError(() => error);
       })
     );
   }
 
   logout(): void {
-    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
-      next: (res) => {
-        this.router.navigate(['/auth/login']);
-        this.userSubject.next(null);
-        sessionStorage.removeItem('user');
-        // ExibirSucesso(res);
-      },
-      error: (e) => {
-        this.router.navigate(['/auth/login']);
-        this.userSubject.next(null);
-        sessionStorage.removeItem('user');
-        // ExibirErros(e);
-      },
+    this.clearSession();
+    this.router.navigate(['/auth/login']);
+  }
+
+  getUser(): SessionUser | null {
+    return this.userSubject.value;
+  }
+
+  getUserSubbject(): SessionUser | null {
+    return this.userSubject.value;
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.userSubject.value?.token;
+  }
+
+  isSuperAdmin(): boolean {
+    return this.getUser()?.tipoGlobal === 'SUPER_ADMIN';
+  }
+
+  hasOrgSelected(): boolean {
+    const user = this.getUser();
+    return user?.tipoGlobal === 'SUPER_ADMIN' || !!user?.idOrganizacao;
+  }
+
+  hasPermission(chave: string): boolean {
+    const permissoes = this.getUser()?.permissoes ?? [];
+    return permissoes.includes(chave);
+  }
+
+  hasAnyPermission(...chaves: string[]): boolean {
+    return chaves.some((c) => this.hasPermission(c));
+  }
+
+  clearSession(): void {
+    this.userSubject.next(null);
+    sessionStorage.removeItem(STORAGE_KEY);
+  }
+
+  private persistPartialSession(token: string, tipoGlobal: SessionUser['tipoGlobal']): void {
+    this.persistSession({
+      token,
+      tipoGlobal,
+      permissoes: [],
     });
   }
 
-  cadastrar(data: any): Observable<any> {
-    const url = `${this.apiUrl}/auth/register`;
-
-    return this.http.post(url, data).pipe(catchError((error) => throwError(() => error)));
+  private persistSession(user: SessionUser): void {
+    this.userSubject.next(user);
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }
 
-  getUser() {
-    return this.userSubject.value;
-  }
-
-  getUserSubbject() {
-    return this.userSubject.value;
-  }
-  isAuthenticated(): boolean {
-    return !!this.userSubject.value;
-  }
-
-  updateUserAvatar(url: string) {
-    const user = this.userSubject.value;
-    if (user) {
-      const updatedUser = { ...user, img: url };
-      this.userSubject.next(updatedUser);
-      sessionStorage.setItem('user', JSON.stringify(updatedUser));
-    }
-  }
-
-  updateUserNome(nome: string) {
-    const user = this.userSubject.value;
-    if (user) {
-      const updatedUser = { ...user, nome: nome };
-      this.userSubject.next(updatedUser);
-      sessionStorage.setItem('user', JSON.stringify(updatedUser));
-    }
-  }
-
-  exibirErros(e: any) {
+  exibirErros(e: { error?: ApiErrorShape }): void {
+    const err = e.error;
     this.messageService.add({
       severity: 'error',
-      summary: e.error.message,
-      detail: e.error.codeDescription,
+      summary: err?.message ?? 'Erro',
+      detail: err?.error ?? '',
     });
   }
+}
 
-  exibirSucesso(res: any) {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Sucesso',
-      detail: res.message,
-    });
-  }
+interface ApiErrorShape {
+  message?: string;
+  error?: string;
 }

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
-import { LoadingService } from '../../services/loading.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -22,126 +21,50 @@ export class AppMenu {
   auth = inject(AuthService);
 
   ngOnInit() {
-    const role = this.auth.getUserSubbject().role;
-    const isAreaDev = this.auth.getUserSubbject().isAreaDev;
-
-    if (isAreaDev && role === 'ROLE_DEV') {
-      this.model.push({
-        label: 'Administração',
-        items: [
-          {
-            label: 'Painel',
-            icon: 'pi pi-fw pi-bookmark',
-            routerLink: ['/dev/home'],
-          },
-          {
-            label: 'Empresas',
-            items: [
-              {
-                label: 'Planos',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['/dev/planoassinatura'],
-              },
-              {
-                label: 'Empresas',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['/dev/empresa'],
-              },
-              {
-                label: 'Método de Precificação',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['metodoprecificacao'],
-              },
-            ],
-          },
-          {
-            label: 'Usuarios',
-            items: [
-              {
-                label: 'Permissões',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['/dev/role'],
-              },
-              {
-                label: 'Usuarios',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['/dev/usuario'],
-              },
-            ],
-          },
-          {
-            label: 'Configuração geral',
-            items: [
-              {
-                label: 'Condição de Pagamento',
-                icon: 'pi pi-fw pi-bookmark',
-                routerLink: ['/dev/condicaopagamento'],
-              },
-
-            ],
-          },
-        ],
-      });
-    } else {
-
-
+    if (this.auth.isSuperAdmin()) {
       this.model = [
         {
-          label: 'Início',
-          items: [
-            {
-              label: 'Painel Principal',
-              icon: 'pi pi-fw pi-home',
-              routerLink: ['/client/home'],
-            },
-          ],
-        },
-        {
-          label: 'Gerenciamentos',
-          items: [
-            {
-              label: 'Clientes',
-              icon: 'pi pi-user',
-              routerLink: ['/client/cliente'],
-            },
-            {
-              label: 'Materiais',
-              icon: 'pi pi-book',
-              routerLink: ['material'],
-            },
-            {
-              label: 'Catalogo',
-              icon: 'pi pi-book',
-              routerLink: ['catalogo'],
-            },
-            {
-              label: 'Orçamentos',
-              icon: 'pi pi-file',
-              routerLink: ['/client/orcamento'],
-            },
-            {
-              label: 'Novo Orçamento',
-              icon: 'pi pi-plus',
-              routerLink: ['/client/orcamento/novo'],
-            },
-            {
-              label: 'Configuração',
-              icon: 'pi pi-cog',
-              routerLink: ['/client/configuracao'],
-            },
-          ],
-        },
-
-      ];
-
-      if (role === 'ROLE_ADMIN' && role === 'ROLE_DEV') {
-        this.model.push({
           label: 'Administração',
           items: [
-
+            { label: 'Painel', icon: 'pi pi-home', routerLink: ['/admin/home'] },
+            { label: 'Organizações', icon: 'pi pi-building', routerLink: ['/admin/organizacoes'] },
+            { label: 'Planos', icon: 'pi pi-bookmark', routerLink: ['/admin/planos-assinatura'] },
           ],
-        });
-      }
+        },
+      ];
+      return;
     }
+
+    const items: MenuItem[] = [
+      { label: 'Painel Principal', icon: 'pi pi-home', routerLink: ['/client/home'] },
+    ];
+
+    if (this.auth.hasPermission('clientes.ler')) {
+      items.push({ label: 'Clientes', icon: 'pi pi-user', routerLink: ['/client/cliente'] });
+    }
+    if (this.auth.hasPermission('campos-personalizados.ler')) {
+      items.push({ label: 'Materiais', icon: 'pi pi-book', routerLink: ['/client/material'] });
+    }
+    if (this.auth.hasPermission('catalogos.ler')) {
+      items.push({ label: 'Catálogo', icon: 'pi pi-book', routerLink: ['/client/catalogo'] });
+    }
+    if (this.auth.hasPermission('orcamentos.ler')) {
+      items.push({ label: 'Orçamentos', icon: 'pi pi-file', routerLink: ['/client/orcamento'] });
+    }
+    if (this.auth.hasPermission('orcamentos.criar')) {
+      items.push({ label: 'Novo Orçamento', icon: 'pi pi-plus', routerLink: ['/client/orcamento/novo'] });
+    }
+    if (this.auth.hasPermission('condicoes-pagamento.ler')) {
+      items.push({
+        label: 'Condições de Pagamento',
+        icon: 'pi pi-wallet',
+        routerLink: ['/client/condicoes-pagamento'],
+      });
+    }
+    if (this.auth.hasAnyPermission('configuracao-orcamento.ler', 'metodos-precificacao.ler')) {
+      items.push({ label: 'Configuração', icon: 'pi pi-cog', routerLink: ['/client/configuracao'] });
+    }
+
+    this.model = [{ label: 'Menu', items }];
   }
 }

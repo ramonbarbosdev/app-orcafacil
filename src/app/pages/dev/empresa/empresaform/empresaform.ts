@@ -59,7 +59,7 @@ export class Empresaform {
   loading: boolean = true;
   public objeto: Empresa = new Empresa();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'empresa';
+  private endpoint = 'admin/organizacoes';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -95,12 +95,13 @@ export class Empresaform {
     this.baseService.findById(`${this.endpoint}`, id).subscribe({
       next: (res: any) => {
         this.objeto = res;
+        this.objeto.idOrganizacao = res.idOrganizacao ?? res.idEmpresa;
+        this.objeto.nmEmpresa = res.nmOrganizacao ?? res.nmEmpresa;
+        this.objeto.cdEmpresa = FormatCpfCnpj(res.dsDocumento ?? res.cdEmpresa ?? '');
         this.loading = false;
-       this.objeto.cdEmpresa =  FormatCpfCnpj(this.objeto.cdEmpresa);
-
         this.cd.markForCheck();
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -111,24 +112,25 @@ export class Empresaform {
     if (this.validarItens()) {
       this.loading = true;
 
-         const payload = {
-        ...this.objeto,
-        cdEmpresa: this.objeto.cdEmpresa.replace(/\D/g, '')
+      const payload = {
+        nmOrganizacao: this.objeto.nmEmpresa,
+        dsDocumento: this.objeto.cdEmpresa?.replace(/\D/g, '') || undefined,
       };
 
-      
-      this.baseService.create(`${this.endpoint}/cadastrar`, payload).subscribe({
-        next: () => {
-          this.loading = false;
-          this.hideDialog();
-          this.onReloadList();
-          this.cd.markForCheck();
-        },
-        error: (erro) => {
-          this.loading = false;
-          this.cd.markForCheck();
-        },
-      });
+      this.baseService
+        .save(this.endpoint, payload, (this.objeto as any).idOrganizacao ?? this.objeto.idEmpresa)
+        .subscribe({
+          next: () => {
+            this.loading = false;
+            this.hideDialog();
+            this.onReloadList();
+            this.cd.markForCheck();
+          },
+          error: () => {
+            this.loading = false;
+            this.cd.markForCheck();
+          },
+        });
     }
   }
 
@@ -170,7 +172,7 @@ export class Empresaform {
   }
 
   obterAssinatura() {
-    this.baseService.findAll(`planoassinatura/`).subscribe({
+    this.baseService.findAll('admin/planos-assinatura').subscribe({
       next: (res) => {
         this.listaAssinatura = (res as any).map((index: any) => {
           const item = new FlagOption();

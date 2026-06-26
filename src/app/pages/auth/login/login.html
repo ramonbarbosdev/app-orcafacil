@@ -20,40 +20,40 @@
 
       <form #f="ngForm" class="flex flex-col gap-4" (ngSubmit)="entrar()">
         <app-layout-campo
-          [error]="errorValidacao['login']"
-          [label]="'Login:'"
+          [error]="errorValidacao['nuCpf']"
+          [label]="'CPF:'"
           [width]="'w-full'"
-          [sublabel]="'Informe o seu CPF como login'"
-          [describedby]="'cd_areavisita'"
+          [sublabel]="'Informe o seu CPF'"
+          [describedby]="'nuCpf'"
         >
           <input
-            title="login"
-            name="login"
+            title="nuCpf"
+            name="nuCpf"
             pInputText
-            id="login"
+            id="nuCpf"
             type="text"
             placeholder="000.000.000-00"
             class="w-full"
-            [(ngModel)]="objeto.login"
-            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['login'] }"
+            [(ngModel)]="objeto.nuCpf"
+            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpf'] }"
             mask="000.000.000-00"
           />
         </app-layout-campo>
 
         <app-layout-campo
-          [error]="errorValidacao['senha']"
+          [error]="errorValidacao['dsSenha']"
           [label]="'Senha:'"
           [width]="'w-full'"
           [sublabel]="'Informe a sua Senha para autenticar'"
-          [describedby]="'senha'"
+          [describedby]="'dsSenha'"
         >
           <p-password
-            name="senha"
-            id="senha"
-            [(ngModel)]="objeto.senha"
+            name="dsSenha"
+            id="dsSenha"
+            [(ngModel)]="objeto.dsSenha"
             placeholder="Senha"
             [toggleMask]="true"
-            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['senha'] }"
+            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsSenha'] }"
             [fluid]="true"
             [feedback]="false"
           ></p-password>

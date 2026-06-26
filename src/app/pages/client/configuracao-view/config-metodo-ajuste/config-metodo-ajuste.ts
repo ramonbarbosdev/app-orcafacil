@@ -34,7 +34,7 @@ export class ConfigMetodoAjuste {
 
   public errorValidacao: Record<string, string> = {};
 
-  endpoint = 'metodoajuste';
+  endpoint = 'metodos-ajuste';
 
   lista: Metodoajuste[] = [];
   objeto: Metodoajuste = new Metodoajuste();
@@ -57,7 +57,7 @@ export class ConfigMetodoAjuste {
   }
 
   carregarLista() {
-    this.baseService.findAll(`${this.endpoint}/obter-por-tenant`)
+    this.baseService.findAll(this.endpoint)
       .subscribe(res => this.lista = res);
   }
 
@@ -72,7 +72,7 @@ export class ConfigMetodoAjuste {
   onSave() {
 
     if (this.validarItens()) {
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto)
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idMetodoAjuste)
         .subscribe(() => {
           this.objeto = new Metodoajuste();
           this.campoSelecionado = undefined;
@@ -125,7 +125,7 @@ export class ConfigMetodoAjuste {
 
 
   obterCampos() {
-    this.baseService.findAll('campopersonalizado/')
+    this.baseService.findAll('campos-personalizados')
       .subscribe(res => {
         this.listaCampos = res.map((c: any) => ({
           code: c.idCampoPersonalizado,

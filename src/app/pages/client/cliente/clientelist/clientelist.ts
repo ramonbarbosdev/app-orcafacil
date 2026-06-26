@@ -31,7 +31,7 @@ import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 export class Clientelist {
   loading: boolean = true;
   public baseService = inject(BaseService);
-  endpoint = 'cliente';
+  endpoint = 'clientes';
   primaryKey = 'idCliente';
   router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -67,6 +67,7 @@ export class Clientelist {
       icon: 'pi pi-pencil',
       rounded: true,
       outlined: true,
+      permission: 'clientes.editar',
       onClick: (row) => this.onEdit(row),
     },
     {
@@ -74,6 +75,7 @@ export class Clientelist {
       severity: 'danger',
       rounded: true,
       outlined: true,
+      permission: 'clientes.deletar',
       onClick: (row) => this.onDelete(row),
     },
   ];

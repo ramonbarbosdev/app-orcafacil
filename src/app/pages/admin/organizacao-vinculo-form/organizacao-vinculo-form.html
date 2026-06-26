@@ -1,0 +1,93 @@
+<app-layout-form-simples
+  [(visible)]="isDialog"
+  [title]="titulo"
+  [loading]="loading"
+  (save)="onSave()"
+  (cancel)="hideDialog()"
+  (show)="onShow()"
+>
+  <p class="text-color-secondary mb-4 text-sm">
+    Cadastra o usuário (se ainda não existir) e vincula à organização selecionada.
+  </p>
+
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [error]="errorValidacao['nuCpf']"
+      [label]="'CPF: (*)'"
+      [width]="'md:w-6/12'"
+      [sublabel]="'CPF do usuário (11 dígitos)'"
+      [describedby]="'nuCpf'"
+    >
+      <input
+        title="nuCpf"
+        pInputText
+        id="nuCpf"
+        name="nuCpf"
+        class="w-full"
+        placeholder="000.000.000-00"
+        [(ngModel)]="objeto.nuCpf"
+        mask="000.000.000-00"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpf'] }"
+      />
+    </app-layout-campo>
+
+    <app-layout-campo
+      [error]="errorValidacao['nmUsuario']"
+      [label]="'Nome: (*)'"
+      [width]="'md:w-6/12'"
+      [sublabel]="'Nome completo do usuário'"
+      [describedby]="'nmUsuario'"
+    >
+      <input
+        title="nmUsuario"
+        pInputText
+        id="nmUsuario"
+        name="nmUsuario"
+        class="w-full"
+        [(ngModel)]="objeto.nmUsuario"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nmUsuario'] }"
+      />
+    </app-layout-campo>
+  </div>
+
+  <div class="flex-row-responsive">
+    <app-layout-campo
+      [error]="errorValidacao['dsSenha']"
+      [label]="'Senha: (*)'"
+      [width]="'md:w-6/12'"
+      [sublabel]="'Senha de acesso ao sistema'"
+      [describedby]="'dsSenha'"
+    >
+      <p-password
+        name="dsSenha"
+        id="dsSenha"
+        [(ngModel)]="objeto.dsSenha"
+        placeholder="Senha"
+        [toggleMask]="true"
+        [fluid]="true"
+        [feedback]="false"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsSenha'] }"
+      ></p-password>
+    </app-layout-campo>
+
+    <app-layout-campo
+      [error]="errorValidacao['dsRole']"
+      [label]="'Perfil na organização: (*)'"
+      [width]="'md:w-6/12'"
+      [sublabel]="'ADMIN ou USER'"
+      [describedby]="'dsRole'"
+    >
+      <p-select
+        [checkmark]="true"
+        name="dsRole"
+        [options]="listaRoles"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione"
+        class="w-full"
+        [(ngModel)]="objeto.dsRole"
+        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['dsRole'] }"
+      />
+    </app-layout-campo>
+  </div>
+</app-layout-form-simples>

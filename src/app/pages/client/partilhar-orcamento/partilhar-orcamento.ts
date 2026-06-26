@@ -64,7 +64,7 @@ export class PartilharOrcamento {
 
   gerarPdf() {
     const codigo =this.cdPublico;
-      this.baseService.getPdf('orcamento/relatorio', codigo)
+      this.baseService.getPdf('orcamentos/relatorio', codigo)
       .subscribe(blob => {
 
         const fileURL = URL.createObjectURL(blob);

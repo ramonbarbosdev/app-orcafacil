@@ -29,7 +29,7 @@ export class Condicaopagamentolist {
   loading: boolean = true;
   public listagem: Condicaopagamento[] = [];
   public baseService = inject(BaseService);
-  endpoint = 'condicaopagamento';
+  endpoint = 'condicoes-pagamento';
   primaryKey = 'idCondicaoPagamento';
   router = inject(Router);
   private route = inject(ActivatedRoute);

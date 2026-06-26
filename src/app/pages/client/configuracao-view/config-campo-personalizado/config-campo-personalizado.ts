@@ -29,7 +29,7 @@ export class ConfigCampoPersonalizado {
 
   private baseService = inject(BaseService);
   loading: boolean = true;
-  private endpoint = 'campopersonalizado';
+  private endpoint = 'campos-personalizados';
   private confirmationService = inject(ConfirmationService);
   private eventService = inject(EventService);
   public errorValidacao: Record<string, string> = {};
@@ -50,7 +50,7 @@ export class ConfigCampoPersonalizado {
 
   carregarLista() {
 
-    this.baseService.findAll(`${this.endpoint}/obter-por-tenant`).subscribe({
+    this.baseService.findAll(this.endpoint).subscribe({
       next: (res: any) => {
 
         if (res) {
@@ -95,7 +95,7 @@ export class ConfigCampoPersonalizado {
 
   onEdit() {
 
-    this.baseService.findAll(`${this.endpoint}/obter-por-tenant`).subscribe({
+    this.baseService.findAll(this.endpoint).subscribe({
       next: (res: any) => {
 
         if (res) {
@@ -124,7 +124,7 @@ export class ConfigCampoPersonalizado {
   onSave() {
 
     if (this.validarItens()) {
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe(() => {
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idCampoPersonalizado).subscribe(() => {
         this.novo();
         this.carregarLista();
         this.eventService.emitAtualizarCampoPersonalizado();

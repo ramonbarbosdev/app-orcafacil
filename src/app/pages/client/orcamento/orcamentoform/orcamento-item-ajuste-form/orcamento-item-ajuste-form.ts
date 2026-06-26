@@ -92,7 +92,7 @@ export class OrcamentoItemAjusteForm {
 
   obterCampos() {
 
-    this.baseService.findAll('campopersonalizado/').subscribe({
+    this.baseService.findAll('campos-personalizados').subscribe({
       next: (res) => {
         this.listaCampos = (res as any).map((index: any) => {
           const item = new FlagOption();

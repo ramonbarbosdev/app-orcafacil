@@ -67,7 +67,7 @@ export class Planoassinaturaform {
   loading: boolean = true;
   public objeto: Planoassinatura = new Planoassinatura();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'planoassinatura';
+  private endpoint = 'admin/planos-assinatura';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -114,7 +114,7 @@ export class Planoassinaturaform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idPlanoAssinatura).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();

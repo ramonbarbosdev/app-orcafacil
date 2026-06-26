@@ -52,7 +52,7 @@ export class Catalogoform {
   loading: boolean = true;
   public objeto: Catalogo = new Catalogo();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'catalogo';
+  private endpoint = 'catalogos';
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
   private wizardState = inject(CatalogoWizardStateService);
@@ -158,7 +158,7 @@ export class Catalogoform {
 
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idCatalogo).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();

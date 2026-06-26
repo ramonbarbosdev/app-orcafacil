@@ -3,79 +3,82 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
-import { OrcamentoClienteForm } from "./orcamento-cliente-form/orcamento-cliente-form";
+import { OrcamentoClienteForm } from './orcamento-cliente-form/orcamento-cliente-form';
 import { Orcamento } from '../../../../models/orcamento';
 import { BaseService } from '../../../../services/base.service';
 import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-schema';
 import { ZodError } from 'zod';
-import { OrcamentoDetalhesForm } from "./orcamento-detalhes-form/orcamento-detalhes-form";
+import { OrcamentoDetalhesForm } from './orcamento-detalhes-form/orcamento-detalhes-form';
 import { OrcamentoSchema } from '../../../../schema/orcamento-schema';
-import { OrcamentoItemForm } from "./orcamento-item-form/orcamento-item-form";
-import { OrcamentoInformacaoadicionalForm } from "./orcamento-informacaoadicional-form/orcamento-informacaoadicional-form";
+import { OrcamentoItemForm } from './orcamento-item-form/orcamento-item-form';
+import { OrcamentoInformacaoadicionalForm } from './orcamento-informacaoadicional-form/orcamento-informacaoadicional-form';
 import { FormatarDataBanco } from '../../../../utils/FormatarData';
-import { OrcamentoResumo } from "./orcamento-resumo/orcamento-resumo";
+import { OrcamentoResumo } from './orcamento-resumo/orcamento-resumo';
 import { EventService } from '../../../../services/event.service';
-import { PartilharOrcamento } from "../../partilhar-orcamento/partilhar-orcamento";
+import { PartilharOrcamento } from '../../partilhar-orcamento/partilhar-orcamento';
 
 @Component({
   selector: 'app-orcamentoform',
-  imports: [CardModule, ButtonModule, DividerModule, OrcamentoClienteForm, OrcamentoDetalhesForm, OrcamentoItemForm, OrcamentoInformacaoadicionalForm, OrcamentoResumo, PartilharOrcamento],
+  imports: [
+    CardModule,
+    ButtonModule,
+    DividerModule,
+    OrcamentoClienteForm,
+    OrcamentoDetalhesForm,
+    OrcamentoItemForm,
+    OrcamentoInformacaoadicionalForm,
+    OrcamentoResumo,
+    PartilharOrcamento,
+  ],
   templateUrl: './orcamentoform.html',
   styleUrl: './orcamentoform.scss',
 })
 export class Orcamentoform {
-
   router = inject(Router);
   public objeto: Orcamento = new Orcamento();
 
   public errorValidacao: Record<string, string> = {};
-  public endpoint = 'orcamento';
+  public endpoint = 'orcamentos';
   public baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
 
-  carregarDetalhes = false;
   partilharVisible: boolean = false;
 
+  ngOnInit(): void {
+    this.objeto.orcamentoItem = this.objeto.orcamentoItem ?? [];
+  }
 
   ngAfterViewInit(): void {
     const key = Number(this.route.snapshot.paramMap.get('id'));
-
 
     this.eventService.atualizarCampoPersonalizado$.subscribe(() => {
       this.consultarPreviewValorFinal();
     });
 
-    if (key == 0) {
-
-    } else {
+    if (key) {
       this.onEdit(key);
     }
   }
-
 
   hideDialog() {
     this.partilharVisible = false;
   }
 
   onEdit(id: number) {
-    if (!id) {
-      return;
-    }
+    if (!id) return;
 
-    this.baseService.findById(`${this.endpoint}`, id).subscribe({
+    this.baseService.findById(this.endpoint, id).subscribe({
       next: (res: any) => {
         this.objeto = res;
+        this.objeto.orcamentoItem = res.itens ?? res.orcamentoItem ?? [];
         this.objeto.descricaoMetodo = res.dsMetodoPrecificacao;
         this.objeto.dtEmissao = FormatarDataBanco(res.dtEmissao);
         this.objeto.dtValido = FormatarDataBanco(res.dtValido);
-
         this.cd.markForCheck();
       },
-      error: (err) => {
-        this.cd.markForCheck();
-      },
+      error: () => this.cd.markForCheck(),
     });
   }
 
@@ -84,41 +87,68 @@ export class Orcamentoform {
   }
 
   onSaveRascunho() {
-
     this.onSave('rascunho');
   }
 
   onSaveGerado() {
-
     this.onSave('gerar');
-
   }
 
-  onSave(url?: string) {
+  onSave(mode?: string) {
+    if (!this.validarItens()) return;
 
+    const payload = this.toApiPayload();
 
-    if (this.validarItens()) {
-
-      let urlRequisicao = url ? url : `cadastrar`;
-
-      this.baseService.create(`${this.endpoint}/${urlRequisicao}`, this.objeto).subscribe({
-        next: (res) => {
-
-          if (urlRequisicao == 'gerar') {
-            this.objeto.cdPublico = res.cdPublico
-            this.partilharVisible = true;
-          }
-          else {  
-            this.cd.markForCheck();
-            this.onClose()
-          }
-
-        },
-        error: (erro) => {
+    if (mode === 'rascunho') {
+      this.baseService.post(`${this.endpoint}/rascunho`, payload).subscribe({
+        next: () => {
           this.cd.markForCheck();
+          this.onClose();
         },
+        error: () => this.cd.markForCheck(),
       });
+      return;
     }
+
+    if (mode === 'gerar') {
+      const id = this.objeto.idOrcamento;
+      if (!id) {
+        this.baseService.post(`${this.endpoint}/rascunho`, payload).subscribe({
+          next: (res: any) => {
+            const newId = res.idOrcamento ?? res;
+            this.gerarOrcamento(newId, payload);
+          },
+          error: () => this.cd.markForCheck(),
+        });
+      } else {
+        this.gerarOrcamento(id, payload);
+      }
+      return;
+    }
+
+    this.baseService.save(this.endpoint, payload, this.objeto.idOrcamento).subscribe({
+      next: () => {
+        this.cd.markForCheck();
+        this.onClose();
+      },
+      error: () => this.cd.markForCheck(),
+    });
+  }
+
+  private gerarOrcamento(id: number, payload: unknown) {
+    this.baseService.post(`${this.endpoint}/${id}/gerar`, payload).subscribe({
+      next: (res: any) => {
+        this.objeto.cdPublico = res.cdPublico ?? res;
+        this.partilharVisible = true;
+        this.cd.markForCheck();
+      },
+      error: () => this.cd.markForCheck(),
+    });
+  }
+
+  private toApiPayload(): Record<string, unknown> {
+    const { orcamentoItem, ...rest } = this.objeto as Orcamento & { orcamentoItem: unknown[] };
+    return { ...rest, itens: orcamentoItem ?? [] };
   }
 
   validarItens(): boolean {
@@ -146,20 +176,15 @@ export class Orcamentoform {
     this.objeto.vlPrecoFinal = valor;
   }
 
-  //buscar preview
   consultarPreviewValorFinal() {
-    if (this.objeto.orcamentoItem.length > 0) {
-
-      this.baseService.post(`${this.endpoint}/preview-precificacao`, this.objeto).subscribe({
-        next: (res) => {
-          this.objeto.vlPrecoBase = res.valorTotal;
+    if ((this.objeto.orcamentoItem?.length ?? 0) > 0) {
+      this.baseService.post(`${this.endpoint}/preview-precificacao`, this.toApiPayload()).subscribe({
+        next: (res: any) => {
+          this.objeto.vlPrecoBase = res.valorTotal ?? res;
           this.cd.markForCheck();
         },
-        error: (erro) => {
-          this.cd.markForCheck();
-        },
+        error: () => this.cd.markForCheck(),
       });
     }
   }
-
 }

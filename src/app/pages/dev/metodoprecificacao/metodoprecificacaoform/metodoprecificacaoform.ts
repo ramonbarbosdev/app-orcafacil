@@ -39,7 +39,7 @@ export class Metodoprecificacaoform {
   loading: boolean = true;
   public objeto: MetodoPrecificacao = new MetodoPrecificacao();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'metodoprecificacao';
+  private endpoint = 'metodos-precificacao';
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
 
@@ -90,7 +90,7 @@ export class Metodoprecificacaoform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idMetodoPrecificacao).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();
@@ -129,7 +129,7 @@ export class Metodoprecificacaoform {
   }
 
   obterCodigo() {
-    this.baseService.findAll(`${this.endpoint}/tipo-precificacao`).subscribe({
+    this.baseService.findAll(`${this.endpoint}/tipos`).subscribe({
       next: (res) => {
         this.listaCodigo = (res as any).map((index: any) => {
           const item = new FlagOption();

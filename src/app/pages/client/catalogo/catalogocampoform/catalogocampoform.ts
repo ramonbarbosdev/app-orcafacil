@@ -80,7 +80,7 @@ export class Catalogocampoform {
   }
 
   obterCampos() {
-    this.baseService.findAll('campopersonalizado/obter-por-tenant')
+    this.baseService.findAll('campos-personalizados')
       .subscribe(res => {
 
         const selecionados = this.wizardState.getCamposSelecionadosSnapshot();

@@ -17,7 +17,7 @@ export class Materiallist {
 loading: boolean = true;
   public listagem: Campopersonalizado[] = [];
   public baseService = inject(BaseService);
-  endpoint = 'campopersonalizado';
+  endpoint = 'campos-personalizados';
   primaryKey = 'idCampoPersonalizado';
   router = inject(Router);
   private route = inject(ActivatedRoute);

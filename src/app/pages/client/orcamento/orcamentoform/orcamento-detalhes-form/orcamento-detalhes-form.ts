@@ -54,7 +54,7 @@ export class OrcamentoDetalhesForm {
 
     if (this.objeto.idOrcamento) return;
 
-    this.baseService.findAll('configuracaoorcamento/').subscribe({
+    this.baseService.findAll('configuracao-orcamento').subscribe({
       next: (res) => {
 
         const validadeDias = res.validadeDias ?? 30;

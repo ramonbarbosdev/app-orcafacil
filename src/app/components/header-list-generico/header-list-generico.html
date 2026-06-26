@@ -1,14 +1,14 @@
 <div class="card w-full overflow-x-auto">
   <div class="font-semibold text-xl mb-4">{{ title }}</div>
 
-  <p-table #dt [value]="value" [lazy]="true" [paginator]="true" [rows]="10" [totalRecords]="totalRegistro"
-    (onLazyLoad)="carregarLazy($event)" [loading]="loading" dataKey="id" [rowsPerPageOptions]="[2,5, 10, 15,20]"
-    [paginator]="true" [rowHover]="true" [showGridlines]="false" responsiveLayout="scroll"
+  <p-table #dt [value]="value" [paginator]="true" [rows]="10" [totalRecords]="totalRegistro"
+    [loading]="loading" dataKey="id" [rowsPerPageOptions]="[5, 10, 15, 20]"
+    [rowHover]="true" [showGridlines]="false" responsiveLayout="scroll"
     [globalFilterFields]="globalFilterFields" stripedRows selectionMode="multiple" sortMode="multiple">
     <ng-template #caption>
       <div class="flex flex-wrap gap-2 justify-between items-center">
         <div class="flex flex-wrap gap-2">
-          <button title="Novo" pButton label="Novo" icon="pi pi-plus" class="p-button-outlined"
+          <button *ngIf="canCreate" title="Novo" pButton label="Novo" icon="pi pi-plus" class="p-button-outlined"
             (click)="onAdd()"></button>
 
           <button title="Limpar" pButton label="Limpar Filtros" icon="pi pi-filter-slash" class="p-button-outlined"
@@ -40,7 +40,7 @@
     <ng-template #body let-row>
       <tr>
         <td>
-          <ng-container *ngFor="let action of actions">
+          <ng-container *ngFor="let action of visibleActions">
             <p-button [icon]="action.icon" [label]="action.label" [severity]="action.severity"
               [rounded]="action.rounded" [outlined]="action.outlined" (click)="executarAcao(row, action)"
               class="mr-2"></p-button>

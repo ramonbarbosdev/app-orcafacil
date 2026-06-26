@@ -63,7 +63,7 @@ export class Clienteform {
   loading: boolean = true;
   public objeto: Clientes = new Clientes();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'cliente';
+  private endpoint = 'clientes';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -112,7 +112,7 @@ export class Clienteform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idCliente).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();
@@ -151,19 +151,10 @@ export class Clienteform {
   }
 
   obterTipoCliente() {
-    this.baseService.findAll(`${this.endpoint}/tipo-cliente/`).subscribe({
-      next: (res) => {
-        this.listaTipo = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index;
-          item.name = index;
-          this.cd.markForCheck();
-          return item;
-        });
-
-        this.objeto.tpCliente = String(this.listaTipo[0].code);
-      },
-      error: (err) => { },
-    });
+    this.listaTipo = [
+      { code: 'Fisico', name: 'Fisico' },
+      { code: 'Juridico', name: 'Juridico' },
+    ] as FlagOption[];
+    this.objeto.tpCliente = 'Fisico';
   }
 }

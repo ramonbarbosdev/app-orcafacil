@@ -2,19 +2,13 @@
   (onShow)="showDialog()">
   <div class="flex-row-responsive">
     <app-layout-campo [label]="'Organização:'" [width]="'w-full'" [sublabel]="'Informe a organização'"
-      [describedby]="'idTenant'">
-      <p-select [checkmark]="true" [showClear]="true" name="idTenant" [options]="listaEmpresa" optionLabel="name"
-        optionValue="code" placeholder="Empresas" class="w-full" [(ngModel)]="objeto.idTenant" />
-    </app-layout-campo>
-  </div>
-  <div class="flex-row-responsive">
-    <app-layout-campo [label]="'Aréa do Desenvolvedor:'" [width]="'w-full'" *ngIf="getVerificarPermissao() ">
-      <p-toggleswitch [(ngModel)]="objeto.isAreaDev" />
-
+      [describedby]="'idOrganizacao'">
+      <p-select [checkmark]="true" [showClear]="true" name="idOrganizacao" [options]="listaEmpresa" optionLabel="name"
+        optionValue="code" placeholder="Organizações" class="w-full" [(ngModel)]="objeto.idOrganizacao" />
     </app-layout-campo>
   </div>
 
   <div class="flex justify-end gap-2">
-    <p-button label="Continuar" (click)="login()" [loading]="loading" />
+    <p-button label="Continuar" (click)="continuar()" [loading]="loading" />
   </div>
 </p-dialog>

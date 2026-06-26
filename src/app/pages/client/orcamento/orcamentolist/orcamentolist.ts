@@ -29,7 +29,7 @@ export class Orcamentolist {
   loading: boolean = true;
   public listagem: Catalogo[] = [];
   public baseService = inject(BaseService);
-  endpoint = 'orcamento';
+  endpoint = 'orcamentos';
   primaryKey = 'idOrcamento';
   router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -89,6 +89,7 @@ export class Orcamentolist {
       icon: 'pi pi-pencil',
       rounded: true,
       outlined: true,
+      permission: 'orcamentos.editar',
       onClick: (row) => this.onEdit(row),
     },
     {
@@ -96,20 +97,21 @@ export class Orcamentolist {
       rounded: true,
       outlined: true,
       onClick: (row) => this.onView(row),
-      requiresConfirmation: false
+      requiresConfirmation: false,
     },
     {
       icon: 'pi pi-file-pdf',
       rounded: true,
       outlined: true,
       onClick: (row) => this.onPdf(row),
-      requiresConfirmation: false
+      requiresConfirmation: false,
     },
     {
       icon: 'pi pi-trash',
       severity: 'danger',
       rounded: true,
       outlined: true,
+      permission: 'orcamentos.deletar',
       onClick: (row) => this.onDelete(row),
     },
   ];
@@ -152,7 +154,7 @@ export class Orcamentolist {
   onPdf(item: any) {
     if (item && item['cdPublico']) {
       const codigo = item['cdPublico'];
-      this.baseService.getPdf('orcamento/relatorio', codigo)
+      this.baseService.getPdf('orcamentos/relatorio', codigo)
       .subscribe(blob => {
 
         const fileURL = URL.createObjectURL(blob);

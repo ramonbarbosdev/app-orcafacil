@@ -11,27 +11,31 @@ import { LayoutService } from '../../../../layout/service/layout.service';
 
 @Component({
   selector: 'app-orcamentoview',
-  imports: [CommonModule, FormsModule, CardModule,AccordionModule, DividerModule  ],
+  imports: [CommonModule, FormsModule, CardModule, AccordionModule, DividerModule],
   templateUrl: './orcamentoview.html',
   styleUrl: './orcamentoview.scss',
 })
 export class Orcamentoview {
-
   orcamento!: OrcamentoVisualizacao;
   loading = true;
 
   private cd = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   public baseService = inject(BaseService);
-    layoutService = inject(LayoutService);
-  
+  layoutService = inject(LayoutService);
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('codigo');
+    const codigo = this.route.snapshot.paramMap.get('codigo');
 
-    this.baseService.findById(`orcamento/visualizacao`, id).subscribe(res => {
-      this.orcamento = res;
-      this.loading = false;
+    this.baseService.getPublic<OrcamentoVisualizacao>(`orcamentos/visualizacao/${codigo}`).subscribe({
+      next: (res) => {
+        this.orcamento = res;
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 
@@ -41,9 +45,7 @@ export class Orcamentoview {
       'bg-blue-100 text-blue-700': status === 'GERADO',
       'bg-yellow-100 text-yellow-700': status === 'ENVIADO',
       'bg-green-100 text-green-700': status === 'APROVADO',
-      'bg-red-100 text-red-700': status === 'REJEITADO'
+      'bg-red-100 text-red-700': status === 'REJEITADO',
     };
   }
-
-
 }

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } fro
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { BaseService } from '../../../services/base.service';
 import { FlagOption } from '../../../models/flag-option';
 import { SelectModule } from 'primeng/select';
 import { LayoutCampo } from '../../../components/layout-campo/layout-campo';
@@ -12,8 +11,6 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { LoginSchema } from '../../../schema/login-schema';
 import { ZodError } from 'zod';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { TipoRole } from '../../../enum/TipoRole';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,20 +23,17 @@ import { Router } from '@angular/router';
     LayoutCampo,
     CommonModule,
     FormsModule,
-    ToggleSwitchModule,
   ],
   templateUrl: './selecionar-organizacao.html',
   styleUrl: './selecionar-organizacao.scss',
 })
 export class SelecionarOrganizacao {
   @Input() visible: boolean = false;
-  @Input() listaEmpresa: any[] = [];
+  @Input() listaEmpresa: FlagOption[] = [];
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
-  @Output() show = new EventEmitter<void>();
 
-  @Input() objeto: any;
-  private baseService = inject(BaseService);
+  @Input() objeto!: Auth;
   private auth = inject(AuthService);
   private router = inject(Router);
 
@@ -48,7 +42,9 @@ export class SelecionarOrganizacao {
   public errorValidacao: Record<string, string> = {};
 
   showDialog() {
-    this.objeto.idTenant = String(this.listaEmpresa[0].code);
+    if (this.listaEmpresa.length > 0) {
+      this.objeto.idOrganizacao = Number(this.listaEmpresa[0].code);
+    }
   }
 
   hideDialog() {
@@ -58,39 +54,23 @@ export class SelecionarOrganizacao {
     this.loading = false;
   }
 
-  login() {
-    if (!this.validarItens()) return;
+  continuar() {
+    if (!this.validarItens() || !this.objeto.idOrganizacao) return;
     this.loading = true;
 
-    this.auth.login(this.objeto).subscribe({
-      next: (res: any) => {
+    this.auth.selecionarOrganizacao(Number(this.objeto.idOrganizacao)).subscribe({
+      next: () => {
         this.loading = false;
         this.visible = false;
-        this.gerenciarRotaUsuario(res);
+        this.router.navigate(['/client/home']);
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
       },
     });
   }
 
-  gerenciarRotaUsuario(res: any) {
-
-    if (this.objeto.isAreaDev) {
-      this.router.navigate(['dev/home']);
-      return;
-    }
-    this.router.navigate(['client/home']);
-  }
-
-  getVerificarPermissao() {
-    if (TipoRole.ROLE_DEV === this.objeto.role) {
-      return true;
-    }
-    return false;
-  }
-
-  validarItens(): any {
+  validarItens(): boolean {
     try {
       LoginSchema.parse([this.objeto]);
       return true;
@@ -101,9 +81,9 @@ export class SelecionarOrganizacao {
           const value = e.path[1];
           this.errorValidacao[String(value)] = e.message;
         });
-
         return false;
       }
+      return false;
     }
   }
 }

@@ -1,27 +1,19 @@
-import { inject, Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpErrorResponse,
-  HttpInterceptorFn,
-  HttpHandlerFn,
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api'; // Se quiser mostrar toast
+import { HttpInterceptorFn } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { inject } from '@angular/core';
 
-export const Error403Interceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
-  const router = inject(Router);
+export const Error403Interceptor: HttpInterceptorFn = (req, next) => {
   const messageService = inject(MessageService);
 
   return next(req).pipe(
-    catchError(err => {
+    catchError((err) => {
       if (err.status === 403) {
-        // messageService.add({ severity: 'error', summary: 'Acesso negado', detail: 'Você não tem permissão.' });
-        router.navigate(['/auth/access']);
+        messageService.add({
+          severity: 'error',
+          summary: 'Sem permissão',
+          detail: err.error?.message ?? 'Você não tem permissão para esta ação.',
+        });
       }
       return throwError(() => err);
     })

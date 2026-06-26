@@ -15,7 +15,7 @@ import { ConfigMetodoAjuste } from "./config-metodo-ajuste/config-metodo-ajuste"
 
 @Component({
   selector: 'app-configuracao-view',
-  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigEmpresa, ConfigOrcamento, ConfigNotificacao, ConfigMetodoPrecificacao, ConfigCampoPersonalizado, ConfigMetodoAjuste],
+  imports: [DividerModule, ButtonModule, CardModule, CommonModule, FormsModule, InputTextModule, ConfigOrcamento, ConfigNotificacao, ConfigMetodoPrecificacao, ConfigCampoPersonalizado, ConfigMetodoAjuste],
   templateUrl: './configuracao-view.html',
   styleUrl: './configuracao-view.scss',
 })

@@ -1,5 +1,6 @@
 export class Empresa {
   public idEmpresa!: number;
+  public idOrganizacao?: number;
   public idTenant: string = '';
   public cdEmpresa: string = '';
   public nmEmpresa: string = '';

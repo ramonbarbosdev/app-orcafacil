@@ -61,7 +61,7 @@ export class Servicoform {
   loading: boolean = true;
   public objeto: Servicos = new Servicos();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'servico';
+  private endpoint = 'servicos';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -110,7 +110,7 @@ export class Servicoform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idServico).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();

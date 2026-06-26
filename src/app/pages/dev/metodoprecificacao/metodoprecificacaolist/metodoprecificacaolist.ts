@@ -28,7 +28,7 @@ export class Metodoprecificacaolist {
  loading: boolean = true;
   public listagem: MetodoPrecificacao[] = [];
   public baseService = inject(BaseService);
-  endpoint = 'metodoprecificacao';
+  endpoint = 'metodos-precificacao';
   primaryKey = 'idMetodoPrecificacao';
   router = inject(Router);
   private route = inject(ActivatedRoute);

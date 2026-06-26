@@ -29,7 +29,7 @@ export class Catalogolist {
   loading: boolean = true;
   public listagem: Catalogo[] = [];
   public baseService = inject(BaseService);
-  endpoint = 'catalogo';
+  endpoint = 'catalogos';
   primaryKey = 'idCatalogo';
   router = inject(Router);
   private route = inject(ActivatedRoute);

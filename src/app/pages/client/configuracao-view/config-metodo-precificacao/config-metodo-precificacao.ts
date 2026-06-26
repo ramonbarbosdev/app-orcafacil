@@ -41,7 +41,7 @@ export class ConfigMetodoPrecificacao {
   public errorValidacao: Record<string, string> = {};
   public objeto: EmpresaMetodoPrecificacao = new EmpresaMetodoPrecificacao();
   loading: boolean = true;
-  private endpoint = 'empresametodoprecificacao';
+  private endpoint = 'empresa-metodos-precificacao';
   private baseService = inject(BaseService);
   private confirmationService = inject(ConfirmationService);
 
@@ -115,7 +115,7 @@ export class ConfigMetodoPrecificacao {
 
   onEdit() {
 
-    this.baseService.findAll(`${this.endpoint}/obter-por-tenant`).subscribe({
+    this.baseService.findAll(this.endpoint).subscribe({
       next: (res: any) => {
         if (res) {
           this.objeto = res;
@@ -138,7 +138,7 @@ export class ConfigMetodoPrecificacao {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idEmpresaMetodoPrecificacao).subscribe({
         next: () => {
           this.novo();
           this.carregarLista();
@@ -186,7 +186,7 @@ export class ConfigMetodoPrecificacao {
 
 
   obterMetodo() {
-    this.baseService.findAll(`metodoprecificacao/buscar`).subscribe({
+    this.baseService.findAll('metodos-precificacao').subscribe({
       next: (res: any) => {
         this.listaMetodo = res as MetodoPrecificacaoMetaDTO[];
       },

@@ -2,25 +2,32 @@ import { Component, inject } from '@angular/core';
 import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
 import { BaseService } from '../../../../services/base.service';
 import { ConfiguracaoOrcamento } from '../../../../models/configuracao-orcamento';
-import { LayoutCampo } from "../../../../components/layout-campo/layout-campo";
+import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { InputTextModule } from 'primeng/inputtext';
-
 import { InputNumberModule } from 'primeng/inputnumber';
+
 @Component({
   selector: 'app-config-orcamento',
-  imports: [LayoutCardConfig, LayoutCampo, CommonModule, FormsModule,TextareaModule, InputTextModule,InputNumberModule],
+  imports: [
+    LayoutCardConfig,
+    LayoutCampo,
+    CommonModule,
+    FormsModule,
+    TextareaModule,
+    InputTextModule,
+    InputNumberModule,
+  ],
   templateUrl: './config-orcamento.html',
   styleUrl: './config-orcamento.scss',
 })
 export class ConfigOrcamento {
-
   public errorValidacao: Record<string, string> = {};
   public objeto: ConfiguracaoOrcamento = new ConfiguracaoOrcamento();
   loading: boolean = true;
-  private endpoint = 'configuracaoorcamento';
+  private endpoint = 'configuracao-orcamento';
   private baseService = inject(BaseService);
 
   ngAfterViewInit(): void {
@@ -28,13 +35,12 @@ export class ConfigOrcamento {
   }
 
   onEdit() {
-    this.baseService.findAll(`${this.endpoint}/`).subscribe({
-      next: (res: any) => {
-        this.objeto = res;
-
+    this.baseService.findAll(this.endpoint).subscribe({
+      next: (res: ConfiguracaoOrcamento) => {
+        this.objeto = res ?? new ConfiguracaoOrcamento();
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
       },
     });
@@ -42,17 +48,13 @@ export class ConfigOrcamento {
 
   onSave() {
     this.loading = true;
-
-      this.baseService.create(`${this.endpoint}/`, this.objeto).subscribe({
-        next: () => {
-          this.loading = false;
-
-        },
-        error: (erro) => {
-          this.loading = false;
-        },
-      });
+    this.baseService.update(this.endpoint, this.objeto).subscribe({
+      next: () => {
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
   }
-
-
 }

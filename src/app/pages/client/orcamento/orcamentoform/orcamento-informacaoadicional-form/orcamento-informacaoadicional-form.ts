@@ -38,7 +38,7 @@ export class OrcamentoInformacaoadicionalForm {
   }
 
   obterCondicao() {
-    this.baseService.findAll(`condicaopagamento/`).subscribe({
+    this.baseService.findAll('condicoes-pagamento').subscribe({
       next: (res) => {
         this.listaCondicaoPagamento = (res as any).map((index: any) => {
           const item = new FlagOption();
@@ -57,7 +57,7 @@ export class OrcamentoInformacaoadicionalForm {
    obterTermoCondicoes() {
     if (this.objeto.idOrcamento) return;
 
-    this.baseService.findAll('configuracaoorcamento/').subscribe({
+    this.baseService.findAll('configuracao-orcamento').subscribe({
       next: (res) => {
 
         this.objeto.dsObservacoes = res.termosPadrao ?? '';
@@ -72,7 +72,7 @@ export class OrcamentoInformacaoadicionalForm {
   
   
    obterStatus() {
-    this.baseService.findAll(`orcamento/status-orcamento`).subscribe({
+    this.baseService.findAll('orcamentos/status').subscribe({
       next: (res) => {
         this.listaStatus = (res as any).map((index: any) => {
           const item = new FlagOption();

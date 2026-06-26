@@ -32,7 +32,7 @@ import { Planoassinaturaform } from "../planoassinaturaform/planoassinaturaform"
 export class Planoassinaturalist {
   loading: boolean = true;
   public baseService = inject(BaseService);
-  endpoint = 'planoassinatura';
+  endpoint = 'admin/planos-assinatura';
   primaryKey = 'idPlanoAssinatura';
   router = inject(Router);
   private route = inject(ActivatedRoute);

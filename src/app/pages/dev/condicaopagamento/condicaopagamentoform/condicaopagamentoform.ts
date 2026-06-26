@@ -52,7 +52,7 @@ export class Condicaopagamentoform {
   loading: boolean = true;
   public objeto: Condicaopagamento = new Condicaopagamento();
   public errorValidacao: Record<string, string> = {};
-  private endpoint = 'condicaopagamento';
+  private endpoint = 'condicoes-pagamento';
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private cd = inject(ChangeDetectorRef);
@@ -98,7 +98,7 @@ export class Condicaopagamentoform {
     if (this.validarItens()) {
       this.loading = true;
 
-      this.baseService.create(`${this.endpoint}/cadastrar`, this.objeto).subscribe({
+      this.baseService.save(this.endpoint, this.objeto, this.objeto.idCondicaoPagamento).subscribe({
         next: () => {
           this.loading = false;
           this.hideDialog();
