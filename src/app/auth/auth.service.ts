@@ -12,6 +12,7 @@ import {
   SelecionarOrgResponse,
   SessionUser,
 } from '../models/api.types';
+import { isAuthHandledStatus } from '../utils/http-error.util';
 
 const STORAGE_KEY = 'user';
 
@@ -161,12 +162,17 @@ export class AuthService {
     return body as T;
   }
 
-  exibirErros(e: { error?: ApiErrorShape }): void {
+  exibirErros(e: { error?: ApiErrorShape; status?: number }): void {
+    if (isAuthHandledStatus(e.status ?? 0)) {
+      return;
+    }
+
     const err = e.error;
+    const detail = [err?.message, err?.hint].filter(Boolean).join(' ');
     this.messageService.add({
       severity: 'error',
-      summary: err?.message ?? 'Erro',
-      detail: err?.error ?? '',
+      summary: 'Não foi possível concluir',
+      detail: detail || err?.error || 'Ocorreu um erro inesperado. Tente novamente.',
     });
   }
 }
@@ -174,6 +180,7 @@ export class AuthService {
 interface ApiErrorShape {
   message?: string;
   error?: string;
+  hint?: string;
 }
 
 interface ApiEnvelope<T> {

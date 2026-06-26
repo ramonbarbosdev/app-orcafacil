@@ -80,7 +80,7 @@ export class OrcamentoClienteForm {
   }
 
   obterCliente() {
-    this.baseService.findAll(`cliente/`).subscribe({
+    this.baseService.findAll('clientes').subscribe({
       next: (res) => {
         this.listaCliente = (res as any).map((index: any) => {
           const item = new FlagOption();

@@ -1,10 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MessageService } from 'primeng/api';
 import { FlagOption } from '../models/flag-option';
 import { ApiResponse } from '../models/api.types';
+import { isAuthHandledStatus } from '../utils/http-error.util';
 
 @Injectable({
   providedIn: 'root',
@@ -141,11 +142,17 @@ export class BaseService {
     return this.unwrap(this.http.get<ApiResponse<T>>(`${this.apiUrl}/${endpoint}`));
   }
 
-  exibirErros(e: { error?: { message?: string; error?: string } }): void {
+  exibirErros(e: HttpErrorResponse | { error?: { message?: string; error?: string; hint?: string }; status?: number }): void {
+    if ('status' in e && isAuthHandledStatus(e.status ?? 0)) {
+      return;
+    }
+
+    const err = e.error;
+    const detail = [err?.message, err?.hint].filter(Boolean).join(' ');
     this.messageService.add({
       severity: 'error',
-      summary: e.error?.message ?? 'Erro',
-      detail: e.error?.error ?? '',
+      summary: 'Não foi possível concluir',
+      detail: detail || err?.error || 'Ocorreu um erro inesperado. Tente novamente.',
     });
   }
 

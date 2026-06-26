@@ -163,12 +163,12 @@ export class Servicoform {
   }
 
   obterCategoria() {
-    this.baseService.findAll(`categoriaservico/`).subscribe({
+    this.baseService.findAll('categorias-servico').subscribe({
       next: (res) => {
         this.listaCategoria = (res as any).map((index: any) => {
           const item = new FlagOption();
-          item.code = index.idCategoriaservico;
-          item.name = index.nmCategoriaservico;
+          item.code = index.idCategoriaServico;
+          item.name = index.nmCategoriaServico;
           this.cd.markForCheck();
           return item;
         });

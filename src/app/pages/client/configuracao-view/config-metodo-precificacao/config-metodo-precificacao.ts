@@ -58,7 +58,7 @@ export class ConfigMetodoPrecificacao {
 
   carregarLista() {
 
-    this.baseService.findAll(`${this.endpoint}/`).subscribe({
+    this.baseService.findAll(this.endpoint).subscribe({
       next: (res: any) => {
         if (res) {
           this.lista = res;

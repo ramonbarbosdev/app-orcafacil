@@ -161,7 +161,7 @@ export class ConfigCampoPersonalizado {
 
 
   obterTipoValor() {
-    this.baseService.findAll(`${this.endpoint}/tipo-valor/`).subscribe({
+    this.baseService.findAll(`${this.endpoint}/tipo-valor`).subscribe({
       next: (res) => {
 
         this.listaTipoValor = (res as any).map((index: any) => {
@@ -181,7 +181,7 @@ export class ConfigCampoPersonalizado {
   }
 
   obterTipoCampo() {
-    this.baseService.findAll(`${this.endpoint}/tipo-campo/`).subscribe({
+    this.baseService.findAll(`${this.endpoint}/tipo-campo`).subscribe({
       next: (res) => {
 
         this.listaTipoCampo = (res as any).map((index: any) => {

@@ -7,6 +7,7 @@ export interface ApiError {
   status: number;
   error: string;
   message: string;
+  hint?: string;
   path: string;
   timestamp: string;
 }

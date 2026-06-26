@@ -210,7 +210,7 @@ export class OrcamentoItemForm {
 
   obterCatalogo() {
 
-    this.baseService.findAll('catalogo/').subscribe({
+    this.baseService.findAll('catalogos').subscribe({
       next: (res) => {
         this.listaCatalogo = (res as any).map((index: any) => {
           const item = new FlagOption();

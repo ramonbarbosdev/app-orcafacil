@@ -71,9 +71,9 @@ export class OrcamentoDetalhesForm {
   }
 
   obterMetodo() {
-    this.baseService.findAll(`empresametodoprecificacao/listar`).subscribe({
+    this.baseService.findAll('empresa-metodos-precificacao').subscribe({
       next: (res) => {
-        this.listaMetodo = (res.content as any).map((index: any) => {
+        this.listaMetodo = (res as any[]).map((index: any) => {
           const item = new FlagOption();
           item.code = index.idEmpresaMetodoPrecificacao;
           item.name = index.nmMetodoPrecificacao;
