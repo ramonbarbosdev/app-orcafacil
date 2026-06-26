@@ -52,33 +52,38 @@ export class AppMenu implements OnInit, OnDestroy {
       { label: 'Painel Principal', icon: 'pi pi-home', routerLink: ['/client/home'] },
     ];
 
-    if (this.auth.hasPermission('clientes.ler')) {
+    if (this.auth.canShowInMenu('clientes')) {
       items.push({ label: 'Clientes', icon: 'pi pi-user', routerLink: ['/client/cliente'] });
     }
-    if (this.auth.hasPermission('campos-personalizados.ler')) {
+    if (this.auth.canShowInMenu('campos-personalizados')) {
       items.push({ label: 'Materiais', icon: 'pi pi-book', routerLink: ['/client/material'] });
     }
-    if (this.auth.hasPermission('catalogos.ler')) {
+    if (this.auth.canShowInMenu('catalogos')) {
       items.push({ label: 'Catálogo', icon: 'pi pi-book', routerLink: ['/client/catalogo'] });
     }
-    if (this.auth.hasPermission('orcamentos.ler')) {
+    if (this.auth.canShowInMenu('orcamentos')) {
       items.push({ label: 'Orçamentos', icon: 'pi pi-file', routerLink: ['/client/orcamento'] });
     }
-    if (this.auth.hasPermission('orcamentos.criar')) {
+    if (this.auth.canShowInMenu('orcamentos') && this.auth.hasPermission('orcamentos.criar')) {
       items.push({ label: 'Novo Orçamento', icon: 'pi pi-plus', routerLink: ['/client/orcamento/novo'] });
     }
-    if (this.auth.hasPermission('condicoes-pagamento.ler')) {
+    if (this.auth.canShowInMenu('condicoes-pagamento')) {
       items.push({
         label: 'Condições de Pagamento',
         icon: 'pi pi-wallet',
         routerLink: ['/client/condicoes-pagamento'],
       });
     }
-    if (this.auth.hasAnyPermission('configuracao-orcamento.ler', 'metodos-precificacao.ler')) {
+    if (
+      this.auth.canShowInMenu('configuracao-orcamento') ||
+      this.auth.canShowInMenu('metodos-precificacao') ||
+      this.auth.canShowInMenu('campos-personalizados') ||
+      this.auth.canShowInMenu('metodos-ajuste') ||
+      this.auth.canShowInMenu('empresa-metodos-precificacao')
+    ) {
       items.push({ label: 'Configuração', icon: 'pi pi-cog', routerLink: ['/client/configuracao'] });
     }
 
     this.model = [{ label: 'Menu', items }];
   }
 }
-

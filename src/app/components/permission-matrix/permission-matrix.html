@@ -1,6 +1,12 @@
 <div class="permission-matrix" *ngIf="!loading; else skeleton">
   <div class="permission-matrix__toolbar">
-    <span class="text-sm text-surface-500">{{ selectedCount }} de {{ totalCount }} selecionadas</span>
+    <div class="flex flex-column gap-1">
+      <span class="text-sm text-surface-500">{{ selectedCount }} de {{ totalCount }} selecionadas</span>
+      <span class="text-xs text-surface-500">
+        <strong>Exibir no menu</strong> controla o item no menu lateral.
+        <strong>Consultar</strong> libera leitura na API; criar, editar e excluir controlam as demais ações.
+      </span>
+    </div>
     <div class="flex gap-2">
       <button pButton type="button" label="Marcar todas" class="p-button-text p-button-sm" (click)="marcarTodas()"></button>
       <button pButton type="button" label="Limpar" class="p-button-text p-button-sm" (click)="limparTodas()"></button>

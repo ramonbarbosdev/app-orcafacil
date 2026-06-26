@@ -7,7 +7,8 @@
   (show)="onShow()"
 >
   <p class="text-color-secondary mb-4 text-sm" *ngIf="!isEdicao">
-    Cadastra o usuário (se ainda não existir) e vincula à organização selecionada.
+    Informe o CPF e clique em <strong>Buscar</strong>. Se o usuário já existir no sistema, basta escolher o perfil
+  para vinculá-lo à organização. Senha só é obrigatória para cadastrar alguém novo.
   </p>
   <p class="text-color-secondary mb-4 text-sm" *ngIf="isEdicao">
     Altere nome, perfil ou senha. Deixe a senha em branco para mantê-la.
@@ -17,7 +18,7 @@
     <app-layout-campo
       [error]="errorValidacao['nuCpf']"
       [label]="'CPF: (*)'"
-      [width]="'md:w-6/12'"
+      [width]="'md:w-8/12'"
       [sublabel]="'CPF do usuário (11 dígitos)'"
       [describedby]="'nuCpf'"
     >
@@ -29,11 +30,38 @@
         class="w-full"
         placeholder="000.000.000-00"
         [(ngModel)]="objeto.nuCpf"
+        (ngModelChange)="onCpfChange()"
         mask="000.000.000-00"
         [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['nuCpf'] }"
       />
     </app-layout-campo>
+
+    <app-layout-campo [label]="' '" [width]="'md:w-4/12'" [sublabel]="' '">
+      <button
+        pButton
+        type="button"
+        label="Buscar"
+        icon="pi pi-search"
+        class="w-full mt-2"
+        [loading]="buscandoCpf"
+        (click)="buscarPorCpf()"
+      ></button>
+    </app-layout-campo>
   </div>
+
+  <p-message
+    *ngIf="!isEdicao && usuarioExistente"
+    severity="info"
+    class="mb-3 block w-full"
+    text="Usuário encontrado. Ele será vinculado a esta organização. A senha atual será mantida se você deixar o campo em branco."
+  />
+
+  <p-message
+    *ngIf="!isEdicao && cpfInformadoCompleto && !usuarioExistente && !buscandoCpf"
+    severity="secondary"
+    class="mb-3 block w-full"
+    text="Usuário não encontrado. Preencha os dados para cadastrar e vincular."
+  />
 
   <div class="flex-row-responsive" *ngIf="isEdicao">
     <app-layout-campo [label]="'CPF:'" [width]="'md:w-6/12'" [sublabel]="'Não editável'">
@@ -62,9 +90,13 @@
 
     <app-layout-campo
       [error]="errorValidacao['dsSenha']"
-      [label]="isEdicao ? 'Nova senha:' : 'Senha: (*)'"
+      [label]="isEdicao || usuarioExistente ? 'Nova senha:' : 'Senha: (*)'"
       [width]="'md:w-6/12'"
-      [sublabel]="isEdicao ? 'Opcional — em branco mantém a atual' : 'Senha de acesso ao sistema'"
+      [sublabel]="
+        isEdicao || usuarioExistente
+          ? 'Opcional — em branco mantém a atual'
+          : 'Senha de acesso ao sistema'
+      "
       [describedby]="'dsSenha'"
     >
       <p-password

@@ -48,13 +48,24 @@ export class BaseService {
     );
   }
 
-  findSequence(endpoint: string): Observable<any> {
-    return this.unwrap(this.http.get<ApiResponse<any>>(`${this.apiUrl}/${endpoint}/sequencia`)).pipe(
+  findSequence(endpoint: string): Observable<{ sequencia: string }> {
+    return this.unwrap(this.http.get<ApiResponse<string>>(`${this.apiUrl}/${endpoint}/sequencia`)).pipe(
+      map((res) => this.normalizarSequencia(res)),
       catchError((e) => {
         this.exibirErros(e);
         return throwError(() => e);
       })
     );
+  }
+
+  private normalizarSequencia(res: unknown): { sequencia: string } {
+    if (typeof res === 'string' || typeof res === 'number') {
+      return { sequencia: String(res) };
+    }
+    if (res && typeof res === 'object' && 'sequencia' in res) {
+      return { sequencia: String((res as { sequencia: unknown }).sequencia ?? '') };
+    }
+    return { sequencia: '' };
   }
 
   findAll(endpoint: string): Observable<any> {

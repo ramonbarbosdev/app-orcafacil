@@ -53,15 +53,22 @@ export class AuthService {
   selecionarOrganizacao(idOrganizacao: number): Observable<SelecionarOrgResponse> {
     const body: SelecionarOrgRequest = { idOrganizacao };
     return this.http
-      .post<SelecionarOrgResponse>(`${this.apiUrl}/auth/selecionar-organizacao`, body)
+      .post<SelecionarOrgResponse | ApiEnvelope<SelecionarOrgResponse>>(
+        `${this.apiUrl}/auth/selecionar-organizacao`,
+        body
+      )
       .pipe(
+        map((res) => this.unwrapAuth(res)),
         tap((res) => {
+          if (!res?.token) {
+            throw new Error('Token não recebido ao selecionar organização');
+          }
           this.persistSession({
             token: res.token,
             tipoGlobal: 'DEFAULT',
             idOrganizacao: res.idOrganizacao,
             role: res.role,
-            permissoes: res.permissoes,
+            permissoes: res.permissoes ?? [],
             idUsuario: this.getUser()?.idUsuario,
           });
         }),
@@ -133,6 +140,11 @@ export class AuthService {
 
   hasAnyPermission(...chaves: string[]): boolean {
     return chaves.some((c) => this.hasPermission(c));
+  }
+
+  /** Controle de exibição no menu lateral (permissão {modulo}.exibir no plano/papel). */
+  canShowInMenu(modulo: string): boolean {
+    return this.hasPermission(`${modulo}.exibir`);
   }
 
   clearSession(): void {

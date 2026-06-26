@@ -54,13 +54,41 @@ export function parseHttpError(status: number, body: unknown): ParsedHttpError {
   }
 
   if (status === 401) {
-    return {
-      summary: code === 'UNAUTHORIZED' ? 'Autenticação necessária' : 'Não autorizado',
-      detail:
-        composed ||
-        'Não foi possível concluir a operação. Verifique se você está autenticado e com a organização correta selecionada.',
-      severity: 'warn',
-    };
+    switch (code) {
+      case 'INVALID_TOKEN':
+        return {
+          summary: 'Sessão inválida',
+          detail:
+            composed ||
+            'Sua sessão não é mais válida. Faça login novamente para continuar.',
+          severity: 'error',
+        };
+      case 'INVALID_VINCULO':
+        return {
+          summary: 'Vínculo encerrado',
+          detail:
+            composed ||
+            'Seu acesso a esta organização não está mais ativo. Faça login e selecione outra organização.',
+          severity: 'warn',
+        };
+      case 'ORGANIZATION_UNAVAILABLE':
+        return {
+          summary: 'Organização indisponível',
+          detail:
+            composed ||
+            'A organização selecionada não está disponível. Selecione outra ou contate o suporte.',
+          severity: 'warn',
+        };
+      case 'UNAUTHORIZED':
+      default:
+        return {
+          summary: 'Autenticação necessária',
+          detail:
+            composed ||
+            'Faça login e selecione a organização antes de acessar este recurso.',
+          severity: 'warn',
+        };
+    }
   }
 
   return {

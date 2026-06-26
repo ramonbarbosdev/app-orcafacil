@@ -124,7 +124,8 @@ export class PermissionMatrix implements OnInit, OnChanges {
 
   rotuloAcao(acao: string): string {
     const mapa: Record<string, string> = {
-      ler: 'Listar',
+      exibir: 'Exibir no menu',
+      ler: 'Consultar',
       criar: 'Criar',
       editar: 'Editar',
       deletar: 'Excluir',

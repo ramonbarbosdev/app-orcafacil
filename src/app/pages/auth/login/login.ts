@@ -13,6 +13,7 @@ import { LoginSchema } from '../../../schema/login-schema';
 import { ZodError } from 'zod';
 import { NgxMaskDirective } from 'ngx-mask';
 import { AuthService } from '../../../auth/auth.service';
+import { MessageService } from 'primeng/api';
 import { LayoutCampo } from '../../../components/layout-campo/layout-campo';
 import { SelectModule } from 'primeng/select';
 import { FlagOption } from '../../../models/flag-option';
@@ -48,6 +49,7 @@ export class Login {
   loginResponse: LoginResponse | null = null;
 
   private auth = inject(AuthService);
+  private messageService = inject(MessageService);
   public errorValidacao: Record<string, string> = {};
   private cd = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -60,6 +62,7 @@ export class Login {
 
   hideDialog() {
     this.visibleOrganizacao = false;
+    this.auth.clearSession();
   }
 
   entrar() {
@@ -78,6 +81,24 @@ export class Login {
           return;
         }
 
+        if (!res.organizacoes?.length) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Sem organização',
+            detail: 'Seu usuário não está vinculado a nenhuma organização ativa.',
+          });
+          this.auth.clearSession();
+          return;
+        }
+
+        if (res.organizacoes.length === 1) {
+          this.auth.selecionarOrganizacao(res.organizacoes[0].idOrganizacao).subscribe({
+            next: () => this.router.navigate(['/client/home']),
+            error: () => this.auth.clearSession(),
+          });
+          return;
+        }
+
         if (res.precisaSelecionarOrganizacao) {
           this.visibleOrganizacao = true;
           this.listaEmpresa = res.organizacoes.map((org) => {
@@ -89,12 +110,6 @@ export class Login {
           if (this.listaEmpresa.length > 0) {
             this.objeto.idOrganizacao = Number(this.listaEmpresa[0].code);
           }
-        } else if (res.organizacoes?.length === 1) {
-          this.auth.selecionarOrganizacao(res.organizacoes[0].idOrganizacao).subscribe({
-            next: () => this.router.navigate(['/client/home']),
-          });
-        } else {
-          this.router.navigate(['/client/home']);
         }
       },
       error: () => {

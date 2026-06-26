@@ -66,6 +66,7 @@ export class SelecionarOrganizacao {
       },
       error: () => {
         this.loading = false;
+        this.auth.clearSession();
       },
     });
   }

@@ -217,7 +217,6 @@ export class Catalogoform {
   obterSequencia() {
     this.baseService.findSequence(this.endpoint).subscribe({
       next: (res) => {
-        console.log(res)
         this.objeto.cdCatalogo = res.sequencia;
         this.loading = false;
         this.cd.markForCheck();
