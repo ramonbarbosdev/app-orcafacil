@@ -37,6 +37,8 @@ export interface ActionConfig {
   onClick: (row: any) => void;
   requiresConfirmation?: boolean;
   permission?: string;
+  disabled?: (row: any) => boolean;
+  loading?: (row: any) => boolean;
 }
 
 @Component({
@@ -113,6 +115,10 @@ export class HeaderListGenerico {
   }
 
   executarAcao(row: any, acao: ActionConfig) {
+    if (acao.disabled?.(row) || acao.loading?.(row)) {
+      return;
+    }
+
     const isEditAction =
       acao.label?.toLowerCase().includes('editar') ||
       acao.icon === 'pi pi-pencil';

@@ -1,7 +1,15 @@
 <p-dialog header="Partilhar" [modal]="true" [(visible)]="visible" [style]="{ width: '42rem' }" (onHide)="hideDialog()"
     (onShow)="showDialog()">
 
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-6 relative">
+
+        @if (gerandoPdf) {
+            <div class="partilhar-pdf-loading absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg">
+                <p-progressSpinner strokeWidth="4" styleClass="w-10 h-10" />
+                <p class="text-sm font-medium m-0">Gerando PDF do orçamento...</p>
+                <p class="text-xs text-surface-500 m-0">Isso pode levar alguns segundos</p>
+            </div>
+        }
 
         <p class="text-sm">
             O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
@@ -42,7 +50,14 @@
             </p-button>
 
             <!-- PDF -->
-            <p-button variant="text" type="button" severity="secondary" (click)="gerarPdf()">
+            <p-button
+                variant="text"
+                type="button"
+                severity="secondary"
+                [loading]="gerandoPdf"
+                [disabled]="gerandoPdf"
+                (click)="gerarPdf()"
+            >
                 <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
 
                     <div class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center">

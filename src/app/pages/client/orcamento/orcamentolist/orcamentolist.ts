@@ -27,6 +27,7 @@ import { FormatDataParaListagem } from '../../../../utils/FormatarData';
 })
 export class Orcamentolist {
   loading: boolean = true;
+  gerandoPdfCodigo: string | null = null;
   public listagem: Catalogo[] = [];
   public baseService = inject(BaseService);
   endpoint = 'orcamentos';
@@ -105,6 +106,8 @@ export class Orcamentolist {
       outlined: true,
       onClick: (row) => this.onPdf(row),
       requiresConfirmation: false,
+      disabled: (row) => this.gerandoPdfCodigo === row?.['cdPublico'],
+      loading: (row) => this.gerandoPdfCodigo === row?.['cdPublico'],
     },
     {
       icon: 'pi pi-trash',
@@ -152,24 +155,27 @@ export class Orcamentolist {
     }
   }
   onPdf(item: any) {
-    if (item && item['cdPublico']) {
-      const codigo = item['cdPublico'];
-      this.baseService.getPdf('orcamentos/relatorio', codigo)
-      .subscribe(blob => {
-
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
-        // ou 👉 download automático:
-        // const link = document.createElement('a');
-        // link.href = fileURL;
-        // link.download = 'orcamento.pdf';
-        // link.click();
-
-        this.loading = false;
-      });
-    } else {
-      console.error('ID está indefinido');
+    const codigo = item?.['cdPublico'];
+    if (!codigo) {
+      console.error('Código público indefinido');
+      return;
     }
+
+    if (this.gerandoPdfCodigo) {
+      return;
+    }
+
+    this.gerandoPdfCodigo = codigo;
+    this.baseService.gerarEAbrirRelatorioPdf(codigo).subscribe({
+      complete: () => {
+        this.gerandoPdfCodigo = null;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.gerandoPdfCodigo = null;
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onDelete(item: any) {

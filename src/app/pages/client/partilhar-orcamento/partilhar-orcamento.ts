@@ -5,18 +5,26 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { Divider, DividerModule } from 'primeng/divider';
-import { ActivatedRoute, Router } from '@angular/router';
+import { DividerModule } from 'primeng/divider';
+import { Router } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-partilhar-orcamento',
-  imports: [DialogModule, FormsModule, CommonModule, ButtonModule, InputTextModule, DividerModule, ButtonModule],
+  imports: [
+    DialogModule,
+    FormsModule,
+    CommonModule,
+    ButtonModule,
+    InputTextModule,
+    DividerModule,
+    ProgressSpinnerModule,
+  ],
   templateUrl: './partilhar-orcamento.html',
   styleUrl: './partilhar-orcamento.scss',
 })
 export class PartilharOrcamento {
-
-  @Input() cdPublico!: string ;
+  @Input() cdPublico!: string;
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
@@ -24,9 +32,11 @@ export class PartilharOrcamento {
   @Output() confirmar = new EventEmitter<any>();
 
   linkOrcamento = '';
+  gerandoPdf = false;
+
   public baseService = inject(BaseService);
   router = inject(Router);
-
+  private cd = inject(ChangeDetectorRef);
 
   hideDialog() {
     this.visible = false;
@@ -35,15 +45,11 @@ export class PartilharOrcamento {
   }
 
   showDialog() {
-
     this.linkOrcamento = `${window.location.origin}/public/orcamento/${this.cdPublico}`;
     this.visible = true;
   }
 
-
-
   enviarWhatsApp() {
-    // depois você integra com backend
     console.log('Enviar WhatsApp');
   }
 
@@ -53,26 +59,27 @@ export class PartilharOrcamento {
 
   copiarLink() {
     navigator.clipboard.writeText(this.linkOrcamento);
-
   }
 
   abrirView() {
-    // navigator.clipboard.writeText(this.linkOrcamento);
-      this.router.navigate(['public/orcamento', this.cdPublico]);
-
+    this.router.navigate(['public/orcamento', this.cdPublico]);
   }
 
-  gerarPdf() {
-    const codigo =this.cdPublico;
-      this.baseService.getPdf('orcamentos/relatorio', codigo)
-      .subscribe(blob => {
+  gerarPdf(): void {
+    if (this.gerandoPdf) {
+      return;
+    }
 
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
-
-      });
+    this.gerandoPdf = true;
+    this.baseService.gerarEAbrirRelatorioPdf(this.cdPublico).subscribe({
+      complete: () => {
+        this.gerandoPdf = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.gerandoPdf = false;
+        this.cd.markForCheck();
+      },
+    });
   }
-
- 
-
 }

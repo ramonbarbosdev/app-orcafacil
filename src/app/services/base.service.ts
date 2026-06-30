@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import { catchError, finalize, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MessageService } from 'primeng/api';
 import { FlagOption } from '../models/flag-option';
@@ -12,6 +12,7 @@ import { isAuthHandledStatus } from '../utils/http-error.util';
 })
 export class BaseService {
   private readonly apiUrl = environment.apiUrl;
+  private static readonly RELATORIO_PDF_TOAST_KEY = 'relatorio-pdf';
   private messageService = inject(MessageService);
 
   constructor(private http: HttpClient) {}
@@ -147,6 +148,62 @@ export class BaseService {
 
   getPdf(url: string, id: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${url}/${id}`, { responseType: 'blob' });
+  }
+
+  gerarEAbrirRelatorioPdf(codigoPublico: string): Observable<void> {
+    const codigo = codigoPublico?.trim();
+    if (!codigo) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Relatório indisponível',
+        detail: 'Este orçamento ainda não possui código público para gerar o PDF.',
+        life: 5000,
+      });
+      return throwError(() => new Error('Código público inválido'));
+    }
+
+    this.iniciarFeedbackRelatorio();
+
+    return this.getPdf('orcamentos/relatorio', codigo).pipe(
+      tap((blob) => this.abrirPdfNoNavegador(blob)),
+      map(() => undefined),
+      tap(() => this.finalizarFeedbackRelatorioSucesso()),
+      catchError((e) => {
+        if (!('status' in e) || !isAuthHandledStatus(e.status ?? 0)) {
+          this.exibirErros(e);
+        }
+        return throwError(() => e);
+      }),
+      finalize(() => this.messageService.clear(BaseService.RELATORIO_PDF_TOAST_KEY)),
+    );
+  }
+
+  private iniciarFeedbackRelatorio(): void {
+    this.messageService.clear(BaseService.RELATORIO_PDF_TOAST_KEY);
+    this.messageService.add({
+      key: BaseService.RELATORIO_PDF_TOAST_KEY,
+      severity: 'info',
+      summary: 'Gerando relatório',
+      detail: 'Aguarde, o PDF está sendo preparado...',
+      sticky: true,
+      closable: false,
+    });
+  }
+
+  private finalizarFeedbackRelatorioSucesso(): void {
+    this.messageService.clear(BaseService.RELATORIO_PDF_TOAST_KEY);
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Relatório pronto',
+      detail: 'O PDF foi aberto em uma nova aba do navegador.',
+      life: 4000,
+    });
+  }
+
+  private abrirPdfNoNavegador(blob: Blob): void {
+    const fileURL = URL.createObjectURL(blob);
+    window.open(fileURL, '_blank', 'noopener,noreferrer');
+    setTimeout(() => URL.revokeObjectURL(fileURL), 60_000);
   }
 
   getPublic<T>(endpoint: string): Observable<T> {
