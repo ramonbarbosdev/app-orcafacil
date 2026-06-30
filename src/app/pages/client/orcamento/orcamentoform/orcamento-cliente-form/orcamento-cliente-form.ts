@@ -24,13 +24,30 @@ export class OrcamentoClienteForm {
   listaCliente: FlagOption[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['objeto']) {
-
-      if (!this.objeto.cliente)
-        this.objeto.cliente = {};
-
+    if (changes['objeto'] && this.objeto) {
+      this.hidratarClienteDoOrcamento();
       this.obterCliente();
     }
+  }
+
+  private hidratarClienteDoOrcamento(): void {
+    const clienteAtual = this.objeto.cliente ?? {};
+    const idCliente = clienteAtual.idCliente ?? this.objeto.idCliente;
+    const nmCliente = clienteAtual.nmCliente ?? this.objeto.nmCliente ?? '';
+
+    if (!idCliente && !nmCliente) {
+      this.objeto.cliente = {};
+      return;
+    }
+
+    this.objeto.cliente = {
+      idCliente,
+      nmCliente,
+      nuCpfcnpj: clienteAtual.nuCpfcnpj ?? '',
+      dsEmail: clienteAtual.dsEmail ?? '',
+      nuTelefone: clienteAtual.nuTelefone ?? '',
+      dsObservacoes: clienteAtual.dsObservacoes ?? '',
+    };
   }
 
 

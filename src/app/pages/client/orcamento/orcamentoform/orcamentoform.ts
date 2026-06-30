@@ -5,6 +5,8 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { OrcamentoClienteForm } from './orcamento-cliente-form/orcamento-cliente-form';
 import { Orcamento } from '../../../../models/orcamento';
+import { Orcamentoitem } from '../../../../models/orcamentoitem';
+import { Clientes } from '../../../../models/clientes';
 import { BaseService } from '../../../../services/base.service';
 import { OrcamentoClienteSchema } from '../../../../schema/orcamentoclientes-schema';
 import { ZodError } from 'zod';
@@ -71,15 +73,70 @@ export class Orcamentoform {
 
     this.baseService.findById(this.endpoint, id).subscribe({
       next: (res: any) => {
-        this.objeto = res;
-        this.objeto.orcamentoItem = res.itens ?? res.orcamentoItem ?? [];
-        this.objeto.descricaoMetodo = res.dsMetodoPrecificacao;
-        this.objeto.dtEmissao = FormatarDataBanco(res.dtEmissao);
-        this.objeto.dtValido = FormatarDataBanco(res.dtValido);
-        this.cd.markForCheck();
+        this.aplicarOrcamentoCarregado(res);
       },
       error: () => this.cd.markForCheck(),
     });
+  }
+
+  private aplicarOrcamentoCarregado(res: any): void {
+    this.objeto = {
+      ...res,
+      orcamentoItem: this.mapearItens(res.itens ?? res.orcamentoItem ?? []),
+      descricaoMetodo: res.dsMetodoPrecificacao,
+      dtEmissao: FormatarDataBanco(res.dtEmissao),
+      dtValido: FormatarDataBanco(res.dtValido),
+      cliente: res.cliente ?? {
+        idCliente: res.idCliente,
+        nmCliente: res.nmCliente ?? '',
+      },
+    };
+
+    if (res.idCliente) {
+      this.carregarDadosCliente(res.idCliente, res.nmCliente);
+      return;
+    }
+
+    this.cd.markForCheck();
+  }
+
+  private carregarDadosCliente(idCliente: number, nmCliente?: string): void {
+    this.baseService.findById('clientes', idCliente).subscribe({
+      next: (cliente: any) => {
+        this.objeto.cliente = {
+          idCliente: cliente.idCliente ?? idCliente,
+          nmCliente: cliente.nmCliente ?? nmCliente ?? '',
+          nuCpfcnpj: cliente.nuCpfcnpj ?? '',
+          dsEmail: cliente.dsEmail ?? '',
+          nuTelefone: cliente.nuTelefone ?? '',
+          dsObservacoes: cliente.dsObservacoes ?? '',
+        } as Clientes;
+        this.objeto.idCliente = this.objeto.cliente?.idCliente ?? idCliente;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.objeto.cliente = {
+          idCliente,
+          nmCliente: nmCliente ?? '',
+          nuCpfcnpj: '',
+          dsEmail: '',
+          nuTelefone: '',
+          dsObservacoes: '',
+        } as Clientes;
+        this.objeto.idCliente = idCliente;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private mapearItens(itens: any[]): Orcamentoitem[] {
+    return (itens ?? []).map(
+      (item) =>
+        new Orcamentoitem({
+          ...item,
+          orcamentoItemCampoValor: item.orcamentoItemCampoValor ?? item.camposValor ?? [],
+        })
+    );
   }
 
   onClose() {
@@ -147,8 +204,17 @@ export class Orcamentoform {
   }
 
   private toApiPayload(): Record<string, unknown> {
-    const { orcamentoItem, ...rest } = this.objeto as Orcamento & { orcamentoItem: unknown[] };
-    return { ...rest, itens: orcamentoItem ?? [] };
+    const { orcamentoItem, cliente, ...rest } = this.objeto as Orcamento & {
+      orcamentoItem: unknown[];
+      cliente?: Orcamento['cliente'];
+    };
+
+    return {
+      ...rest,
+      idCliente: cliente?.idCliente ?? rest.idCliente,
+      cliente,
+      itens: orcamentoItem ?? [],
+    };
   }
 
   validarItens(): boolean {
