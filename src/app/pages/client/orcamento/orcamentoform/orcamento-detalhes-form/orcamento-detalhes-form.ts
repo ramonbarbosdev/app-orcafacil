@@ -8,12 +8,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FlagOption } from '../../../../../models/flag-option';
 import { SelectModule } from 'primeng/select';
 import { EventService } from '../../../../../services/event.service';
+import { SelectCadastroRapido } from '../../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 
 @Component({
   selector: 'app-orcamento-detalhes-form',
   standalone: true,
-  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule, SelectModule],
+  imports: [LayoutCampo, CommonModule, FormsModule, InputTextModule, DatePickerModule, SelectModule, SelectCadastroRapido],
   templateUrl: './orcamento-detalhes-form.html',
   styleUrl: './orcamento-detalhes-form.scss',
 })
@@ -73,16 +74,33 @@ export class OrcamentoDetalhesForm {
   obterMetodo() {
     this.baseService.findAll('empresa-metodos-precificacao').subscribe({
       next: (res) => {
-        this.listaMetodo = (res as any[]).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.idEmpresaMetodoPrecificacao;
-          item.name = index.nmMetodoPrecificacao;
-          item.extra = { descricao: index.dsMetodoPrecificacao };
-          this.cd.markForCheck();
-          return item;
-        });
+        this.atualizarListaMetodo(this.mapearMetodos(res as any[]));
+        this.cd.markForCheck();
       },
-      error: (err) => { },
+      error: () => { },
+    });
+  }
+
+  atualizarListaMetodo(opcoes: FlagOption[]) {
+    this.listaMetodo = opcoes.map((c) => {
+      const item = new FlagOption();
+      item.code = c.code;
+      item.name = c.name;
+      const extra = c.extra as Record<string, unknown> | undefined;
+      item.extra = {
+        descricao: extra?.['dsMetodoPrecificacao'] ?? extra?.['descricao'],
+      };
+      return item;
+    });
+  }
+
+  private mapearMetodos(res: any[]): FlagOption[] {
+    return res.map((index) => {
+      const item = new FlagOption();
+      item.code = index.idEmpresaMetodoPrecificacao;
+      item.name = index.nmMetodoPrecificacao;
+      item.extra = index;
+      return item;
     });
   }
 

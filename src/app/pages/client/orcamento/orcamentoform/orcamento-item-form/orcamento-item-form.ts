@@ -13,6 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { OrcamentoItemAjusteForm } from '../orcamento-item-ajuste-form/orcamento-item-ajuste-form';
 import { Orcamentoitemcampovalor } from '../../../../../models/orcamentoitemcampovalor';
 import { ConfirmationService } from 'primeng/api';
+import { SelectCadastroRapido } from '../../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 
 export interface GridColuna {
@@ -26,7 +27,7 @@ export interface GridColuna {
 
 @Component({
   selector: 'app-orcamento-item-form',
-  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, SelectModule, OrcamentoItemAjusteForm],
+  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, SelectModule, OrcamentoItemAjusteForm, SelectCadastroRapido],
   templateUrl: './orcamento-item-form.html',
   styleUrl: './orcamento-item-form.scss',
 })
@@ -212,24 +213,40 @@ export class OrcamentoItemForm {
 
     this.baseService.findAll('catalogos').subscribe({
       next: (res) => {
-        this.listaCatalogo = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.idCatalogo;
-          item.name = index.nmCatalogo;
-          item.extra = {
-            vlCustoBase: index.vlCustoBase,
-            vlPrecoBase: index.vlPrecoBase,
-            catalogoCampo: index.catalogoCampo
-          };
-          return item;
-        });
-
-
+        this.atualizarListaCatalogo(this.mapearCatalogos(res as any[]));
         this.cd.markForCheck();
       },
       error: () => {
         this.cd.markForCheck();
       },
+    });
+  }
+
+  atualizarListaCatalogo(opcoes: FlagOption[]) {
+    this.listaCatalogo = opcoes.map((c) => {
+      const item = new FlagOption();
+      item.code = c.code;
+      item.name = c.name;
+      item.extra = c.extra ?? {
+        vlCustoBase: (c as any).vlCustoBase,
+        vlPrecoBase: (c as any).vlPrecoBase,
+        catalogoCampo: (c as any).catalogoCampo,
+      };
+      return item;
+    });
+  }
+
+  private mapearCatalogos(res: any[]): FlagOption[] {
+    return res.map((index) => {
+      const item = new FlagOption();
+      item.code = index.idCatalogo;
+      item.name = index.nmCatalogo;
+      item.extra = {
+        vlCustoBase: index.vlCustoBase,
+        vlPrecoBase: index.vlPrecoBase,
+        catalogoCampo: index.catalogoCampo,
+      };
+      return item;
     });
   }
 

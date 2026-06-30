@@ -16,20 +16,10 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 
-export interface CampoMetodoDTO {
-  nome: string;
-  label: string;
-  tipo: 'NUMBER' | 'TEXT' | 'BOOLEAN';
-  obrigatorio: boolean;
-}
-
-export interface MetodoPrecificacaoMetaDTO {
-  idMetodoPrecificacao: number;
-  cdMetodoPrecificacao: string;
-  nmMetodoPrecificacao: string;
-  dsMetodoPrecificacao: string;
-  campos: CampoMetodoDTO[];
-}
+import {
+  CampoMetodoDTO,
+  MetodoPrecificacaoMetaDTO,
+} from '../../../../models/metodo-precificacao-meta';
 
 @Component({
   selector: 'app-config-metodo-precificacao',

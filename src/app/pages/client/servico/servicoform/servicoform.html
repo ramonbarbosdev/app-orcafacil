@@ -17,10 +17,21 @@
   <div class="flex-row-responsive">
     <app-layout-campo [error]="errorValidacao['idCategoriaservico']" [label]="'Categoria: (*)'" [width]="'md:w-6/12'"
       [sublabel]="'Informe a categoria'" [describedby]="'Informe a categoria'">
-      <p-select [checkmark]="true" [showClear]="true" name="idCategoriaservico" [options]="listaCategoria"
-        optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
+      <app-select-cadastro-rapido
+        name="idCategoriaservico"
+        inputId="idCategoriaservico"
+        [checkmark]="true"
+        [showClear]="true"
+        placeholder="Selecione"
         [(ngModel)]="objeto.idCategoriaservico"
-        [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCategoriaservico'] }" />
+        [options]="listaCategoria"
+        listEndpoint="categorias-servico"
+        optionValueField="idCategoriaServico"
+        optionLabelField="nmCategoriaServico"
+        quickCreatePreset="categorias-servico"
+        [invalid]="!!errorValidacao['idCategoriaservico']"
+        (optionsChange)="listaCategoria = $event"
+      />
     </app-layout-campo>
   </div>
 

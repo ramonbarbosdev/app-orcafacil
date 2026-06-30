@@ -11,10 +11,11 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { FlagOption } from '../../../../../models/flag-option';
 import { TextareaModule } from 'primeng/textarea';
+import { SelectCadastroRapido } from '../../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 @Component({
   selector: 'app-orcamento-informacaoadicional-form',
-  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, LayoutCampo, DatePickerModule, SelectModule,TextareaModule],
+  imports: [InputNumberModule, FormsModule, CommonModule, InputTextModule, ButtonModule, DividerModule, LayoutCampo, DatePickerModule, SelectModule,TextareaModule, SelectCadastroRapido],
   templateUrl: './orcamento-informacaoadicional-form.html',
   styleUrl: './orcamento-informacaoadicional-form.scss',
 })

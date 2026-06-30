@@ -1,0 +1,55 @@
+.select-cadastro-rapido__btn {
+  opacity: 0.55;
+
+  &:hover:not(:disabled) {
+    opacity: 1;
+  }
+}
+
+:host ::ng-deep .select-cadastro-rapido-dialog {
+  max-width: calc(100vw - 1rem);
+  margin: 0.5rem;
+
+  .p-dialog-header {
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .p-dialog-content {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    padding: 0 1rem 0.5rem;
+  }
+
+  .p-dialog-footer {
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+  }
+}
+
+.select-cadastro-rapido-dialog__body {
+  width: 100%;
+  min-width: 0;
+  max-height: min(65dvh, 32rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 0.125rem;
+  scrollbar-width: thin;
+}
+
+.select-cadastro-rapido-dialog__footer {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  :host ::ng-deep .select-cadastro-rapido-dialog {
+    width: calc(100vw - 1rem) !important;
+    max-width: calc(100vw - 1rem);
+
+    .p-dialog-header .p-dialog-title {
+      font-size: 1rem;
+      line-height: 1.35;
+      padding-right: 0.5rem;
+    }
+  }
+}

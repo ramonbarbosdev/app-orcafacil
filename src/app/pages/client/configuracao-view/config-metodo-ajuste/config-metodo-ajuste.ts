@@ -18,10 +18,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MetodoAjusteSchema } from '../../../../schema/metodoajuste-schema';
 import { ZodError } from 'zod';
 import { EventService } from '../../../../services/event.service';
+import { SelectCadastroRapido } from '../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 @Component({
   selector: 'app-config-metodo-ajuste',
-  imports: [LayoutCardConfig, ButtonModule, FormsModule, CommonModule, TagModule, TableModule, LayoutCampo, SelectModule, InputTextModule, ToggleSwitchModule, InputNumberModule],
+  imports: [LayoutCardConfig, ButtonModule, FormsModule, CommonModule, TagModule, TableModule, LayoutCampo, SelectModule, InputTextModule, ToggleSwitchModule, InputNumberModule, SelectCadastroRapido],
   templateUrl: './config-metodo-ajuste.html',
   styleUrl: './config-metodo-ajuste.scss',
 })
@@ -126,13 +127,25 @@ export class ConfigMetodoAjuste {
 
   obterCampos() {
     this.baseService.findAll('campos-personalizados')
-      .subscribe(res => {
-        this.listaCampos = res.map((c: any) => ({
-          code: c.idCampoPersonalizado,
-          name: c.nmCampoPersonalizado,
-          tpCampoPersonalizado: c.tpCampoPersonalizado
-        }));
-      });
+      .subscribe(res => this.atualizarListaCampos(this.mapearCampos(res)));
+  }
+
+  atualizarListaCampos(opcoes: FlagOption[]) {
+    this.listaCampos = opcoes.map((c) => ({
+      code: c.code,
+      name: c.name,
+      tpCampoPersonalizado: c.extra?.['tpCampoPersonalizado'] ?? (c as any).tpCampoPersonalizado,
+    })) as FlagOption[];
+  }
+
+  private mapearCampos(res: unknown[]): FlagOption[] {
+    return (res as any[]).map((c) => {
+      const item = new FlagOption();
+      item.code = c.idCampoPersonalizado;
+      item.name = c.nmCampoPersonalizado;
+      item.extra = c;
+      return item;
+    });
   }
 
   tipoAjuste() {

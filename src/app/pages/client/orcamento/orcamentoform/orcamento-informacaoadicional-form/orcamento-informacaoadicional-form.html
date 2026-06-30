@@ -6,10 +6,21 @@
 
         <app-layout-campo [error]="errorValidacao['idCondicaoPagamento']" [label]="'Condições de Pagamento: (*)'"
             [width]="'w-6/12'" [describedby]="'idCondicaoPagamento'">
-            <p-select [checkmark]="true" [showClear]="true" name="idCondicaoPagamento"
-                [options]="listaCondicaoPagamento" optionLabel="name" optionValue="code" placeholder="Selecione"
-                class="w-full" [(ngModel)]="objeto.idCondicaoPagamento"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCondicaoPagamento'] }" />
+            <app-select-cadastro-rapido
+                name="idCondicaoPagamento"
+                inputId="idCondicaoPagamento"
+                [checkmark]="true"
+                [showClear]="true"
+                placeholder="Selecione"
+                [(ngModel)]="objeto.idCondicaoPagamento"
+                [options]="listaCondicaoPagamento"
+                listEndpoint="condicoes-pagamento"
+                optionValueField="idCondicaoPagamento"
+                optionLabelField="nmCondicaoPagamento"
+                quickCreatePreset="condicoes-pagamento"
+                [invalid]="!!errorValidacao['idCondicaoPagamento']"
+                (optionsChange)="listaCondicaoPagamento = $event"
+            />
 
         </app-layout-campo>
 

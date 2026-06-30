@@ -68,10 +68,18 @@
 
                     <!-- Campo -->
                     <app-layout-campo label="Material: (*)" [error]="errorValidacao['idCampoPersonalizado']">
-                        <p-select [options]="listaCampos" optionLabel="name" optionValue="code" placeholder="Selecione"
-                            [(ngModel)]="objeto.idCampoPersonalizado" class="w-full" (onChange)="onCampoChange()"
-                            [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idCampoPersonalizado'] }">
-                        </p-select>
+                        <app-select-cadastro-rapido
+                            [options]="listaCampos"
+                            placeholder="Selecione"
+                            [(ngModel)]="objeto.idCampoPersonalizado"
+                            listEndpoint="campos-personalizados"
+                            optionValueField="idCampoPersonalizado"
+                            optionLabelField="nmCampoPersonalizado"
+                            quickCreatePreset="campos-personalizados"
+                            [invalid]="!!errorValidacao['idCampoPersonalizado']"
+                            (selectionChange)="onCampoChange()"
+                            (optionsChange)="atualizarListaCampos($event)"
+                        />
                     </app-layout-campo>
 
                     <!-- Valor esperado -->

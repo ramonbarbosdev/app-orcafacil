@@ -12,6 +12,7 @@ import { Orcamentoitemcampovalor } from '../../../../../models/orcamentoitemcamp
 import { LayoutCampo } from "../../../../../components/layout-campo/layout-campo";
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectCadastroRapido } from '../../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 @Component({
   selector: 'app-orcamento-item-ajuste-form',
@@ -20,7 +21,7 @@ import { InputTextModule } from 'primeng/inputtext';
     FormsModule,
     ButtonModule,
     SelectModule,
-    InputNumberModule, LayoutCampo, DividerModule, InputTextModule],
+    InputNumberModule, LayoutCampo, DividerModule, InputTextModule, SelectCadastroRapido],
   templateUrl: './orcamento-item-ajuste-form.html',
   styleUrl: './orcamento-item-ajuste-form.scss',
 })
@@ -94,23 +95,36 @@ export class OrcamentoItemAjusteForm {
 
     this.baseService.findAll('campos-personalizados').subscribe({
       next: (res) => {
-        this.listaCampos = (res as any).map((index: any) => {
-          const item = new FlagOption();
-          item.code = index.idCampoPersonalizado;
-          item.name = index.nmCampoPersonalizado;
-          item.extra = {
-            tpCampoValor: index.tpCampoValor,
-          };
-          return item;
-        });
-
-        // this.itens[0].idCatalogo = Number(this.listaCatalogo[0].code);
-
+        this.atualizarListaCampos(this.mapearCampos(res as any[]));
         this.cd.markForCheck();
       },
       error: () => {
         this.cd.markForCheck();
       },
+    });
+  }
+
+  atualizarListaCampos(opcoes: FlagOption[]) {
+    this.listaCampos = opcoes.map((c) => {
+      const item = new FlagOption();
+      item.code = c.code;
+      item.name = c.name;
+      item.extra = c.extra ?? {
+        tpCampoValor: (c as any).tpCampoValor,
+      };
+      return item;
+    });
+  }
+
+  private mapearCampos(res: any[]): FlagOption[] {
+    return res.map((index) => {
+      const item = new FlagOption();
+      item.code = index.idCampoPersonalizado;
+      item.name = index.nmCampoPersonalizado;
+      item.extra = {
+        tpCampoValor: index.tpCampoValor,
+      };
+      return item;
     });
   }
 

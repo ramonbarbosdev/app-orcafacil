@@ -29,6 +29,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { Servicos } from '../../../../models/servicos';
 import { ChipModule } from 'primeng/chip';
 import { ServicoSchema } from '../../../../schema/servico-schema';
+import { SelectCadastroRapido } from '../../../../components/select-cadastro-rapido/select-cadastro-rapido';
 
 @Component({
   selector: 'app-servicoform',
@@ -48,6 +49,7 @@ import { ServicoSchema } from '../../../../schema/servico-schema';
     LayoutCampo,
     ToggleButtonModule,
     ChipModule,
+    SelectCadastroRapido,
   ],
   templateUrl: './servicoform.html',
   styleUrl: './servicoform.scss',

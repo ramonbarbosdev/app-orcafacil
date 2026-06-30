@@ -1,0 +1,177 @@
+<div class="select-cadastro-rapido flex items-start gap-1 w-full">
+  <p-select
+    class="flex-1 min-w-0"
+    [name]="name"
+    [inputId]="inputId"
+    [options]="options"
+    optionLabel="name"
+    optionValue="code"
+    [placeholder]="placeholder"
+    [showClear]="showClear"
+    [checkmark]="checkmark"
+    [filter]="filter"
+    [disabled]="disabled"
+    [(ngModel)]="value"
+    (ngModelChange)="onValueChange($event)"
+    [ngClass]="{ 'ng-dirty ng-invalid': invalid }"
+  />
+
+  @if (canQuickCreate) {
+    <p-button
+      type="button"
+      icon="pi pi-plus"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      class="select-cadastro-rapido__btn shrink-0 mt-0.5"
+      pTooltip="Cadastrar novo"
+      tooltipPosition="top"
+      [disabled]="disabled"
+      (onClick)="abrirCadastroRapido()"
+    />
+  }
+</div>
+
+<p-dialog
+  [header]="quickCreate?.title ?? 'Cadastro rápido'"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="dialogStyle"
+  [breakpoints]="dialogBreakpoints"
+  [contentStyle]="dialogContentStyle"
+  styleClass="select-cadastro-rapido-dialog"
+  appendTo="body"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="fecharDialogo()"
+>
+  @if (dialogLoading) {
+    <p class="text-color-secondary text-sm m-0">Carregando...</p>
+  } @else if (isMetodoPrecificacaoMode) {
+    <div class="select-cadastro-rapido-dialog__body flex flex-col gap-3 sm:gap-4">
+      <app-layout-campo label="Modelo (*)" [error]="dialogErrors['idMetodoPrecificacao']">
+        <p-select
+          class="w-full"
+          [options]="opcoesMetodoPrecificacao"
+          optionLabel="name"
+          optionValue="code"
+          placeholder="Selecione o modelo"
+          appendTo="body"
+          [filter]="true"
+          [(ngModel)]="form['idMetodoPrecificacao']"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onMetodoPrecificacaoTemplateChange($event)"
+        />
+      </app-layout-campo>
+
+      @for (campo of camposMetodoPrecificacao; track campo.nome) {
+        <app-layout-campo
+          [label]="campo.label + (campo.obrigatorio ? ' (*)' : '')"
+          [error]="dialogErrors[campo.nome]"
+        >
+          @switch (campo.tipo) {
+            @case ('NUMBER') {
+              <p-inputnumber
+                class="w-full"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+                [(ngModel)]="configuracaoMetodo[campo.nome]"
+                [ngModelOptions]="{ standalone: true }"
+                mode="decimal"
+                [min]="0"
+                [max]="100"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="5"
+              />
+            }
+            @case ('BOOLEAN') {
+              <p-toggleswitch
+                [(ngModel)]="configuracaoMetodo[campo.nome]"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            }
+            @default {
+              <input
+                pInputText
+                class="w-full"
+                [(ngModel)]="configuracaoMetodo[campo.nome]"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            }
+          }
+        </app-layout-campo>
+      }
+    </div>
+  } @else {
+    <div class="select-cadastro-rapido-dialog__body flex flex-col gap-3 sm:gap-4">
+      @for (field of quickCreateFields; track field.key) {
+        <app-layout-campo [label]="field.label + (field.required ? ' (*)' : '')" [error]="dialogErrors[field.key]">
+          @switch (field.type ?? 'text') {
+            @case ('textarea') {
+              <textarea
+                pTextarea
+                class="w-full"
+                [placeholder]="field.placeholder ?? ''"
+                [(ngModel)]="form[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+                rows="3"
+                [autoResize]="true"
+              ></textarea>
+            }
+            @case ('number') {
+              <p-inputnumber
+                class="w-full"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+                [(ngModel)]="form[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+                [placeholder]="field.placeholder ?? ''"
+              />
+            }
+            @case ('select') {
+              <p-select
+                class="w-full"
+                [options]="opcoesDoCampo(field)"
+                optionLabel="name"
+                optionValue="code"
+                appendTo="body"
+                [placeholder]="field.placeholder ?? 'Selecione'"
+                [(ngModel)]="form[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            }
+            @default {
+              <input
+                pInputText
+                class="w-full"
+                [placeholder]="field.placeholder ?? ''"
+                [(ngModel)]="form[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            }
+          }
+        </app-layout-campo>
+      }
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="select-cadastro-rapido-dialog__footer flex flex-col-reverse sm:flex-row gap-2 sm:justify-end w-full">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        styleClass="w-full sm:w-auto"
+        (onClick)="fecharDialogo()"
+      />
+      <p-button
+        label="Salvar"
+        icon="pi pi-check"
+        styleClass="w-full sm:w-auto"
+        [loading]="dialogSaving"
+        (onClick)="salvarCadastroRapido()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

@@ -26,11 +26,22 @@
         <app-layout-campo  [error]="errorValidacao['idEmpresaMetodoPrecificacao']"
             [label]="'Método de Precificacão: (*)'" [width]="'md:w-12/12'"
             [describedby]="'idEmpresaMetodoPrecificacao'">
-            <p-select [checkmark]="true" [showClear]="true" name="idEmpresaMetodoPrecificacao" [options]="listaMetodo"
-                optionLabel="name" optionValue="code" placeholder="Selecione" class="w-full"
+            <app-select-cadastro-rapido
+                name="idEmpresaMetodoPrecificacao"
+                inputId="idEmpresaMetodoPrecificacao"
+                [checkmark]="true"
+                [showClear]="true"
+                placeholder="Selecione"
                 [(ngModel)]="objeto.idEmpresaMetodoPrecificacao"
-                [ngClass]="{ 'ng-dirty ng-invalid': errorValidacao['idEmpresaMetodoPrecificacao'] }"
-                 (ngModelChange)="processarMetodo($event)" ></p-select>
+                [options]="listaMetodo"
+                listEndpoint="empresa-metodos-precificacao"
+                optionValueField="idEmpresaMetodoPrecificacao"
+                optionLabelField="nmMetodoPrecificacao"
+                quickCreatePreset="empresa-metodos-precificacao"
+                [invalid]="!!errorValidacao['idEmpresaMetodoPrecificacao']"
+                (optionsChange)="atualizarListaMetodo($event)"
+                (selectionChange)="processarMetodo($event)"
+            />
         </app-layout-campo>
 
     </div>

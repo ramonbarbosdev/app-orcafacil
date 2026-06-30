@@ -29,10 +29,19 @@
             <!-- ITEM -->
             <div *ngIf="col.tipo === 'select'">
                 <label class="text-xs text-gray-500 lg:hidden">{{ col.label }}</label>
-                <p-select [options]="getCatalogosDisponiveis(i)" optionLabel="name" optionValue="code" class="w-full" filter="true"
-                    [(ngModel)]="item.idCatalogo" (ngModelChange)="processarCatalogo($event, i)"
-                    placeholder="Selecione um item">
-                </p-select>
+                <app-select-cadastro-rapido
+                    class="w-full"
+                    [filter]="true"
+                    [options]="getCatalogosDisponiveis(i)"
+                    placeholder="Selecione um item"
+                    [(ngModel)]="item.idCatalogo"
+                    listEndpoint="catalogos"
+                    optionValueField="idCatalogo"
+                    optionLabelField="nmCatalogo"
+                    quickCreatePreset="catalogos"
+                    (optionsChange)="atualizarListaCatalogo($event)"
+                    (selectionChange)="processarCatalogo($event, i)"
+                />
             </div>
 
             <!-- NUMBER -->
