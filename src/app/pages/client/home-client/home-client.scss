@@ -1,0 +1,46 @@
+.dashboard-hero {
+  background: linear-gradient(135deg, var(--p-primary-600, #2563eb), var(--p-primary-400, #60a5fa));
+}
+
+.dashboard-hero__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host ::ng-deep .dashboard-kpi {
+  .p-card-body {
+    padding: 1.25rem;
+  }
+}
+
+.dashboard-kpi__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-chart {
+  height: min(18rem, 55vw);
+  position: relative;
+}
+
+:host ::ng-deep .dashboard-chart p-chart,
+:host ::ng-deep .dashboard-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 640px) {
+  .dashboard-chart {
+    height: 14rem;
+  }
+}
