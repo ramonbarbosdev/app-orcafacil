@@ -1,4 +1,5 @@
 import { Component, ViewChild, inject } from '@angular/core';
+import { TabsModule } from 'primeng/tabs';
 import {
   ActionConfig,
   ColumnConfig,
@@ -7,10 +8,12 @@ import {
 import { ModuloPermissaoForm } from '../modulo-permissao-form/modulo-permissao-form';
 import { ModuloPermissaoAdmin } from '../../../../models/permissao';
 import { BaseService } from '../../../../services/base.service';
+import { CatalogoRecursosList } from '../catalogo-recursos-list/catalogo-recursos-list';
+import { PermissaoItensList } from '../permissao-itens-list/permissao-itens-list';
 
 @Component({
   selector: 'app-permissoeslist',
-  imports: [HeaderListGenerico, ModuloPermissaoForm],
+  imports: [TabsModule, HeaderListGenerico, ModuloPermissaoForm, CatalogoRecursosList, PermissaoItensList],
   templateUrl: './permissoeslist.html',
 })
 export class Permissoeslist {
@@ -24,24 +27,9 @@ export class Permissoeslist {
   private baseService = inject(BaseService);
 
   columns: ColumnConfig[] = [
-    {
-      field: 'modulo',
-      header: 'Código',
-      minWidth: '10rem',
-      filterType: 'text',
-    },
-    {
-      field: 'nmModulo',
-      header: 'Recurso',
-      minWidth: '14rem',
-      filterType: 'text',
-    },
-    {
-      field: 'totalPermissoes',
-      header: 'Permissões',
-      minWidth: '8rem',
-      filterType: 'numeric',
-    },
+    { field: 'modulo', header: 'Código', minWidth: '10rem', filterType: 'text' },
+    { field: 'nmModulo', header: 'Recurso', minWidth: '14rem', filterType: 'text' },
+    { field: 'totalPermissoes', header: 'Permissões', minWidth: '8rem', filterType: 'numeric' },
     {
       field: 'flAtivo',
       header: 'Ativo',

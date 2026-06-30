@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../../auth/auth.service';
+import { Component } from '@angular/core';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -34,6 +33,4 @@ import { ConfigOrganizacaoLogo } from './config-organizacao-logo/config-organiza
   templateUrl: './configuracao-view.html',
   styleUrl: './configuracao-view.scss',
 })
-export class ConfiguracaoView {
-  protected readonly sessionReady$ = inject(AuthService).whenSessionReady();
-}
+export class ConfiguracaoView {}

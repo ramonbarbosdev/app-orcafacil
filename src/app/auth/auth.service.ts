@@ -169,14 +169,14 @@ export class AuthService {
     return this.isSessionReady() && !this.isSessionValidated();
   }
 
-  whenSessionReady(): Observable<void> {
+  whenSessionReady(): Observable<boolean> {
     if (this.sessionReadySubject.value) {
-      return of(undefined);
+      return of(true);
     }
     return this.sessionReadySubject.pipe(
       filter((ready) => ready),
       take(1),
-      map(() => undefined)
+      map(() => true)
     );
   }
 
@@ -187,6 +187,10 @@ export class AuthService {
 
   hasAnyPermission(...chaves: string[]): boolean {
     return chaves.some((c) => this.hasPermission(c));
+  }
+
+  hasAllPermissions(...chaves: string[]): boolean {
+    return chaves.every((c) => this.hasPermission(c));
   }
 
   canShowInMenu(modulo: string): boolean {

@@ -1,0 +1,69 @@
+<div class="card">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div>
+      <h3 class="text-lg font-semibold m-0">Catálogo de recursos</h3>
+      <p class="text-color-secondary m-0 mt-1 text-sm">
+        Recursos curados e descobertos automaticamente nos controllers da API.
+      </p>
+    </div>
+    <p-button
+      label="Cadastrar todos pendentes"
+      icon="pi pi-database"
+      [disabled]="loading || pendentesCount() === 0"
+      (onClick)="registrarTodosPendentes()"
+    />
+  </div>
+
+  <p-table
+    [value]="lista"
+    [loading]="loading"
+    [rowGroupMode]="'subheader'"
+    groupRowsBy="grupo"
+    sortField="grupo"
+    sortMode="single"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  >
+    <ng-template pTemplate="groupheader" let-row>
+      <tr pRowGroupHeader>
+        <td colspan="7">
+          <span class="font-bold">{{ row.grupo }}</span>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Módulo</th>
+        <th>Label</th>
+        <th>Rota</th>
+        <th>Origem</th>
+        <th>Status</th>
+        <th>Ações sugeridas</th>
+        <th style="width: 8rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td><code>{{ item.modulo }}</code></td>
+        <td>{{ item.label }}</td>
+        <td><code>{{ item.rota }}</code></td>
+        <td>{{ item.origem }}</td>
+        <td>
+          <p-tag [value]="item.status" [severity]="statusSeverity(item.status)" />
+        </td>
+        <td class="text-sm">{{ acoesLabel(item) }}</td>
+        <td>
+          <p-button
+            *ngIf="podeCadastrar(item)"
+            label="Cadastrar"
+            size="small"
+            icon="pi pi-plus"
+            [loading]="registrandoModulo === item.modulo"
+            (onClick)="registrar(item)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

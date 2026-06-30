@@ -10,6 +10,9 @@ export interface ApiError {
   hint?: string;
   path: string;
   timestamp: string;
+  modulo?: string;
+  acao?: string;
+  permissaoEsperada?: string;
 }
 
 export interface LoginRequest {

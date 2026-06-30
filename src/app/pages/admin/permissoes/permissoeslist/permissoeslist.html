@@ -1,15 +1,39 @@
-<app-header-list-generico
-  [title]="'Recursos e permissões'"
-  [columns]="columns"
-  [actions]="actions"
-  [endpoint]="endpoint"
-  [loading]="loading"
-  (add)="onAdd()"
->
-</app-header-list-generico>
+<div class="p-4">
+  <div class="mb-4">
+    <h2 class="text-2xl font-semibold m-0">Permissões</h2>
+    <p class="text-color-secondary m-0 mt-1">
+      Catálogo híbrido, cadastro em lote e atribuição por papel (padrão modulo.acao).
+    </p>
+  </div>
 
-<app-modulo-permissao-form
-  [(isDialog)]="isDialog"
-  [key]="moduloEdicao"
-  [onReloadList]="onShow"
-/>
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Catálogo</p-tab>
+      <p-tab value="1">Recursos</p-tab>
+      <p-tab value="2">Permissões</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <app-catalogo-recursos-list />
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <app-header-list-generico
+          [title]="'Recursos cadastrados'"
+          [columns]="columns"
+          [actions]="actions"
+          [endpoint]="endpoint"
+          [loading]="loading"
+          (add)="onAdd()"
+        />
+        <app-modulo-permissao-form
+          [(isDialog)]="isDialog"
+          [key]="moduloEdicao"
+          [onReloadList]="onShow"
+        />
+      </p-tabpanel>
+      <p-tabpanel value="2">
+        <app-permissao-itens-list />
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

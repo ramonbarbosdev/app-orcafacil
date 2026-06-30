@@ -42,14 +42,17 @@ export function parseHttpError(status: number, body: unknown): ParsedHttpError {
           severity: 'warn',
         };
       case 'ACCESS_DENIED':
-      default:
+      default: {
+        const permissao = err?.permissaoEsperada;
+        const detailComPermissao = composed || (permissao
+          ? `Permissão necessária: ${permissao}.`
+          : 'Você não tem permissão para realizar esta ação. Solicite ao administrador da sua organização a liberação deste acesso.');
         return {
           summary: 'Acesso não permitido',
-          detail:
-            composed ||
-            'Você não tem permissão para realizar esta ação. Solicite ao administrador da sua organização a liberação deste acesso.',
+          detail: detailComPermissao,
           severity: 'warn',
         };
+      }
     }
   }
 

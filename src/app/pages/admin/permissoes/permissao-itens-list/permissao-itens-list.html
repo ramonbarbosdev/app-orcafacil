@@ -1,0 +1,62 @@
+<div class="card">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div>
+      <h3 class="text-lg font-semibold m-0">Permissões individuais</h3>
+      <p class="text-color-secondary m-0 mt-1 text-sm">CRUD manual de chaves no padrão modulo.acao</p>
+    </div>
+    <p-button label="Nova permissão" icon="pi pi-plus" (onClick)="abrirNovo()" />
+  </div>
+
+  <div class="mb-3">
+    <input
+      pInputText
+      class="w-full md:w-20rem"
+      placeholder="Filtrar por código, módulo ou ação"
+      [(ngModel)]="filtro"
+    />
+  </div>
+
+  <p-table [value]="listaFiltrada" [loading]="loading" [paginator]="true" [rows]="15">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Código</th>
+        <th>Módulo</th>
+        <th>Ação</th>
+        <th>Descrição</th>
+        <th>Ativo</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td><code>{{ item.nmChave }}</code></td>
+        <td>{{ item.modulo }}</td>
+        <td>{{ item.acao }}</td>
+        <td>{{ item.descricao }}</td>
+        <td>
+          <p-tag [value]="item.flAtivo ? 'Sim' : 'Não'" [severity]="item.flAtivo ? 'success' : 'danger'" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog header="Nova permissão" [(visible)]="dialogVisible" [modal]="true" [style]="{ width: '28rem' }">
+  <div class="flex flex-col gap-3">
+    <div>
+      <label class="block mb-1">Módulo</label>
+      <input pInputText class="w-full" [(ngModel)]="form.modulo" placeholder="ex.: fechamentos" />
+    </div>
+    <div>
+      <label class="block mb-1">Ação</label>
+      <input pInputText class="w-full" [(ngModel)]="form.acao" placeholder="ex.: ler" />
+    </div>
+    <div>
+      <label class="block mb-1">Descrição (opcional)</label>
+      <input pInputText class="w-full" [(ngModel)]="form.descricao" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" (onClick)="dialogVisible = false" />
+    <p-button label="Salvar" [loading]="salvando" (onClick)="salvar()" />
+  </ng-template>
+</p-dialog>
