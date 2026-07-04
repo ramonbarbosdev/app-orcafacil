@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
 import { Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
+import { TagModule } from 'primeng/tag';
 
 type NotificacaoCanal = 'WHATSAPP' | 'EMAIL';
 
@@ -25,6 +27,20 @@ interface OrcamentoEnviarResponse {
   notificacoes?: ResultadoNotificacao[];
 }
 
+interface HistoricoNotificacao {
+  idOrcamentoNotificacao: number;
+  canal: string;
+  destinatario?: string;
+  sucesso: boolean;
+  erro?: string;
+  dtCriacao: string;
+}
+
+interface MensagemCompartilhamento {
+  mensagem: string;
+  linkOrcamento: string;
+}
+
 @Component({
   selector: 'app-partilhar-orcamento',
   imports: [
@@ -33,8 +49,10 @@ interface OrcamentoEnviarResponse {
     CommonModule,
     ButtonModule,
     InputTextModule,
+    TextareaModule,
     DividerModule,
     ProgressSpinnerModule,
+    TagModule,
   ],
   templateUrl: './partilhar-orcamento.html',
   styleUrl: './partilhar-orcamento.scss',
@@ -50,6 +68,12 @@ export class PartilharOrcamento {
   @Output() confirmar = new EventEmitter<any>();
 
   linkOrcamento = '';
+  mensagemWhatsApp = '';
+  carregandoMensagem = false;
+  carregandoHistorico = false;
+  historico: HistoricoNotificacao[] = [];
+  readonly placeholdersAjuda =
+    'Placeholders: {nomeCliente}, {numeroOrcamento}, {valorTotal}, {dataValidade}, {linkOrcamento}';
   gerandoPdf = false;
   enviandoWhatsApp = false;
   enviandoEmail = false;
@@ -72,6 +96,47 @@ export class PartilharOrcamento {
     this.whatsappEnviado = false;
     this.emailEnviado = false;
     this.visible = true;
+    this.carregarMensagemPadrao();
+    this.carregarHistorico();
+  }
+
+  private carregarMensagemPadrao() {
+    if (!this.idOrcamento) {
+      return;
+    }
+    this.carregandoMensagem = true;
+    this.baseService.findAll(`orcamentos/${this.idOrcamento}/mensagem-compartilhamento`).subscribe({
+      next: (res: MensagemCompartilhamento) => {
+        this.mensagemWhatsApp = res?.mensagem ?? '';
+        if (res?.linkOrcamento) {
+          this.linkOrcamento = res.linkOrcamento;
+        }
+        this.carregandoMensagem = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.carregandoMensagem = false;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private carregarHistorico() {
+    if (!this.idOrcamento) {
+      return;
+    }
+    this.carregandoHistorico = true;
+    this.baseService.findAll(`orcamentos/${this.idOrcamento}/notificacoes`).subscribe({
+      next: (res: HistoricoNotificacao[]) => {
+        this.historico = res ?? [];
+        this.carregandoHistorico = false;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.carregandoHistorico = false;
+        this.cd.markForCheck();
+      },
+    });
   }
 
   enviarWhatsApp() {
@@ -119,6 +184,7 @@ export class PartilharOrcamento {
     this.baseService
       .post(`orcamentos/${this.idOrcamento}/enviar`, {
         canais: [canal],
+        mensagem: canal === 'WHATSAPP' ? this.mensagemWhatsApp?.trim() : undefined,
         nuTelefone: canal === 'WHATSAPP' ? destinatario?.trim() : undefined,
         dsEmail: canal === 'EMAIL' ? destinatario?.trim() : undefined,
       })
@@ -132,6 +198,7 @@ export class PartilharOrcamento {
             } else {
               this.emailEnviado = true;
             }
+            this.carregarHistorico();
             this.messageService.add({
               severity: 'success',
               summary: canal === 'WHATSAPP' ? 'WhatsApp enviado' : 'E-mail enviado',
@@ -202,5 +269,12 @@ export class PartilharOrcamento {
         this.cd.markForCheck();
       },
     });
+  }
+
+  formatarData(data: string): string {
+    if (!data) {
+      return '';
+    }
+    return new Date(data).toLocaleString('pt-BR');
   }
 }

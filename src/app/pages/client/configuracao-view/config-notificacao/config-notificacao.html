@@ -1,43 +1,77 @@
-<app-layout-card-config [title]="'Notificações'" [subtitle]="'Configure alertas e lembretes'"
-    [icon]="'pi pi-bell'" (salvar)="onSave()">
+<app-layout-card-config
+  [title]="'Integração WhatsApp'"
+  [subtitle]="'API Key e status da notificacao-api por organização'"
+  [icon]="'pi pi-whatsapp'"
+  (salvar)="onSave()"
+>
 
-
-
-  <div class="flex items-center justify-between w-full p-2 ">
-    <div class="flex flex-col  gap-2">
-      <span class="font-bold">E-mail de confirmação</span>
-      <small class="">
-        Receber e-mail quando um orçamento for aprovado
-      </small>
+  @if (loading && !status) {
+    <div class="flex items-center gap-2 p-4 text-sm text-surface-500">
+      <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
+      Carregando configuração...
     </div>
+  } @else {
+    <div class="flex flex-col gap-4 p-2">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <span class="font-bold">Status da integração</span>
+          <small>Verifica API Key e sessão WhatsApp na notificacao-api</small>
+        </div>
+        <div class="flex items-center gap-2">
+          @if (verificandoStatus) {
+            <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
+          } @else if (status) {
+            <p-tag
+              [value]="status.conectada && status.whatsappConectado ? 'OK' : status.conectada ? 'Parcial' : 'Erro'"
+              [severity]="status.conectada && status.whatsappConectado ? 'success' : status.conectada ? 'warn' : 'danger'"
+            />
+          }
+          <button type="button" class="p-button p-button-text p-button-sm" (click)="verificarStatus()">
+            Atualizar
+          </button>
+        </div>
+      </div>
 
-    <p-toggleswitch [(ngModel)]="objeto.flEmailConfirmacao"></p-toggleswitch>
-  </div>
+      @if (status?.mensagem) {
+        <p class="text-sm m-0" [class.text-red-500]="!status?.conectada">{{ status?.mensagem }}</p>
+      }
 
-  <p-divider></p-divider>
+      @if (status?.whatsappTelefone) {
+        <p class="text-sm text-surface-600 m-0">WhatsApp: {{ status?.whatsappTelefone }}</p>
+      }
 
-   <div class="flex items-center justify-between w-full p-2 ">
+      <p-divider />
 
-    <div class="flex flex-col  gap-2">
-      <span class="font-bold ">Lembrete de validade</span>
-      <small class="">
-        Alertar quando orçamentos estiverem próximos do vencimento
-      </small>
+      <app-layout-campo label="ID organização (notificacao-api)">
+        <input
+          type="number"
+          pInputText
+          class="w-full"
+          [(ngModel)]="idOrganizacaoNotificacao"
+          placeholder="Ex.: 1"
+        />
+      </app-layout-campo>
+
+      <app-layout-campo label="API Key do tenant">
+        <input
+          type="password"
+          pInputText
+          class="w-full"
+          [(ngModel)]="apiKey"
+          placeholder="nak_prefixo.segredo"
+          autocomplete="new-password"
+        />
+        <small class="text-surface-500">
+          @if (config.apiKeyMascarada) {
+            Chave atual: {{ config.apiKeyMascarada }}
+            @if (config.usaApiKeyGlobal) {
+              (fallback global do servidor)
+            }
+          } @else {
+            Deixe em branco para manter a chave atual ou usar fallback global.
+          }
+        </small>
+      </app-layout-campo>
     </div>
-
-    <p-toggleswitch [(ngModel)]="objeto.flLembreteValidade"></p-toggleswitch>
-  </div>
-
-  <p-divider></p-divider>
-
-    <div class="flex items-center justify-between w-full p-2 ">
-      <div class="flex flex-col  gap-2">
-      <span class="font-bold">Resumo semanal</span>
-      <small class="">
-        Receber relatório semanal por e-mail
-      </small>
-    </div>
-
-    <p-toggleswitch [(ngModel)]="objeto.flResumoSemanal"></p-toggleswitch>
-  </div>
+  }
 </app-layout-card-config>
