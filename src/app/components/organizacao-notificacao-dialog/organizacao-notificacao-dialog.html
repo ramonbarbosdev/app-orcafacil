@@ -1,0 +1,108 @@
+<p-dialog
+  [header]="titulo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '640px', maxWidth: '95vw' }"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+>
+  @if (!loading) {
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <span class="font-medium">Liberar integração</span>
+          <p class="text-sm text-surface-500 m-0 mt-1">
+            Permite que a organização envie orçamentos por WhatsApp e e-mail.
+          </p>
+        </div>
+        <p-toggleswitch [(ngModel)]="habilitada" [ngModelOptions]="{ standalone: true }" />
+      </div>
+
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <span class="font-medium">Status da API</span>
+          <p class="text-sm text-surface-500 m-0 mt-1">Validação da API Key na notificacao-api</p>
+        </div>
+        <div class="flex items-center gap-2">
+          @if (verificandoStatus) {
+            <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
+          } @else if (status) {
+            <p-tag
+              [value]="status.conectada && status.whatsappConectado ? 'OK' : status.conectada ? 'Parcial' : config.configurada ? 'Erro' : 'Pendente'"
+              [severity]="status.conectada && status.whatsappConectado ? 'success' : status.conectada ? 'warn' : config.configurada ? 'danger' : 'secondary'"
+            />
+          }
+          <button type="button" class="p-button p-button-text p-button-sm" (click)="verificarStatus()">
+            Atualizar
+          </button>
+        </div>
+      </div>
+
+      @if (status?.mensagem) {
+        <p class="text-sm m-0" [class.text-red-500]="!status?.conectada">{{ status?.mensagem }}</p>
+      }
+
+      <div>
+        <label class="block mb-2 font-medium">ID organização (notificacao-api)</label>
+        <input
+          type="number"
+          pInputText
+          class="w-full"
+          [(ngModel)]="idOrganizacaoNotificacao"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="Opcional — identificado pela API Key"
+        />
+      </div>
+
+      <div>
+        <label class="block mb-2 font-medium">API Key</label>
+        <input
+          type="text"
+          pInputText
+          class="w-full font-mono text-sm"
+          [(ngModel)]="apiKey"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="nak_prefixo.segredo"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <small class="text-surface-500">
+          Gere a chave no painel da notificacao-api. Deixe em branco para manter a atual.
+        </small>
+      </div>
+
+      <div>
+        <label class="block mb-2 font-medium">E-mail para alertas</label>
+        <input
+          type="email"
+          pInputText
+          class="w-full"
+          [(ngModel)]="emailAlertas"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="admin@empresa.com"
+        />
+        <small class="text-surface-500">
+          Recebe avisos quando o envio falhar por problemas no serviço de notificações.
+        </small>
+      </div>
+
+      <p class="text-sm text-surface-500 m-0">
+        A conexão do WhatsApp (QR Code) é feita pela organização em Configurações → Integrações.
+      </p>
+    </div>
+  } @else {
+    <p class="text-center py-4">Carregando...</p>
+  }
+
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Fechar" class="p-button-text" (click)="onHide()"></button>
+    <button
+      pButton
+      type="button"
+      label="Salvar configuração"
+      icon="pi pi-check"
+      [loading]="saving"
+      (click)="salvarConfig()"
+    ></button>
+  </ng-template>
+</p-dialog>

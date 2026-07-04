@@ -49,6 +49,8 @@ interface ErroEnvioBanner {
 interface OrcamentoEnviarResponse {
   orcamento?: unknown;
   notificacoes?: ResultadoNotificacao[];
+  integracaoNotificacaoAtiva?: boolean;
+  mensagemCompartilhamento?: string;
 }
 
 interface HistoricoNotificacao {
@@ -63,6 +65,7 @@ interface HistoricoNotificacao {
 interface MensagemCompartilhamento {
   mensagem: string;
   linkOrcamento: string;
+  integracaoNotificacaoAtiva?: boolean;
 }
 
 @Component({
@@ -105,6 +108,7 @@ export class PartilharOrcamento {
   emailEnviado = false;
   erroEnvio: ErroEnvioBanner | null = null;
   sucessoEnvio: SucessoEnvioInfo | null = null;
+  integracaoNotificacaoAtiva = false;
 
   public baseService = inject(BaseService);
   router = inject(Router);
@@ -136,6 +140,7 @@ export class PartilharOrcamento {
     this.baseService.findAll(`orcamentos/${this.idOrcamento}/mensagem-compartilhamento`).subscribe({
       next: (res: MensagemCompartilhamento) => {
         this.mensagemWhatsApp = res?.mensagem ?? '';
+        this.integracaoNotificacaoAtiva = !!res?.integracaoNotificacaoAtiva;
         if (res?.linkOrcamento) {
           this.linkOrcamento = res.linkOrcamento;
         }
@@ -168,10 +173,18 @@ export class PartilharOrcamento {
   }
 
   enviarWhatsApp() {
+    if (!this.integracaoNotificacaoAtiva) {
+      this.copiarMensagem('WhatsApp');
+      return;
+    }
     this.enviarPorCanal('WHATSAPP', this.nuTelefone, 'telefone');
   }
 
   enviarEmail() {
+    if (!this.integracaoNotificacaoAtiva) {
+      this.copiarMensagem('e-mail');
+      return;
+    }
     this.enviarPorCanal('EMAIL', this.dsEmail, 'e-mail');
   }
 
@@ -220,6 +233,12 @@ export class PartilharOrcamento {
       })
       .subscribe({
         next: (res: OrcamentoEnviarResponse) => {
+          if (res?.integracaoNotificacaoAtiva === false) {
+            this.copiarMensagem(canal === 'WHATSAPP' ? 'WhatsApp' : 'e-mail');
+            this.finalizarEnvio(canal);
+            return;
+          }
+
           const notificacoes = res?.notificacoes ?? [];
           const resultado = notificacoes.find((item) => item.canal === canal);
           if (resultado?.sucesso) {
@@ -255,9 +274,9 @@ export class PartilharOrcamento {
             if (integracaoNaoConfigurada) {
               this.erroEnvio = {
                 canal,
-                titulo: 'Integração não configurada',
+                titulo: 'Integração não liberada',
                 mensagem:
-                  'Configure a API Key em Configurações > Integrações antes de enviar mensagens ao cliente.',
+                  'A integração de notificações não está ativa para esta organização. Copie a mensagem e envie manualmente.',
                 equipeNotificada: false,
               };
             } else {
@@ -378,6 +397,35 @@ export class PartilharOrcamento {
       detail: 'O link do orçamento foi copiado para a área de transferência.',
       life: 3000,
     });
+  }
+
+  copiarMensagem(canal: string): void {
+    const texto = this.mensagemWhatsApp?.trim();
+    if (!texto) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Mensagem vazia',
+        detail: 'Não há mensagem para copiar.',
+        life: 4000,
+      });
+      return;
+    }
+
+    navigator.clipboard.writeText(texto).then(() => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Mensagem copiada',
+        detail: `Cole no ${canal} e envie manualmente ao cliente.`,
+        life: 6000,
+      });
+    });
+  }
+
+  labelAcaoCanal(canal: 'WHATSAPP' | 'EMAIL'): string {
+    if (!this.integracaoNotificacaoAtiva) {
+      return 'Copiar mensagem';
+    }
+    return canal === 'WHATSAPP' ? 'WhatsApp' : 'E-mail';
   }
 
   abrirView() {

@@ -15,6 +15,7 @@ import { Empresaform } from '../empresaform/empresaform';
 import { FormatCpfCnpj } from '../../../../format/FormatarCpfCnpj';
 import { OrganizacaoUsuariosDialog } from '../../../admin/organizacao-usuarios-dialog/organizacao-usuarios-dialog';
 import { OrganizacaoPlanoDialog } from '../../../../components/organizacao-plano-dialog/organizacao-plano-dialog';
+import { OrganizacaoNotificacaoDialog } from '../../../../components/organizacao-notificacao-dialog/organizacao-notificacao-dialog';
 
 @Component({
   selector: 'app-empresalist',
@@ -28,6 +29,7 @@ import { OrganizacaoPlanoDialog } from '../../../../components/organizacao-plano
     Empresaform,
     OrganizacaoUsuariosDialog,
     OrganizacaoPlanoDialog,
+    OrganizacaoNotificacaoDialog,
   ],
   templateUrl: './empresalist.html',
   styleUrl: './empresalist.scss',
@@ -41,11 +43,14 @@ export class Empresalist {
   isDialog = false;
   isUsuariosDialog = false;
   isPlanoDialog = false;
+  isNotificacaoDialog = false;
   idEdicao = 0;
   idOrganizacaoUsuarios = 0;
   idOrganizacaoPlano = 0;
+  idOrganizacaoNotificacao = 0;
   nmOrganizacaoUsuarios = '';
   nmOrganizacaoPlano = '';
+  nmOrganizacaoNotificacao = '';
 
   columns: ColumnConfig[] = [
     {
@@ -80,6 +85,14 @@ export class Empresalist {
       outlined: true,
       requiresConfirmation: false,
       onClick: (row) => this.onGerenciarUsuarios(row),
+    },
+    {
+      icon: 'pi pi-whatsapp',
+      label: 'Notificações',
+      rounded: true,
+      outlined: true,
+      requiresConfirmation: false,
+      onClick: (row) => this.onGerenciarNotificacao(row),
     },
     {
       icon: 'pi pi-pencil',
@@ -140,6 +153,14 @@ export class Empresalist {
     this.idOrganizacaoUsuarios = id;
     this.nmOrganizacaoUsuarios = String(item['nmOrganizacao'] ?? item['nmEmpresa'] ?? '');
     this.isUsuariosDialog = true;
+  }
+
+  onGerenciarNotificacao(item: Record<string, unknown>) {
+    const id = this.getOrganizacaoId(item);
+    if (!id) return;
+    this.idOrganizacaoNotificacao = id;
+    this.nmOrganizacaoNotificacao = String(item['nmOrganizacao'] ?? item['nmEmpresa'] ?? '');
+    this.isNotificacaoDialog = true;
   }
 
   onDelete(item: Record<string, unknown>) {

@@ -1,60 +1,64 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
-import { LayoutCampo } from '../../../../components/layout-campo/layout-campo';
 import { BaseService } from '../../../../services/base.service';
-import { DividerModule } from 'primeng/divider';
-import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
 
-interface IntegracaoStatus {
-  habilitada: boolean;
-  conectada: boolean;
-  mensagem?: string;
-  apiKeyValida?: boolean;
-  whatsappConectado?: boolean;
-  whatsappStatus?: string;
-  whatsappTelefone?: string;
-  usaApiKeyTenant?: boolean;
-}
-
-interface IntegracaoConfig {
-  idOrganizacaoOrcafacil?: number;
-  idOrganizacaoNotificacao?: number;
-  apiKey?: string;
+interface IntegracaoTenantConfig {
+  habilitada?: boolean;
   configurada?: boolean;
-  emailAlertas?: string;
+  mensagem?: string;
 }
+
+interface WhatsappStatus {
+  sucesso?: boolean;
+  status?: string;
+  conectado?: boolean;
+  qrImagem?: string;
+  telefone?: string;
+  erro?: string;
+}
+
+const STATUS_TENTATIVA = new Set([
+  'CONECTANDO',
+  'CONNECTING',
+  'AGUARDANDO_QR',
+  'PENDING_QR',
+]);
 
 @Component({
   selector: 'app-config-notificacao',
-  imports: [
-    LayoutCardConfig,
-    CommonModule,
-    FormsModule,
-    DividerModule,
-    InputTextModule,
-    TagModule,
-    ProgressSpinnerModule,
-    LayoutCampo,
-  ],
+  imports: [LayoutCardConfig, CommonModule, TagModule, ProgressSpinnerModule, ButtonModule, DividerModule],
   templateUrl: './config-notificacao.html',
   styleUrl: './config-notificacao.scss',
 })
-export class ConfigNotificacao {
+export class ConfigNotificacao implements OnDestroy {
   loading = true;
-  verificandoStatus = false;
-  status: IntegracaoStatus | null = null;
-  config: IntegracaoConfig = {};
-  apiKey = '';
-  emailAlertas = '';
+  whatsappCarregando = false;
+  config: IntegracaoTenantConfig | null = null;
+  whatsapp: WhatsappStatus | null = null;
 
   private readonly endpoint = 'integracao-notificacao';
+  private pollingId: ReturnType<typeof setInterval> | null = null;
   private baseService = inject(BaseService);
-  private messageService = inject(MessageService);
+
+  get qrImagemSrc(): string {
+    const qr = this.whatsapp?.qrImagem;
+    if (!qr) return '';
+    return qr.startsWith('data:image/') ? qr : `data:image/png;base64,${qr}`;
+  }
+
+  get statusWhatsappLabel(): string {
+    if (!this.whatsapp?.status) return 'Desconhecido';
+    return this.whatsapp.status.replace(/_/g, ' ');
+  }
+
+  ngOnDestroy(): void {
+    this.pararPolling();
+  }
 
   ngAfterViewInit(): void {
     this.carregar();
@@ -63,12 +67,12 @@ export class ConfigNotificacao {
   carregar(): void {
     this.loading = true;
     this.baseService.findAll(`${this.endpoint}/config`).subscribe({
-      next: (res: IntegracaoConfig) => {
+      next: (res: IntegracaoTenantConfig) => {
         this.config = res ?? {};
-        this.apiKey = res?.apiKey ?? '';
-        this.emailAlertas = res?.emailAlertas ?? '';
         this.loading = false;
-        this.verificarStatus();
+        if (res?.habilitada) {
+          this.atualizarWhatsapp();
+        }
       },
       error: () => {
         this.loading = false;
@@ -76,55 +80,112 @@ export class ConfigNotificacao {
     });
   }
 
-  verificarStatus(): void {
-    this.verificandoStatus = true;
-    this.baseService.findAll(`${this.endpoint}/status`).subscribe({
-      next: (res: IntegracaoStatus) => {
-        this.status = res;
-        this.verificandoStatus = false;
+  atualizarWhatsapp(): void {
+    if (!this.config?.habilitada) return;
+    this.whatsappCarregando = true;
+    this.baseService.findAll(`${this.endpoint}/whatsapp/status`).subscribe({
+      next: (res: WhatsappStatus) => {
+        this.whatsapp = res;
+        this.whatsappCarregando = false;
+        this.avaliarPolling();
       },
       error: () => {
-        this.verificandoStatus = false;
+        this.whatsappCarregando = false;
       },
     });
   }
 
-  onSave(): void {
-    const chave = this.apiKey?.trim();
-    if (!chave && !this.config.configurada) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'API Key obrigatória',
-        detail: 'Informe a API Key completa (nak_prefixo.segredo) para ativar a integração.',
-        life: 6000,
+  conectarWhatsapp(): void {
+    if (this.whatsappCarregando) return;
+    this.iniciarConexaoWhatsapp();
+  }
+
+  private iniciarConexaoWhatsapp(): void {
+    this.whatsappCarregando = true;
+    this.baseService.post(`${this.endpoint}/whatsapp/conectar`, {}).subscribe({
+      next: (res: WhatsappStatus) => {
+        this.whatsapp = res;
+        this.whatsappCarregando = false;
+        if (res?.erro) {
+          this.pararPolling();
+          return;
+        }
+        this.iniciarPolling();
+      },
+      error: () => {
+        this.whatsappCarregando = false;
+      },
+    });
+  }
+
+  desconectarWhatsapp(): void {
+    this.executarAcao('desconectar');
+  }
+
+  conectarOutroWhatsapp(): void {
+    if (this.whatsappCarregando) return;
+
+    if (this.whatsapp?.conectado) {
+      this.whatsappCarregando = true;
+      this.baseService.post(`${this.endpoint}/whatsapp/desconectar`, {}).subscribe({
+        next: () => {
+          this.iniciarConexaoWhatsapp();
+        },
+        error: () => {
+          this.whatsappCarregando = false;
+        },
       });
       return;
     }
 
-    this.loading = true;
-    const payload: Record<string, unknown> = {};
-    if (chave) {
-      payload['apiKey'] = chave;
-    }
-    payload['emailAlertas'] = this.emailAlertas?.trim() || null;
+    this.conectarWhatsapp();
+  }
 
-    this.baseService.update(`${this.endpoint}/config`, payload).subscribe({
-      next: (res: IntegracaoConfig) => {
-        this.config = res ?? {};
-        this.apiKey = res?.apiKey ?? chave ?? '';
-        this.emailAlertas = res?.emailAlertas ?? this.emailAlertas ?? '';
-        this.loading = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Integração salva',
-          detail: 'API Key configurada para esta organização.',
-          life: 5000,
-        });
-        this.verificarStatus();
+  cancelarConexaoWhatsapp(): void {
+    this.executarAcao('cancelar-conexao');
+  }
+
+  private executarAcao(acao: 'desconectar' | 'cancelar-conexao'): void {
+    this.whatsappCarregando = true;
+    this.baseService.post(`${this.endpoint}/whatsapp/${acao}`, {}).subscribe({
+      next: (res: WhatsappStatus) => {
+        this.whatsapp = res;
+        this.whatsappCarregando = false;
+        this.pararPolling();
       },
       error: () => {
-        this.loading = false;
+        this.whatsappCarregando = false;
       },
     });
+  }
+
+  private iniciarPolling(): void {
+    this.pararPolling();
+    this.pollingId = setInterval(() => this.atualizarWhatsappSilencioso(), 4000);
+  }
+
+  private atualizarWhatsappSilencioso(): void {
+    this.baseService.findAll(`${this.endpoint}/whatsapp/status`).subscribe({
+      next: (res: WhatsappStatus) => {
+        this.whatsapp = res;
+        this.avaliarPolling();
+      },
+    });
+  }
+
+  private avaliarPolling(): void {
+    const status = this.whatsapp?.status;
+    if (this.whatsapp?.conectado || !status || !STATUS_TENTATIVA.has(status)) {
+      this.pararPolling();
+    } else if (!this.pollingId) {
+      this.iniciarPolling();
+    }
+  }
+
+  private pararPolling(): void {
+    if (this.pollingId) {
+      clearInterval(this.pollingId);
+      this.pollingId = null;
+    }
   }
 }

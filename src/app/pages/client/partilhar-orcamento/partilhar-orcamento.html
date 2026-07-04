@@ -15,6 +15,12 @@
             O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
         </p>
 
+        @if (!integracaoNotificacaoAtiva && !carregandoMensagem) {
+            <p class="text-sm text-surface-600 m-0 rounded-lg border border-surface-200 bg-surface-50 p-3">
+                A integração automática não está ativa. Use <strong>Copiar mensagem</strong> e envie manualmente pelo WhatsApp ou e-mail.
+            </p>
+        }
+
         @if (sucessoEnvio) {
             <div class="partilhar-sucesso-banner" role="status">
                 <div class="partilhar-sucesso-banner__icon">
@@ -103,15 +109,15 @@
                 variant="text"
                 type="button"
                 severity="secondary"
-                [loading]="enviandoWhatsApp"
-                [disabled]="enviandoWhatsApp || whatsappEnviado"
+                [loading]="integracaoNotificacaoAtiva && enviandoWhatsApp"
+                [disabled]="integracaoNotificacaoAtiva && (enviandoWhatsApp || whatsappEnviado)"
                 (click)="enviarWhatsApp()"
             >
                 <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
                     <div class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
-                        <i class="pi pi-whatsapp text-white text-2xl"></i>
+                        <i class="text-white text-2xl pi" [class.pi-whatsapp]="integracaoNotificacaoAtiva" [class.pi-copy]="!integracaoNotificacaoAtiva"></i>
                     </div>
-                    <span class="text-sm ">WhatsApp</span>
+                    <span class="text-sm ">{{ labelAcaoCanal('WHATSAPP') }}</span>
                 </div>
             </p-button>
 
@@ -119,15 +125,15 @@
                 variant="text"
                 type="button"
                 severity="secondary"
-                [loading]="enviandoEmail"
-                [disabled]="enviandoEmail || emailEnviado"
+                [loading]="integracaoNotificacaoAtiva && enviandoEmail"
+                [disabled]="integracaoNotificacaoAtiva && (enviandoEmail || emailEnviado)"
                 (click)="enviarEmail()"
             >
                 <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
                     <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center">
-                        <i class="pi pi-envelope text-white text-2xl"></i>
+                        <i class="text-white text-2xl pi" [class.pi-envelope]="integracaoNotificacaoAtiva" [class.pi-copy]="!integracaoNotificacaoAtiva"></i>
                     </div>
-                    <span class="text-sm ">E-mail</span>
+                    <span class="text-sm ">{{ labelAcaoCanal('EMAIL') }}</span>
                 </div>
             </p-button>
 
@@ -159,7 +165,9 @@
         </div>
 
         <div class="flex flex-col gap-2">
-            <label class="text-sm font-medium" for="mensagemWhatsApp">Mensagem do WhatsApp</label>
+            <label class="text-sm font-medium" for="mensagemWhatsApp">
+                {{ integracaoNotificacaoAtiva ? 'Mensagem do WhatsApp' : 'Mensagem para compartilhar' }}
+            </label>
             @if (carregandoMensagem) {
                 <div class="flex items-center gap-2 text-sm text-surface-500">
                     <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />

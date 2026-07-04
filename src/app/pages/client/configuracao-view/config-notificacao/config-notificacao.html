@@ -1,82 +1,110 @@
 <app-layout-card-config
-  [title]="'Integração WhatsApp'"
-  [subtitle]="'API Key e status da notificacao-api por organização'"
+  [title]="'WhatsApp'"
+  [subtitle]="'Conecte o número da empresa para enviar orçamentos'"
   [icon]="'pi pi-whatsapp'"
-  (salvar)="onSave()"
+  [showSalvar]="false"
 >
 
-  @if (loading && !status) {
+  @if (loading) {
     <div class="flex items-center gap-2 p-4 text-sm text-surface-500">
       <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
-      Carregando configuração...
+      Carregando...
     </div>
   } @else {
     <div class="flex flex-col gap-4 p-2">
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex flex-col gap-1">
-          <span class="font-bold">Status da integração</span>
-          <small>Verifica API Key e sessão WhatsApp na notificacao-api</small>
+      @if (!config?.habilitada) {
+        <p class="text-sm m-0 text-surface-600">
+          {{ config?.mensagem ?? 'Integração não liberada para esta organização. Contate o suporte.' }}
+        </p>
+      } @else {
+        @if (config?.mensagem) {
+          <p class="text-sm m-0 text-surface-600">{{ config?.mensagem }}</p>
+        }
+
+        <p-divider />
+
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex flex-col gap-1">
+            <span class="font-bold">Sessão WhatsApp</span>
+            <small>{{ statusWhatsappLabel }}</small>
+            @if (whatsapp?.telefone) {
+              <span class="text-sm text-surface-600">Número conectado: {{ whatsapp?.telefone }}</span>
+            }
+          </div>
+          <div class="flex items-center gap-2">
+            @if (whatsappCarregando) {
+              <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
+            } @else if (whatsapp?.conectado) {
+              <p-tag value="Conectado" severity="success" />
+            } @else {
+              <p-tag value="Desconectado" severity="secondary" />
+            }
+            <button type="button" class="p-button p-button-text p-button-sm" (click)="atualizarWhatsapp()">
+              Atualizar
+            </button>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          @if (verificandoStatus) {
-            <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
-          } @else if (status) {
-            <p-tag
-              [value]="status.conectada && status.whatsappConectado ? 'OK' : status.conectada ? 'Parcial' : config.configurada ? 'Erro' : 'Não configurada'"
-              [severity]="status.conectada && status.whatsappConectado ? 'success' : status.conectada ? 'warn' : config.configurada ? 'danger' : 'secondary'"
-            />
-          }
-          <button type="button" class="p-button p-button-text p-button-sm" (click)="verificarStatus()">
-            Atualizar
-          </button>
-        </div>
-      </div>
 
-      @if (status?.mensagem) {
-        <p class="text-sm m-0" [class.text-red-500]="!status?.conectada">{{ status?.mensagem }}</p>
-      }
+        @if (whatsapp?.erro) {
+          <p class="text-sm text-red-500 m-0">{{ whatsapp?.erro }}</p>
+        }
 
-      @if (status?.whatsappTelefone) {
-        <p class="text-sm text-surface-600 m-0">WhatsApp: {{ status?.whatsappTelefone }}</p>
-      }
+        @if (qrImagemSrc) {
+          <div class="flex flex-col items-center gap-2 py-2">
+            <img [src]="qrImagemSrc" alt="QR Code WhatsApp" class="max-w-64 rounded border border-surface-200" />
+            <p class="text-sm text-surface-500 m-0 text-center">
+              Abra o WhatsApp no celular → Aparelhos conectados → Conectar aparelho
+            </p>
+          </div>
+        }
 
-      <p-divider />
+        @if (whatsapp?.conectado) {
+          <p class="text-sm text-surface-500 m-0">
+            Para usar outro número, clique em <strong>Conectar outro WhatsApp</strong> e escaneie o novo QR Code.
+          </p>
+        }
 
-      <app-layout-campo label="API Key">
-        <input
-          type="text"
-          pInputText
-          class="w-full font-mono text-sm"
-          [(ngModel)]="apiKey"
-          placeholder="nak_prefixo.segredo"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <small class="text-surface-500">
-          A organização na notificacao-api é identificada automaticamente pela API Key.
-          @if (config.configurada && !apiKey) {
-            Nenhuma chave salva ainda.
-          } @else if (!config.configurada) {
-            Obrigatória para enviar orçamentos pelo WhatsApp.
+        <div class="flex flex-wrap gap-2">
+          @if (!whatsapp?.conectado) {
+            <button
+              pButton
+              type="button"
+              label="Conectar WhatsApp"
+              icon="pi pi-whatsapp"
+              [loading]="whatsappCarregando"
+              (click)="conectarWhatsapp()"
+            ></button>
+            @if (qrImagemSrc) {
+              <button
+                pButton
+                type="button"
+                label="Cancelar conexão"
+                class="p-button-outlined"
+                [loading]="whatsappCarregando"
+                (click)="cancelarConexaoWhatsapp()"
+              ></button>
+            }
           } @else {
-            Chave salva para esta organização. Edite e salve para alterar.
+            <button
+              pButton
+              type="button"
+              label="Conectar outro WhatsApp"
+              icon="pi pi-refresh"
+              [loading]="whatsappCarregando"
+              (click)="conectarOutroWhatsapp()"
+            ></button>
+            <button
+              pButton
+              type="button"
+              label="Desconectar"
+              severity="danger"
+              class="p-button-outlined"
+              [loading]="whatsappCarregando"
+              (click)="desconectarWhatsapp()"
+            ></button>
           }
-        </small>
-      </app-layout-campo>
-
-      <app-layout-campo label="E-mail para alertas">
-        <input
-          type="email"
-          pInputText
-          class="w-full text-sm"
-          [(ngModel)]="emailAlertas"
-          placeholder="admin@empresa.com"
-          autocomplete="email"
-        />
-        <small class="text-surface-500">
-          Recebe avisos quando o envio de mensagens falhar por problemas internos no serviço de notificações.
-        </small>
-      </app-layout-campo>
+        </div>
+      }
     </div>
   }
 </app-layout-card-config>
