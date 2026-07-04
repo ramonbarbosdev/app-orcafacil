@@ -1,194 +1,263 @@
-<!-- ORÇAMENTO - VISUALIZAÇÃO (READ ONLY) -->
+<div class="orcamento-view-page">
+  <div class="orcamento-view-shell">
 
-<div *ngIf="!loading" class="max-w-6xl mx-auto space-y-8  p-4  rounded-lg "   [ngClass]="{
-    'bg-gray-100 text-gray-900': !layoutService.isDarkTheme(),
-    'bg-black-600 text-gray-100': layoutService.isDarkTheme()
-  }">
+    @if (loading) {
+      <div class="orcamento-view-loading">
+        <p-progressSpinner strokeWidth="4" styleClass="w-10 h-10" />
+        <p class="m-0">Carregando orçamento...</p>
+      </div>
+    } @else if (erro) {
+      <div class="orcamento-view-erro">
+        <i class="pi pi-exclamation-triangle"></i>
+        <h2 class="m-0 text-lg font-semibold text-surface-800">Orçamento indisponível</h2>
+        <p class="m-0 text-sm">{{ erro }}</p>
+      </div>
+    } @else if (orcamento) {
 
-    <!-- CABEÇALHO + STATUS -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-        <div class="flex items-center gap-4">
+      <header class="orcamento-view-header">
+        <div class="orcamento-view-brand">
+          @if (logoPublicaUrl) {
             <img
-                *ngIf="logoPublicaUrl"
-                [src]="logoPublicaUrl"
-                alt="Logo da empresa"
-                class="h-16 sm:h-20 w-auto max-w-[9.5rem] object-contain object-left"
+              [src]="logoPublicaUrl"
+              alt=""
+              class="orcamento-view-logo"
+              (error)="onLogoErro()"
             />
-            <div>
-                <p *ngIf="orcamento.nmEmpresa" class="text-sm text-color-secondary mb-1">{{ orcamento.nmEmpresa }}</p>
-                <h2 class="text-2xl font-semibold ">
-                    Orçamento {{ orcamento.nuOrcamento }}
-                </h2>
-                <p class="text-sm   ">
-                    Emitido em {{ orcamento.dtEmissao | date:'dd/MM/yyyy' }}
-                </p>
-            </div>
+          } @else {
+            <span class="orcamento-view-marca-padrao">OrçaFácil</span>
+          }
+          <div class="min-w-0">
+            <p class="orcamento-view-empresa">{{ orcamento.nmEmpresa || empresaFallback }}</p>
+            <h1 class="orcamento-view-titulo">Orçamento {{ orcamento.nuOrcamento }}</h1>
+            <p class="orcamento-view-subtitulo">
+              Documento para visualização do cliente
+            </p>
+          </div>
         </div>
 
-        <span class="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium tracking-wide"
-            [ngClass]="statusClass(orcamento.status)">
-            {{ orcamento.status }}
-        </span>
+        <div class="orcamento-view-acoes">
+          <span class="orcamento-view-status" [ngClass]="statusClass(orcamento.status)">
+            {{ labelStatus(orcamento.status) }}
+          </span>
+          <p-button
+            icon="pi pi-file-pdf"
+            label="PDF"
+            [outlined]="true"
+            size="small"
+            [loading]="gerandoPdf"
+            (onClick)="baixarPdf()"
+          />
+        </div>
+      </header>
 
-    </div>
+      <dl class="orcamento-view-meta">
+        <div class="orcamento-view-meta-card">
+          <dt>Emissão</dt>
+          <dd>{{ orcamento.dtEmissao | date:'dd/MM/yyyy' }}</dd>
+        </div>
+        <div class="orcamento-view-meta-card">
+          <dt>Validade</dt>
+          <dd>{{ orcamento.dtValido ? (orcamento.dtValido | date:'dd/MM/yyyy') : '—' }}</dd>
+        </div>
+        <div class="orcamento-view-meta-card">
+          <dt>Prazo de entrega</dt>
+          <dd>{{ formatarPrazo(orcamento.nuPrazoEntrega) }}</dd>
+        </div>
+        <div class="orcamento-view-meta-card">
+          <dt>Condição de pagamento</dt>
+          <dd>{{ orcamento.condicaoPagamento || '—' }}</dd>
+        </div>
+      </dl>
 
-    <!-- CLIENTE -->
-    <p-card>
-        <h4 class="text-base font-semibold  mb-4">
+      <section class="orcamento-view-section">
+        <p-card>
+          <h2 class="orcamento-view-section-title">
+            <i class="pi pi-user"></i>
             Cliente
-        </h4>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm   ">
-            <div>
-                <span class="block text-sm   ">Nome:</span>
-                <span class="font-semibold text-base">{{ orcamento.cliente.nome }}</span>
+          </h2>
+          @if (orcamento.cliente) {
+            <div class="orcamento-view-grid-3">
+              <div class="orcamento-view-field">
+                <label>Nome</label>
+                <p>{{ orcamento.cliente.nome || '—' }}</p>
+              </div>
+              <div class="orcamento-view-field">
+                <label>CPF / CNPJ</label>
+                <p>{{ orcamento.cliente.cpfCnpj || '—' }}</p>
+              </div>
+              <div class="orcamento-view-field">
+                <label>E-mail</label>
+                <p>{{ orcamento.cliente.email || '—' }}</p>
+              </div>
+              <div class="orcamento-view-field">
+                <label>Telefone</label>
+                <p>{{ orcamento.cliente.telefone || '—' }}</p>
+              </div>
             </div>
+          } @else {
+            <p class="orcamento-view-vazio">Dados do cliente não disponíveis.</p>
+          }
+        </p-card>
+      </section>
 
-            <div>
-                <span class="block text-sm   ">E-mail:</span>
-                <span class="font-semibold text-base">{{ orcamento.cliente.email }}</span>
-            </div>
+      <section class="orcamento-view-section">
+        <p-card>
+          <h2 class="orcamento-view-section-title">
+            <i class="pi pi-list"></i>
+            Itens e serviços
+          </h2>
 
-            <div>
-                <span class="block text-sm   ">Telefone:</span>
-                <span class="font-semibold text-base">{{ orcamento.cliente.telefone }}</span>
-            </div>
-        </div>
-    </p-card>
-
-    <!-- ITENS DO ORÇAMENTO -->
-    <p-card>
-        <h4 class="text-base font-semibold  mb-4">
-            Itens / Serviços
-        </h4>
-
-        <p-accordion>
-
-            <p-accordion-panel *ngFor="let item of orcamento.itens; let i = index" [value]="i">
-
-                <!-- HEADER DO ITEM -->
-                <p-accordion-header>
-                    <div class="flex justify-between items-center w-full pr-2">
-                        <span class="font-medium   ">
-                            {{ item.descricao }}
-                        </span>
-                        <span class="font-semibold ">
-                            {{ item.subtotal | currency:'BRL' }}
-                        </span>
+          @if (temItens()) {
+            <p-accordion [multiple]="true">
+              @for (item of orcamento.itens; track item.idItem; let i = $index) {
+                <p-accordion-panel [value]="i">
+                  <p-accordion-header>
+                    <div class="orcamento-view-item-header">
+                      <div class="min-w-0">
+                        <span class="orcamento-view-item-titulo">{{ item.descricao || 'Item sem descrição' }}</span>
+                        @if (item.codigo) {
+                          <span class="orcamento-view-item-codigo">Cód. {{ item.codigo }}</span>
+                        }
+                        @if (item.tipo) {
+                          <p-tag
+                            class="mt-1"
+                            [value]="labelTipoItem(item.tipo)"
+                            severity="secondary"
+                          />
+                        }
+                      </div>
+                      <span class="orcamento-view-item-valor">{{ item.subtotal | currency:'BRL' }}</span>
                     </div>
-                </p-accordion-header>
+                  </p-accordion-header>
 
-                <!-- CONTEÚDO DO ITEM -->
-                <p-accordion-content>
-
-                    <!-- RESUMO DO ITEM -->
-                    <div class="grid grid-cols-4 gap-4 text-sm    mb-4">
-                        <div>
-                            <span class=" text-xs   ">Quantidade: {{ item.quantidade }}</span>
-                        </div>
-                        <div class="text-left">
-                            <span class="block text-xs   ">Custo: {{ item.precoCusto | currency:'BRL' }}</span>
-                        </div>
-                        <div class="text-left">
-                            <span class="block text-xs   ">Materiais: {{ item.precoUnitario | currency:'BRL' }}</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-xs   ">Total: {{ item.subtotal | currency:'BRL' }}</span>
-                        </div>
+                  <p-accordion-content>
+                    <div class="orcamento-view-item-detalhes">
+                      <div>
+                        Quantidade
+                        <strong>{{ item.quantidade }}</strong>
+                      </div>
+                      <div>
+                        Custo unit.
+                        <strong>{{ item.precoCusto | currency:'BRL' }}</strong>
+                      </div>
+                      <div>
+                        Preço unit.
+                        <strong>{{ item.precoUnitario | currency:'BRL' }}</strong>
+                      </div>
+                      <div>
+                        Subtotal
+                        <strong>{{ item.subtotal | currency:'BRL' }}</strong>
+                      </div>
                     </div>
 
-                    <!-- MATERIAIS / AJUSTES -->
-                    <div class="border rounded-lg overflow-hidden">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 text-gray-600">
-                                <tr>
-                                    <th class="text-left px-3 py-2">Composição do material</th>
-                                    <!-- <th class="text-right px-3 py-2">Qtd</th> -->
-                                    <th class="text-right px-3 py-2">Valor</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr *ngFor="let mat of item.materiais" class="border-t last:border-b-0">
-                                    <td class="px-3 py-2">
-                                        {{ mat.descricao }}
-                                    </td>
-                                    <!-- <td class="px-3 py-2 text-right">
-                                        {{ mat.quantidade }}
-                                    </td> -->
-                                    <td class="px-3 py-2 text-right">
-                                        {{ mat.valor | currency:'BRL' }}
-                                    </td>
-                                </tr>
-                            </tbody>
+                    @if (item.materiais?.length) {
+                      <div class="orcamento-view-materiais">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Composição / materiais</th>
+                              <th>Valor</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (mat of item.materiais; track $index) {
+                              <tr>
+                                <td>
+                                  {{ labelMaterial(mat) }}
+                                  @if (mat.descricao && mat.nome && mat.descricao !== mat.nome) {
+                                    <span class="orcamento-view-material-desc">{{ mat.descricao }}</span>
+                                  }
+                                </td>
+                                <td>{{ mat.valor | currency:'BRL' }}</td>
+                              </tr>
+                            }
+                          </tbody>
                         </table>
-                    </div>
-
-                </p-accordion-content>
-
-            </p-accordion-panel>
-
-        </p-accordion>
-    </p-card>
-
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        <!-- RESUMO DA PRECIFICAÇÃO -->
-        <p-card class="  h-full">
-            <h4 class="text-base font-semibold  mb-4">
-                Resumo da Precificação
-            </h4>
-
-            <div class="flex justify-between text-sm mb-2">
-                <span class="">Método:</span>
-                <span class="font-medium text-base">
-                    {{ orcamento.metodoPrecificacao }}
-                </span>
-            </div>
-
-            <div class="flex justify-between text-sm mb-2">
-                <span class="">Valor base:</span>
-                <span class="text-base">
-                    {{ orcamento.vlPrecoBase | currency:'BRL' }}
-                </span>
-            </div>
-
-            <p-divider />
-
-            <div class="flex justify-between text-xl font-bold pt-3 mt-3">
-                <span>Valor final</span>
-                <span>
-                    {{ orcamento.vlPrecoFinal | currency:'BRL' }}
-                </span>
-            </div>
+                      </div>
+                    } @else {
+                      <p class="orcamento-view-vazio m-0">Sem composição detalhada para este item.</p>
+                    }
+                  </p-accordion-content>
+                </p-accordion-panel>
+              }
+            </p-accordion>
+          } @else {
+            <p class="orcamento-view-vazio">Nenhum item cadastrado neste orçamento.</p>
+          }
         </p-card>
+      </section>
 
-        <!-- HISTÓRICO DE STATUS -->
-        <p-card class="h-full">
-            <h4 class="text-base font-semibold  mb-4">
-                Histórico de Status
-            </h4>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section class="orcamento-view-section mb-0">
+          <p-card>
+            <h2 class="orcamento-view-section-title">
+              <i class="pi pi-calculator"></i>
+              Resumo financeiro
+            </h2>
 
-            <ul class="space-y-3 text-sm">
-                <li *ngFor="let h of orcamento.historicoStatus" class="flex items-start gap-3   ">
+            <div class="orcamento-view-resumo-linha">
+              <span>Método de precificação</span>
+              <strong>{{ orcamento.metodoPrecificacao || '—' }}</strong>
+            </div>
+            <div class="orcamento-view-resumo-linha">
+              <span>Valor base</span>
+              <strong>{{ orcamento.vlPrecoBase | currency:'BRL' }}</strong>
+            </div>
+            @if (orcamento.totalDesconto) {
+              <div class="orcamento-view-resumo-linha">
+                <span>Descontos</span>
+                <strong>{{ orcamento.totalDesconto | currency:'BRL' }}</strong>
+              </div>
+            }
+            <div class="orcamento-view-resumo-total">
+              <span>Valor final</span>
+              <span>{{ orcamento.vlPrecoFinal | currency:'BRL' }}</span>
+            </div>
+          </p-card>
+        </section>
 
-                    <span class="text-gray-400 leading-6">•</span>
+        <section class="orcamento-view-section mb-0">
+          <p-card>
+            <h2 class="orcamento-view-section-title">
+              <i class="pi pi-history"></i>
+              Histórico de status
+            </h2>
 
-                    <div class="flex flex-col">
-                        <span class="font-medium">
-                            {{ h.statusAnterior ?? 'ELABORACAO'}} → {{ h.statusAtual }}
-                        </span>
-                        <span class="text-gray-400 text-xs">
-                            {{ h.dataHora | date:'dd/MM/yyyy HH:mm' }} · {{ h.usuario }}
-                        </span>
+            @if (temHistorico()) {
+              <ul class="orcamento-view-timeline">
+                @for (h of orcamento.historicoStatus; track $index) {
+                  <li>
+                    <span class="orcamento-view-timeline-dot" aria-hidden="true"></span>
+                    <div>
+                      <span class="orcamento-view-timeline-texto">
+                        {{ labelStatus(h.statusAnterior) }} → {{ labelStatus(h.statusAtual) }}
+                      </span>
+                      <span class="orcamento-view-timeline-data">
+                        {{ h.dataHora | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
                     </div>
-                </li>
-            </ul>
-        </p-card>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="orcamento-view-vazio">Nenhuma alteração de status registrada.</p>
+            }
+          </p-card>
+        </section>
+      </div>
 
-    </div>
+      @if (orcamento.observacoes?.trim()) {
+        <section class="orcamento-view-section">
+          <p-card>
+            <h2 class="orcamento-view-section-title">
+              <i class="pi pi-comment"></i>
+              Observações
+            </h2>
+            <p class="orcamento-view-observacoes">{{ orcamento.observacoes }}</p>
+          </p-card>
+        </section>
+      }
 
-
+    }
+  </div>
 </div>

@@ -2,3 +2,132 @@
   background: color-mix(in srgb, var(--p-surface-0, #fff) 88%, transparent);
   backdrop-filter: blur(2px);
 }
+
+.partilhar-erro-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--p-red-400, #f87171) 45%, transparent);
+  background: color-mix(in srgb, var(--p-red-50, #fef2f2) 80%, var(--p-surface-0, #fff));
+}
+
+.partilhar-erro-banner__icon {
+  color: var(--p-red-500, #ef4444);
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 0.125rem;
+}
+
+.partilhar-erro-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.partilhar-erro-banner__titulo {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--p-red-700, #b91c1c);
+}
+
+.partilhar-erro-banner__mensagem,
+.partilhar-erro-banner__extra {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--p-red-800, #991b1b);
+  line-height: 1.45;
+}
+
+.partilhar-erro-banner__extra {
+  opacity: 0.9;
+}
+
+.partilhar-erro-banner__fechar {
+  border: none;
+  background: transparent;
+  color: var(--p-red-600, #dc2626);
+  cursor: pointer;
+  padding: 0.125rem;
+  line-height: 1;
+}
+
+.partilhar-sucesso-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--p-green-400, #4ade80) 45%, transparent);
+  background: color-mix(in srgb, var(--p-green-50, #f0fdf4) 80%, var(--p-surface-0, #fff));
+}
+
+.partilhar-sucesso-banner__icon {
+  color: var(--p-green-600, #16a34a);
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 0.125rem;
+}
+
+.partilhar-sucesso-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.partilhar-sucesso-banner__titulo {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--p-green-800, #166534);
+}
+
+.partilhar-sucesso-banner__mensagem {
+  margin: 0.25rem 0 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--p-green-900, #14532d);
+  line-height: 1.45;
+}
+
+.partilhar-sucesso-banner__detalhes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.partilhar-sucesso-banner__item {
+  min-width: 0;
+
+  dt {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--p-green-700, #15803d);
+    opacity: 0.85;
+  }
+
+  dd {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--p-green-900, #14532d);
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .partilhar-sucesso-banner__detalhes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partilhar-sucesso-banner__fechar {
+  border: none;
+  background: transparent;
+  color: var(--p-green-700, #15803d);
+  cursor: pointer;
+  padding: 0.125rem;
+  line-height: 1;
+}

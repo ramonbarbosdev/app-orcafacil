@@ -2,6 +2,7 @@ export class ClienteVisualizacao {
 
     idCliente!: number;
     nome!: string;
-    email!: string;
-    telefone!: string;
+    cpfCnpj?: string;
+    email?: string;
+    telefone?: string;
 }

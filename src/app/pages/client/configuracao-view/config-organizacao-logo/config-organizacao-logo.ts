@@ -1,18 +1,32 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { AuthService } from '../../../../auth/auth.service';
-import { OrganizacaoLogoMetadados } from '../../../../models/organizacao-logo';
-import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
-import { OrganizacaoLogoService } from '../../../../services/organizacao-logo.service';
 import { LogoEditorDialog } from '../../../../components/logo-editor-dialog/logo-editor-dialog';
+import { OrganizacaoLogoMetadados } from '../../../../models/organizacao-logo';
+import { OrganizacaoLogoService } from '../../../../services/organizacao-logo.service';
+import { LayoutCardConfig } from '../layout-card-config/layout-card-config';
+
+type ModoConfiguracao = 'arquivo' | 'url';
 
 @Component({
   selector: 'app-config-organizacao-logo',
   standalone: true,
-  imports: [CommonModule, LayoutCardConfig, ButtonModule, ProgressSpinnerModule, LogoEditorDialog],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LayoutCardConfig,
+    ButtonModule,
+    ProgressSpinnerModule,
+    LogoEditorDialog,
+    SelectButtonModule,
+    InputTextModule,
+  ],
   templateUrl: './config-organizacao-logo.html',
   styleUrl: './config-organizacao-logo.scss',
 })
@@ -23,13 +37,21 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
   private confirmationService = inject(ConfirmationService);
   private cd = inject(ChangeDetectorRef);
 
+  readonly opcoesModo = [
+    { label: 'Arquivo', value: 'arquivo' as ModoConfiguracao },
+    { label: 'URL', value: 'url' as ModoConfiguracao },
+  ];
+
   loading = true;
   enviando = false;
+  salvandoUrl = false;
   removendo = false;
   metadados: OrganizacaoLogoMetadados | null = null;
   previewUrl: string | null = null;
   editorVisible = false;
   arquivoParaEditar: File | null = null;
+  modoConfiguracao: ModoConfiguracao = 'arquivo';
+  logoUrlInput = '';
 
   get podeEnviar(): boolean {
     return this.auth.hasPermission('organizacao.criar');
@@ -41,6 +63,10 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
 
   get possuiLogo(): boolean {
     return !!this.metadados?.possuiLogo;
+  }
+
+  get modoAtivo(): string | undefined {
+    return this.metadados?.modo;
   }
 
   ngOnInit(): void {
@@ -63,6 +89,12 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
     this.logoService.obterMetadados().subscribe({
       next: (meta) => {
         this.metadados = meta;
+        if (meta.modo === 'URL') {
+          this.modoConfiguracao = 'url';
+          this.logoUrlInput = meta.logoUrlExterna ?? '';
+        } else if (meta.modo === 'UPLOAD') {
+          this.modoConfiguracao = 'arquivo';
+        }
         this.atualizarPreview();
       },
       error: () => {
@@ -114,11 +146,44 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
     this.enviarLogo(file);
   }
 
+  salvarLogoUrl(): void {
+    if (!this.podeEnviar || this.salvandoUrl) {
+      return;
+    }
+    const url = this.logoUrlInput.trim();
+    if (!url) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'URL obrigatória',
+        detail: 'Informe a URL da imagem da logo.',
+      });
+      return;
+    }
+    this.salvandoUrl = true;
+    this.logoService.salvarUrl(url).subscribe({
+      next: (meta) => {
+        this.metadados = meta;
+        this.salvandoUrl = false;
+        this.atualizarPreview();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Logo atualizada',
+          detail: 'A URL da logo foi salva com sucesso.',
+        });
+      },
+      error: () => {
+        this.salvandoUrl = false;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
   private enviarLogo(file: File): void {
     this.enviando = true;
     this.logoService.enviar(file).subscribe({
       next: (meta) => {
         this.metadados = meta;
+        this.modoConfiguracao = 'arquivo';
         this.enviando = false;
         this.atualizarPreview();
       },
@@ -133,31 +198,40 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
     if (!this.podeRemover || !this.possuiLogo || this.removendo) {
       return;
     }
+    const removeUpload = this.modoAtivo === 'UPLOAD';
     this.confirmationService.confirm({
-      message: 'Deseja remover a logo personalizada? Ela será excluída permanentemente.',
+      message: removeUpload
+        ? 'Deseja remover o arquivo da logo? Se houver URL cadastrada, ela passará a ser usada.'
+        : 'Deseja remover a URL da logo?',
       header: 'Remover logo',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Remover',
       rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
-      accept: () => this.executarRemocao(),
+      accept: () => this.executarRemocao(removeUpload),
     });
   }
 
-  private executarRemocao(): void {
+  private executarRemocao(removeUpload: boolean): void {
     this.removendo = true;
-    this.logoService.remover().subscribe({
+    const operacao = removeUpload ? this.logoService.remover() : this.logoService.removerUrl();
+    operacao.subscribe({
       next: (meta) => {
         this.metadados = meta;
         this.previewUrl = null;
         this.logoService.revogarPreview();
+        if (meta.modo === 'URL') {
+          this.logoUrlInput = meta.logoUrlExterna ?? '';
+        } else if (meta.modo === 'NENHUM') {
+          this.logoUrlInput = '';
+        }
         this.removendo = false;
+        this.atualizarPreview();
         this.messageService.add({
           severity: 'success',
           summary: 'Logo removida',
-          detail: 'A logo foi excluída da organização.',
+          detail: 'A configuração da logo foi atualizada.',
         });
-        this.cd.markForCheck();
       },
       error: () => {
         this.removendo = false;
@@ -168,7 +242,7 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
   }
 
   private atualizarPreview(): void {
-    this.logoService.obterBlobPreviewAutenticado().subscribe({
+    this.logoService.obterUrlExibicaoAutenticada().subscribe({
       next: (url) => {
         this.previewUrl = url;
         this.loading = false;
@@ -180,5 +254,11 @@ export class ConfigOrganizacaoLogo implements OnInit, OnDestroy {
         this.cd.markForCheck();
       },
     });
+  }
+
+  onPreviewErro(): void {
+    this.previewUrl = null;
+    this.logoService.revogarPreview();
+    this.cd.markForCheck();
   }
 }

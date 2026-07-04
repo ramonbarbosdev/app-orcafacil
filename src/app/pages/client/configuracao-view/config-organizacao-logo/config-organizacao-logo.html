@@ -1,6 +1,6 @@
 <app-layout-card-config
   [title]="'Logo da empresa'"
-  [subtitle]="'A logo é redimensionada automaticamente no menu. Use imagem horizontal e recorte sem espaço em branco.'"
+  [subtitle]="'Envie um arquivo ou informe a URL da imagem. Sem logo personalizada, usamos o ícone padrão do OrçaFácil.'"
   [icon]="'pi pi-image'"
   [showSalvar]="false"
 >
@@ -13,28 +13,36 @@
   </div>
 
   <div *ngIf="!loading && auth.hasPermission('organizacao.ler')" class="flex flex-col gap-4">
+    <p-selectButton
+      *ngIf="podeEnviar"
+      [options]="opcoesModo"
+      [(ngModel)]="modoConfiguracao"
+      optionLabel="label"
+      optionValue="value"
+    />
+
     <div
       class="flex flex-col sm:flex-row items-center justify-center gap-4 border border-dashed border-surface-300 rounded-lg bg-surface-50 dark:bg-surface-800 p-4"
     >
       <ng-container *ngIf="previewUrl; else semLogo">
         <div class="logo-preview-slot logo-preview-slot--desktop">
           <span class="logo-preview-slot__label">Desktop</span>
-          <img [src]="previewUrl" alt="Prévia desktop" class="logo-preview-slot__img" />
+          <img [src]="previewUrl" alt="" class="logo-preview-slot__img" (error)="onPreviewErro()" />
         </div>
         <div class="logo-preview-slot logo-preview-slot--mobile">
           <span class="logo-preview-slot__label">Mobile</span>
-          <img [src]="previewUrl" alt="Prévia mobile" class="logo-preview-slot__img" />
+          <img [src]="previewUrl" alt="" class="logo-preview-slot__img" (error)="onPreviewErro()" />
         </div>
       </ng-container>
       <ng-template #semLogo>
         <div class="text-center text-color-secondary w-full py-4">
-          <i class="pi pi-image text-3xl mb-2 block"></i>
-          <span>Nenhuma logo personalizada cadastrada</span>
+          <span class="logo-preview-marca-padrao">OrçaFácil</span>
+          <span class="block mt-2">Nenhuma logo personalizada — exibindo padrão do OrçaFácil</span>
         </div>
       </ng-template>
     </div>
 
-    <div *ngIf="metadados?.possuiLogo" class="text-sm text-color-secondary grid grid-cols-2 md:grid-cols-4 gap-2">
+    <div *ngIf="metadados?.possuiLogo && metadados?.modo === 'UPLOAD'" class="text-sm text-color-secondary grid grid-cols-2 md:grid-cols-4 gap-2">
       <span *ngIf="metadados?.largura && metadados?.altura">
         Dimensões: {{ metadados?.largura }}×{{ metadados?.altura }} px
       </span>
@@ -46,35 +54,80 @@
       </span>
     </div>
 
-    <input
-      #fileInput
-      type="file"
-      class="hidden"
-      accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
-      (change)="onArquivoSelecionado($event)"
-      [disabled]="enviando"
-    />
-
-    <div class="flex flex-wrap gap-2">
-      <p-button
-        *ngIf="podeEnviar"
-        [label]="possuiLogo ? 'Substituir logo' : 'Enviar e editar logo'"
-        icon="pi pi-upload"
-        [loading]="enviando"
-        styleClass="p-button-outlined"
-        (onClick)="fileInput.click()"
-      ></p-button>
-
-      <p-button
-        *ngIf="podeRemover && possuiLogo"
-        label="Remover logo"
-        icon="pi pi-trash"
-        severity="danger"
-        styleClass="p-button-outlined"
-        [loading]="removendo"
-        (onClick)="confirmarRemocao()"
-      ></p-button>
+    <div *ngIf="metadados?.possuiLogo && metadados?.modo === 'URL'" class="text-sm text-color-secondary">
+      Fonte: URL externa
+      <span *ngIf="metadados?.logoUrlExterna" class="block truncate">{{ metadados?.logoUrlExterna }}</span>
     </div>
+
+    <ng-container *ngIf="modoConfiguracao === 'arquivo'">
+      <input
+        #fileInput
+        type="file"
+        class="hidden"
+        accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+        (change)="onArquivoSelecionado($event)"
+        [disabled]="enviando"
+      />
+
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          *ngIf="podeEnviar"
+          [label]="modoAtivo === 'UPLOAD' ? 'Substituir arquivo' : 'Enviar e editar logo'"
+          icon="pi pi-upload"
+          [loading]="enviando"
+          styleClass="p-button-outlined"
+          (onClick)="fileInput.click()"
+        ></p-button>
+
+        <p-button
+          *ngIf="podeRemover && modoAtivo === 'UPLOAD'"
+          label="Remover arquivo"
+          icon="pi pi-trash"
+          severity="danger"
+          styleClass="p-button-outlined"
+          [loading]="removendo"
+          (onClick)="confirmarRemocao()"
+        ></p-button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="modoConfiguracao === 'url'">
+      <div class="flex flex-col gap-2">
+        <label for="logoUrlInput" class="text-sm font-medium">URL da imagem</label>
+        <input
+          pInputText
+          id="logoUrlInput"
+          type="url"
+          class="w-full"
+          placeholder="https://exemplo.com/logo.png"
+          [(ngModel)]="logoUrlInput"
+          [disabled]="!podeEnviar || salvandoUrl"
+        />
+        <p class="text-sm text-color-secondary m-0">
+          Use um link público (http ou https). Se houver arquivo enviado, ele tem prioridade na exibição.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          *ngIf="podeEnviar"
+          label="Salvar URL"
+          icon="pi pi-link"
+          [loading]="salvandoUrl"
+          (onClick)="salvarLogoUrl()"
+        ></p-button>
+
+        <p-button
+          *ngIf="podeRemover && modoAtivo === 'URL'"
+          label="Remover URL"
+          icon="pi pi-trash"
+          severity="danger"
+          styleClass="p-button-outlined"
+          [loading]="removendo"
+          (onClick)="confirmarRemocao()"
+        ></p-button>
+      </div>
+    </ng-container>
 
     <p *ngIf="!podeEnviar" class="text-sm text-color-secondary m-0">
       Apenas usuários autorizados podem alterar a logo. Solicite ao administrador da organização se precisar de acesso.

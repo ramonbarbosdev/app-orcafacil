@@ -19,7 +19,31 @@ interface ResultadoNotificacao {
   destinatario?: string;
   sucesso: boolean;
   idNotificacao?: number;
+  status?: string;
   erro?: string;
+  mensagemUsuario?: string;
+  codigoErro?: string;
+  equipeNotificada?: boolean;
+  tempoEstimadoEnvioSegundos?: number;
+  posicaoFila?: number;
+  tempoEstimadoEnvioTexto?: string;
+}
+
+interface SucessoEnvioInfo {
+  canal: NotificacaoCanal;
+  destinatario?: string;
+  idNotificacao?: number;
+  status?: string;
+  tempoEstimadoEnvioTexto?: string;
+  tempoEstimadoEnvioSegundos?: number;
+  posicaoFila?: number;
+}
+
+interface ErroEnvioBanner {
+  canal: NotificacaoCanal;
+  titulo: string;
+  mensagem: string;
+  equipeNotificada: boolean;
 }
 
 interface OrcamentoEnviarResponse {
@@ -79,6 +103,8 @@ export class PartilharOrcamento {
   enviandoEmail = false;
   whatsappEnviado = false;
   emailEnviado = false;
+  erroEnvio: ErroEnvioBanner | null = null;
+  sucessoEnvio: SucessoEnvioInfo | null = null;
 
   public baseService = inject(BaseService);
   router = inject(Router);
@@ -92,9 +118,11 @@ export class PartilharOrcamento {
   }
 
   showDialog() {
-    this.linkOrcamento = `${window.location.origin}/public/orcamento/${this.cdPublico}`;
+    this.linkOrcamento = `${window.location.origin}/public/orcamento/view/${this.cdPublico}`;
     this.whatsappEnviado = false;
     this.emailEnviado = false;
+    this.erroEnvio = null;
+    this.sucessoEnvio = null;
     this.visible = true;
     this.carregarMensagemPadrao();
     this.carregarHistorico();
@@ -179,6 +207,8 @@ export class PartilharOrcamento {
     } else {
       this.enviandoEmail = true;
     }
+    this.erroEnvio = null;
+    this.sucessoEnvio = null;
     this.cd.markForCheck();
 
     this.baseService
@@ -198,15 +228,13 @@ export class PartilharOrcamento {
             } else {
               this.emailEnviado = true;
             }
+            this.sucessoEnvio = this.montarSucessoEnvio(canal, resultado);
             this.carregarHistorico();
             this.messageService.add({
               severity: 'success',
-              summary: canal === 'WHATSAPP' ? 'WhatsApp enviado' : 'E-mail enviado',
-              detail:
-                canal === 'WHATSAPP'
-                  ? 'A mensagem foi encaminhada para o cliente.'
-                  : 'O e-mail foi encaminhado para o cliente.',
-              life: 5000,
+              summary: canal === 'WHATSAPP' ? 'WhatsApp enfileirado' : 'E-mail enfileirado',
+              detail: this.montarMensagemSucesso(canal, resultado),
+              life: 6000,
             });
           } else if (notificacoes.length === 0) {
             this.messageService.add({
@@ -217,17 +245,120 @@ export class PartilharOrcamento {
               life: 8000,
             });
           } else {
+            const erro = resultado?.erro ?? '';
+            const integracaoNaoConfigurada =
+              erro.toLowerCase().includes('nao configurada') ||
+              erro.toLowerCase().includes('não configurada') ||
+              resultado?.codigoErro === 'API_KEY_INVALIDA' ||
+              resultado?.codigoErro === 'API_KEY_SEM_PERMISSAO';
+
+            if (integracaoNaoConfigurada) {
+              this.erroEnvio = {
+                canal,
+                titulo: 'Integração não configurada',
+                mensagem:
+                  'Configure a API Key em Configurações > Integrações antes de enviar mensagens ao cliente.',
+                equipeNotificada: false,
+              };
+            } else {
+              this.erroEnvio = {
+                canal,
+                titulo: canal === 'WHATSAPP' ? 'Não foi possível enviar o WhatsApp' : 'Não foi possível enviar o e-mail',
+                mensagem:
+                  resultado?.mensagemUsuario ||
+                  'Ocorreu um problema ao enviar a mensagem. Tente novamente em alguns minutos.',
+                equipeNotificada: !!resultado?.equipeNotificada,
+              };
+            }
+
             this.messageService.add({
-              severity: 'error',
-              summary: 'Falha no envio',
-              detail: resultado?.erro ?? `Não foi possível enviar por ${canal === 'WHATSAPP' ? 'WhatsApp' : 'e-mail'}.`,
-              life: 8000,
+              severity: integracaoNaoConfigurada ? 'warn' : 'error',
+              summary: this.erroEnvio.titulo,
+              detail: this.erroEnvio.mensagem,
+              life: 10000,
             });
           }
           this.finalizarEnvio(canal);
         },
         error: () => this.finalizarEnvio(canal),
       });
+  }
+
+  private montarSucessoEnvio(canal: NotificacaoCanal, resultado: ResultadoNotificacao): SucessoEnvioInfo {
+    return {
+      canal,
+      destinatario: resultado.destinatario,
+      idNotificacao: resultado.idNotificacao,
+      status: resultado.status,
+      tempoEstimadoEnvioTexto: resultado.tempoEstimadoEnvioTexto,
+      tempoEstimadoEnvioSegundos: resultado.tempoEstimadoEnvioSegundos,
+      posicaoFila: resultado.posicaoFila,
+    };
+  }
+
+  labelStatusNotificacao(status?: string): string {
+    if (!status) {
+      return '—';
+    }
+    const labels: Record<string, string> = {
+      PENDENTE: 'Na fila',
+      PROCESSANDO: 'Processando',
+      ENVIADA: 'Enviada',
+      ENTREGUE: 'Entregue',
+      LIDA: 'Lida',
+      FALHOU: 'Falhou',
+      BLOQUEADA: 'Bloqueada',
+      CANCELADA: 'Cancelada',
+    };
+    return labels[status] ?? status;
+  }
+
+  severidadeStatus(status?: string): 'success' | 'warn' | 'danger' | 'info' | 'secondary' {
+    switch (status) {
+      case 'ENVIADA':
+      case 'ENTREGUE':
+      case 'LIDA':
+        return 'success';
+      case 'PENDENTE':
+      case 'PROCESSANDO':
+        return 'info';
+      case 'BLOQUEADA':
+        return 'warn';
+      case 'FALHOU':
+      case 'CANCELADA':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
+  }
+
+  fecharSucessoEnvio(): void {
+    this.sucessoEnvio = null;
+    this.cd.markForCheck();
+  }
+
+  private montarMensagemSucesso(canal: NotificacaoCanal, resultado?: ResultadoNotificacao): string {
+    const base =
+      canal === 'WHATSAPP'
+        ? 'A mensagem foi enfileirada para envio ao cliente.'
+        : 'O e-mail foi enfileirado para envio ao cliente.';
+
+    const estimativa = resultado?.tempoEstimadoEnvioTexto?.trim();
+    if (!estimativa) {
+      return base;
+    }
+
+    const fila =
+      resultado?.posicaoFila != null && resultado.posicaoFila > 0
+        ? ` Ha ${resultado.posicaoFila} mensagem(ns) na frente na fila.`
+        : '';
+
+    return `${base} Previsao de envio: ${estimativa}.${fila}`;
+  }
+
+  fecharErroEnvio(): void {
+    this.erroEnvio = null;
+    this.cd.markForCheck();
   }
 
   private finalizarEnvio(canal: NotificacaoCanal) {
@@ -250,7 +381,7 @@ export class PartilharOrcamento {
   }
 
   abrirView() {
-    this.router.navigate(['public/orcamento', this.cdPublico]);
+    this.router.navigate(['public/orcamento/view', this.cdPublico]);
   }
 
   gerarPdf(): void {

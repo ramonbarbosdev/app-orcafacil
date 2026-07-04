@@ -31,13 +31,14 @@ import { AvatarModule } from 'primeng/avatar';
       <a class="layout-topbar-logo" [routerLink]="auth.isSuperAdmin() ? '/admin/home' : '/client/home'">
         <span class="layout-topbar-brand-slot">
           <img
-            *ngIf="logoOrganizacaoUrl; else logoPadrao"
+            *ngIf="logoOrganizacaoUrl; else marcaPadrao"
             [src]="logoOrganizacaoUrl"
-            alt="Logo da empresa"
+            alt=""
             class="layout-topbar-brand-logo"
+            (error)="onLogoErro()"
           />
-          <ng-template #logoPadrao>
-            <img src="/logo.svg" alt="OrçaFácil" class="layout-topbar-brand-logo" />
+          <ng-template #marcaPadrao>
+            <span class="layout-topbar-brand-text">OrçaFácil</span>
           </ng-template>
         </span>
       </a>
@@ -193,7 +194,7 @@ export class AppTopbar implements OnInit, OnDestroy {
       return;
     }
     this.logoCarregamentoPendente = true;
-    this.logoService.obterBlobPreviewAutenticado().subscribe({
+    this.logoService.obterUrlExibicaoAutenticada().subscribe({
       next: (url) => {
         this.logoOrganizacaoUrl = url;
         this.logoCarregamentoPendente = false;
@@ -205,6 +206,12 @@ export class AppTopbar implements OnInit, OnDestroy {
         this.cd.markForCheck();
       },
     });
+  }
+
+  onLogoErro(): void {
+    this.logoOrganizacaoUrl = null;
+    this.logoService.revogarPreview();
+    this.cd.markForCheck();
   }
 
   toggleDarkMode() {

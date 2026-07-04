@@ -15,6 +15,88 @@
             O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
         </p>
 
+        @if (sucessoEnvio) {
+            <div class="partilhar-sucesso-banner" role="status">
+                <div class="partilhar-sucesso-banner__icon">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+                <div class="partilhar-sucesso-banner__content">
+                    <p class="partilhar-sucesso-banner__titulo">
+                        {{ sucessoEnvio.canal === 'WHATSAPP' ? 'WhatsApp enfileirado' : 'E-mail enfileirado' }}
+                    </p>
+                    <p class="partilhar-sucesso-banner__mensagem">
+                        A mensagem foi aceita pelo serviço de notificações e entrará na fila de envio.
+                    </p>
+                    <dl class="partilhar-sucesso-banner__detalhes">
+                        @if (sucessoEnvio.idNotificacao != null) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>ID notificação</dt>
+                                <dd>#{{ sucessoEnvio.idNotificacao }}</dd>
+                            </div>
+                        }
+                        @if (sucessoEnvio.status) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>Status</dt>
+                                <dd>
+                                    <p-tag
+                                        [value]="labelStatusNotificacao(sucessoEnvio.status)"
+                                        [severity]="severidadeStatus(sucessoEnvio.status)"
+                                    />
+                                </dd>
+                            </div>
+                        }
+                        @if (sucessoEnvio.destinatario) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>Destinatário</dt>
+                                <dd>{{ sucessoEnvio.destinatario }}</dd>
+                            </div>
+                        }
+                        @if (sucessoEnvio.tempoEstimadoEnvioTexto) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>Previsão de envio</dt>
+                                <dd>{{ sucessoEnvio.tempoEstimadoEnvioTexto }}</dd>
+                            </div>
+                        }
+                        @if (sucessoEnvio.posicaoFila != null && sucessoEnvio.posicaoFila > 0) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>Posição na fila</dt>
+                                <dd>{{ sucessoEnvio.posicaoFila }} mensagem(ns) à frente</dd>
+                            </div>
+                        }
+                        @if (sucessoEnvio.tempoEstimadoEnvioSegundos != null && !sucessoEnvio.tempoEstimadoEnvioTexto) {
+                            <div class="partilhar-sucesso-banner__item">
+                                <dt>Tempo estimado</dt>
+                                <dd>~{{ sucessoEnvio.tempoEstimadoEnvioSegundos }} segundos</dd>
+                            </div>
+                        }
+                    </dl>
+                </div>
+                <button type="button" class="partilhar-sucesso-banner__fechar" (click)="fecharSucessoEnvio()" aria-label="Fechar aviso">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
+        }
+
+        @if (erroEnvio) {
+            <div class="partilhar-erro-banner" role="alert">
+                <div class="partilhar-erro-banner__icon">
+                    <i class="pi pi-exclamation-circle"></i>
+                </div>
+                <div class="partilhar-erro-banner__content">
+                    <p class="partilhar-erro-banner__titulo">{{ erroEnvio.titulo }}</p>
+                    <p class="partilhar-erro-banner__mensagem">{{ erroEnvio.mensagem }}</p>
+                    @if (erroEnvio.equipeNotificada) {
+                        <p class="partilhar-erro-banner__extra">
+                            Sua equipe foi avisada por e-mail. Você pode tentar novamente em instantes.
+                        </p>
+                    }
+                </div>
+                <button type="button" class="partilhar-erro-banner__fechar" (click)="fecharErroEnvio()" aria-label="Fechar aviso">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
+        }
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
             <p-button

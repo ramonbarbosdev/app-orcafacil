@@ -8,6 +8,7 @@ import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MessageService } from 'primeng/api';
 
 interface IntegracaoStatus {
   habilitada: boolean;
@@ -23,9 +24,9 @@ interface IntegracaoStatus {
 interface IntegracaoConfig {
   idOrganizacaoOrcafacil?: number;
   idOrganizacaoNotificacao?: number;
-  apiKeyMascarada?: string;
-  usaApiKeyTenant?: boolean;
-  usaApiKeyGlobal?: boolean;
+  apiKey?: string;
+  configurada?: boolean;
+  emailAlertas?: string;
 }
 
 @Component({
@@ -48,11 +49,12 @@ export class ConfigNotificacao {
   verificandoStatus = false;
   status: IntegracaoStatus | null = null;
   config: IntegracaoConfig = {};
-  idOrganizacaoNotificacao?: number;
   apiKey = '';
+  emailAlertas = '';
 
   private readonly endpoint = 'integracao-notificacao';
   private baseService = inject(BaseService);
+  private messageService = inject(MessageService);
 
   ngAfterViewInit(): void {
     this.carregar();
@@ -63,7 +65,8 @@ export class ConfigNotificacao {
     this.baseService.findAll(`${this.endpoint}/config`).subscribe({
       next: (res: IntegracaoConfig) => {
         this.config = res ?? {};
-        this.idOrganizacaoNotificacao = res?.idOrganizacaoNotificacao;
+        this.apiKey = res?.apiKey ?? '';
+        this.emailAlertas = res?.emailAlertas ?? '';
         this.loading = false;
         this.verificarStatus();
       },
@@ -87,20 +90,36 @@ export class ConfigNotificacao {
   }
 
   onSave(): void {
-    this.loading = true;
-    const payload: Record<string, unknown> = {
-      idOrganizacaoNotificacao: this.idOrganizacaoNotificacao,
-    };
-    if (this.apiKey?.trim()) {
-      payload['apiKey'] = this.apiKey.trim();
+    const chave = this.apiKey?.trim();
+    if (!chave && !this.config.configurada) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'API Key obrigatória',
+        detail: 'Informe a API Key completa (nak_prefixo.segredo) para ativar a integração.',
+        life: 6000,
+      });
+      return;
     }
+
+    this.loading = true;
+    const payload: Record<string, unknown> = {};
+    if (chave) {
+      payload['apiKey'] = chave;
+    }
+    payload['emailAlertas'] = this.emailAlertas?.trim() || null;
 
     this.baseService.update(`${this.endpoint}/config`, payload).subscribe({
       next: (res: IntegracaoConfig) => {
         this.config = res ?? {};
-        this.idOrganizacaoNotificacao = res?.idOrganizacaoNotificacao;
-        this.apiKey = '';
+        this.apiKey = res?.apiKey ?? chave ?? '';
+        this.emailAlertas = res?.emailAlertas ?? this.emailAlertas ?? '';
         this.loading = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Integração salva',
+          detail: 'API Key configurada para esta organização.',
+          life: 5000,
+        });
         this.verificarStatus();
       },
       error: () => {

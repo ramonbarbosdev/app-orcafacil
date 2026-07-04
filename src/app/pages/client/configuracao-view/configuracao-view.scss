@@ -1,0 +1,10 @@
+:host ::ng-deep .config-tabs {
+  .p-tablist {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .p-tabpanels {
+    padding-top: 1rem;
+  }
+}

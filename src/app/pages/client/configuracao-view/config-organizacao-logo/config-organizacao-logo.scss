@@ -36,3 +36,17 @@
   width: 7rem;
   height: 2rem;
 }
+
+.logo-preview-padrao {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-preview-marca-padrao {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--p-primary-color, #2563eb);
+}

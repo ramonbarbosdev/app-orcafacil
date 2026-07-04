@@ -4,11 +4,32 @@
     <p class="text-color-secondary">Personalize seu sistema de orçamentos</p>
   </div>
 
-  <app-config-organizacao-logo></app-config-organizacao-logo>
-  <app-config-empresa></app-config-empresa>
-  <app-config-orcamento></app-config-orcamento>
-  <app-config-metodo-precificacao></app-config-metodo-precificacao>
-  <app-config-campo-personalizado></app-config-campo-personalizado>
-  <app-config-metodo-ajuste></app-config-metodo-ajuste>
-  <app-config-notificacao></app-config-notificacao>
+  <p-tabs value="geral" class="config-tabs">
+    <p-tablist>
+      <p-tab value="geral">Geral</p-tab>
+      <p-tab value="orcamento">Orçamentos</p-tab>
+      <p-tab value="precificacao">Precificação</p-tab>
+      <p-tab value="integracoes">Integrações</p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+      <p-tabpanel value="geral">
+        <app-config-organizacao-logo></app-config-organizacao-logo>
+        <app-config-empresa></app-config-empresa>
+      </p-tabpanel>
+
+      <p-tabpanel value="orcamento">
+        <app-config-orcamento></app-config-orcamento>
+      </p-tabpanel>
+
+      <p-tabpanel value="precificacao">
+        <app-config-metodo-precificacao></app-config-metodo-precificacao>
+        <app-config-metodo-ajuste></app-config-metodo-ajuste>
+      </p-tabpanel>
+
+      <p-tabpanel value="integracoes">
+        <app-config-notificacao></app-config-notificacao>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>

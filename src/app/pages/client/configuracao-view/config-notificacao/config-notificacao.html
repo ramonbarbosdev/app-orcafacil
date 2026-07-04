@@ -22,8 +22,8 @@
             <p-progressSpinner strokeWidth="4" styleClass="w-5 h-5" />
           } @else if (status) {
             <p-tag
-              [value]="status.conectada && status.whatsappConectado ? 'OK' : status.conectada ? 'Parcial' : 'Erro'"
-              [severity]="status.conectada && status.whatsappConectado ? 'success' : status.conectada ? 'warn' : 'danger'"
+              [value]="status.conectada && status.whatsappConectado ? 'OK' : status.conectada ? 'Parcial' : config.configurada ? 'Erro' : 'Não configurada'"
+              [severity]="status.conectada && status.whatsappConectado ? 'success' : status.conectada ? 'warn' : config.configurada ? 'danger' : 'secondary'"
             />
           }
           <button type="button" class="p-button p-button-text p-button-sm" (click)="verificarStatus()">
@@ -42,34 +42,39 @@
 
       <p-divider />
 
-      <app-layout-campo label="ID organização (notificacao-api)">
+      <app-layout-campo label="API Key">
         <input
-          type="number"
+          type="text"
           pInputText
-          class="w-full"
-          [(ngModel)]="idOrganizacaoNotificacao"
-          placeholder="Ex.: 1"
-        />
-      </app-layout-campo>
-
-      <app-layout-campo label="API Key do tenant">
-        <input
-          type="password"
-          pInputText
-          class="w-full"
+          class="w-full font-mono text-sm"
           [(ngModel)]="apiKey"
           placeholder="nak_prefixo.segredo"
-          autocomplete="new-password"
+          autocomplete="off"
+          spellcheck="false"
         />
         <small class="text-surface-500">
-          @if (config.apiKeyMascarada) {
-            Chave atual: {{ config.apiKeyMascarada }}
-            @if (config.usaApiKeyGlobal) {
-              (fallback global do servidor)
-            }
+          A organização na notificacao-api é identificada automaticamente pela API Key.
+          @if (config.configurada && !apiKey) {
+            Nenhuma chave salva ainda.
+          } @else if (!config.configurada) {
+            Obrigatória para enviar orçamentos pelo WhatsApp.
           } @else {
-            Deixe em branco para manter a chave atual ou usar fallback global.
+            Chave salva para esta organização. Edite e salve para alterar.
           }
+        </small>
+      </app-layout-campo>
+
+      <app-layout-campo label="E-mail para alertas">
+        <input
+          type="email"
+          pInputText
+          class="w-full text-sm"
+          [(ngModel)]="emailAlertas"
+          placeholder="admin@empresa.com"
+          autocomplete="email"
+        />
+        <small class="text-surface-500">
+          Recebe avisos quando o envio de mensagens falhar por problemas internos no serviço de notificações.
         </small>
       </app-layout-campo>
     </div>

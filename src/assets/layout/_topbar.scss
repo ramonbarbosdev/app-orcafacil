@@ -57,6 +57,18 @@
             object-position: left center;
         }
 
+        .layout-topbar-brand-text {
+            display: block;
+            line-height: 1;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--p-primary-color, #2563eb);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         &:focus-visible {
             @include focused();
         }
