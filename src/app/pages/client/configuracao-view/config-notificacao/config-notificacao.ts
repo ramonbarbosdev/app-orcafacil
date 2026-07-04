@@ -6,6 +6,16 @@ import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
+import {
+  ehStatusDeTentativa,
+  labelWhatsappStatus,
+  resolverMensagemExibicao,
+} from '../../../../shared/notificacao.labels';
+import {
+  aguardandoQrCode,
+  montarQrImagemSrc,
+  obterQrBruto,
+} from '../../../../shared/whatsapp.helpers';
 
 interface IntegracaoTenantConfig {
   habilitada?: boolean;
@@ -17,17 +27,11 @@ interface WhatsappStatus {
   sucesso?: boolean;
   status?: string;
   conectado?: boolean;
+  qr?: string;
   qrImagem?: string;
   telefone?: string;
   erro?: string;
 }
-
-const STATUS_TENTATIVA = new Set([
-  'CONECTANDO',
-  'CONNECTING',
-  'AGUARDANDO_QR',
-  'PENDING_QR',
-]);
 
 @Component({
   selector: 'app-config-notificacao',
@@ -43,21 +47,28 @@ export class ConfigNotificacao implements OnDestroy {
 
   private readonly endpoint = 'integracao-notificacao';
   private pollingId: ReturnType<typeof setInterval> | null = null;
+  private refreshQrTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private baseService = inject(BaseService);
 
   get qrImagemSrc(): string {
-    const qr = this.whatsapp?.qrImagem;
-    if (!qr) return '';
-    return qr.startsWith('data:image/') ? qr : `data:image/png;base64,${qr}`;
+    return montarQrImagemSrc(this.whatsapp);
+  }
+
+  get aguardandoQr(): boolean {
+    return aguardandoQrCode(this.whatsapp);
   }
 
   get statusWhatsappLabel(): string {
-    if (!this.whatsapp?.status) return 'Desconhecido';
-    return this.whatsapp.status.replace(/_/g, ' ');
+    return labelWhatsappStatus(this.whatsapp?.status);
+  }
+
+  get whatsappErroLabel(): string {
+    return resolverMensagemExibicao(this.whatsapp?.erro, this.whatsapp?.erro);
   }
 
   ngOnDestroy(): void {
     this.pararPolling();
+    this.cancelarRefreshQr();
   }
 
   ngAfterViewInit(): void {
@@ -85,9 +96,8 @@ export class ConfigNotificacao implements OnDestroy {
     this.whatsappCarregando = true;
     this.baseService.findAll(`${this.endpoint}/whatsapp/status`).subscribe({
       next: (res: WhatsappStatus) => {
-        this.whatsapp = res;
+        this.aplicarRespostaWhatsapp(res);
         this.whatsappCarregando = false;
-        this.avaliarPolling();
       },
       error: () => {
         this.whatsappCarregando = false;
@@ -104,13 +114,11 @@ export class ConfigNotificacao implements OnDestroy {
     this.whatsappCarregando = true;
     this.baseService.post(`${this.endpoint}/whatsapp/conectar`, {}).subscribe({
       next: (res: WhatsappStatus) => {
-        this.whatsapp = res;
+        this.aplicarRespostaWhatsapp(res);
         this.whatsappCarregando = false;
-        if (res?.erro) {
+        if (res?.erro && !ehStatusDeTentativa(res.status)) {
           this.pararPolling();
-          return;
         }
-        this.iniciarPolling();
       },
       error: () => {
         this.whatsappCarregando = false;
@@ -149,7 +157,7 @@ export class ConfigNotificacao implements OnDestroy {
     this.whatsappCarregando = true;
     this.baseService.post(`${this.endpoint}/whatsapp/${acao}`, {}).subscribe({
       next: (res: WhatsappStatus) => {
-        this.whatsapp = res;
+        this.aplicarRespostaWhatsapp(res);
         this.whatsappCarregando = false;
         this.pararPolling();
       },
@@ -161,21 +169,46 @@ export class ConfigNotificacao implements OnDestroy {
 
   private iniciarPolling(): void {
     this.pararPolling();
-    this.pollingId = setInterval(() => this.atualizarWhatsappSilencioso(), 4000);
+    this.pollingId = setInterval(() => this.atualizarWhatsappSilencioso(), 2000);
   }
 
   private atualizarWhatsappSilencioso(): void {
     this.baseService.findAll(`${this.endpoint}/whatsapp/status`).subscribe({
-      next: (res: WhatsappStatus) => {
-        this.whatsapp = res;
-        this.avaliarPolling();
-      },
+      next: (res: WhatsappStatus) => this.aplicarRespostaWhatsapp(res),
     });
+  }
+
+  private aplicarRespostaWhatsapp(res: WhatsappStatus): void {
+    this.whatsapp = res;
+    this.avaliarPolling();
+
+    if (ehStatusDeTentativa(res.status) && !obterQrBruto(res)) {
+      this.agendarRefreshQrRapido();
+    } else {
+      this.cancelarRefreshQr();
+    }
+  }
+
+  private agendarRefreshQrRapido(): void {
+    if (this.refreshQrTimeoutId) return;
+    this.refreshQrTimeoutId = setTimeout(() => {
+      this.refreshQrTimeoutId = null;
+      if (aguardandoQrCode(this.whatsapp)) {
+        this.atualizarWhatsappSilencioso();
+      }
+    }, 1200);
+  }
+
+  private cancelarRefreshQr(): void {
+    if (this.refreshQrTimeoutId) {
+      clearTimeout(this.refreshQrTimeoutId);
+      this.refreshQrTimeoutId = null;
+    }
   }
 
   private avaliarPolling(): void {
     const status = this.whatsapp?.status;
-    if (this.whatsapp?.conectado || !status || !STATUS_TENTATIVA.has(status)) {
+    if (this.whatsapp?.conectado || !status || !ehStatusDeTentativa(status)) {
       this.pararPolling();
     } else if (!this.pollingId) {
       this.iniciarPolling();
@@ -183,6 +216,7 @@ export class ConfigNotificacao implements OnDestroy {
   }
 
   private pararPolling(): void {
+    this.cancelarRefreshQr();
     if (this.pollingId) {
       clearInterval(this.pollingId);
       this.pollingId = null;

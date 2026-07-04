@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { BaseService } from '../../../services/base.service';
 import { DialogModule } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
+import { labelStatusNotificacao, resolverMensagemExibicao } from '../../../shared/notificacao.labels';
 
 type NotificacaoCanal = 'WHATSAPP' | 'EMAIL';
 
@@ -68,6 +69,12 @@ interface MensagemCompartilhamento {
   integracaoNotificacaoAtiva?: boolean;
 }
 
+interface IntegracaoTenantConfig {
+  habilitada?: boolean;
+  configurada?: boolean;
+  mensagem?: string;
+}
+
 @Component({
   selector: 'app-partilhar-orcamento',
   imports: [
@@ -84,7 +91,7 @@ interface MensagemCompartilhamento {
   templateUrl: './partilhar-orcamento.html',
   styleUrl: './partilhar-orcamento.scss',
 })
-export class PartilharOrcamento {
+export class PartilharOrcamento implements OnChanges {
   @Input() idOrcamento!: number;
   @Input() cdPublico!: string;
   @Input() nuTelefone?: string;
@@ -109,11 +116,21 @@ export class PartilharOrcamento {
   erroEnvio: ErroEnvioBanner | null = null;
   sucessoEnvio: SucessoEnvioInfo | null = null;
   integracaoNotificacaoAtiva = false;
+  integracaoVerificada = false;
 
   public baseService = inject(BaseService);
   router = inject(Router);
   private cd = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.visible) {
+      return;
+    }
+    if (changes['idOrcamento']?.currentValue || changes['visible']?.currentValue === true) {
+      this.carregarDadosCompartilhamento();
+    }
+  }
 
   hideDialog() {
     this.visible = false;
@@ -127,9 +144,40 @@ export class PartilharOrcamento {
     this.emailEnviado = false;
     this.erroEnvio = null;
     this.sucessoEnvio = null;
-    this.visible = true;
+    this.integracaoNotificacaoAtiva = false;
+    this.integracaoVerificada = false;
+    this.carregarDadosCompartilhamento();
+  }
+
+  private carregarDadosCompartilhamento(): void {
+    this.carregarStatusIntegracao();
+
+    if (!this.idOrcamento) {
+      queueMicrotask(() => {
+        if (this.visible && this.idOrcamento) {
+          this.carregarMensagemPadrao();
+          this.carregarHistorico();
+        }
+      });
+      return;
+    }
+
     this.carregarMensagemPadrao();
     this.carregarHistorico();
+  }
+
+  private carregarStatusIntegracao(): void {
+    this.baseService.findAll('integracao-notificacao/config').subscribe({
+      next: (res: IntegracaoTenantConfig) => {
+        this.integracaoNotificacaoAtiva = !!res?.habilitada;
+        this.integracaoVerificada = true;
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.integracaoVerificada = true;
+        this.cd.markForCheck();
+      },
+    });
   }
 
   private carregarMensagemPadrao() {
@@ -140,7 +188,10 @@ export class PartilharOrcamento {
     this.baseService.findAll(`orcamentos/${this.idOrcamento}/mensagem-compartilhamento`).subscribe({
       next: (res: MensagemCompartilhamento) => {
         this.mensagemWhatsApp = res?.mensagem ?? '';
-        this.integracaoNotificacaoAtiva = !!res?.integracaoNotificacaoAtiva;
+        if (res?.integracaoNotificacaoAtiva != null) {
+          this.integracaoNotificacaoAtiva = !!res.integracaoNotificacaoAtiva;
+        }
+        this.integracaoVerificada = true;
         if (res?.linkOrcamento) {
           this.linkOrcamento = res.linkOrcamento;
         }
@@ -149,6 +200,7 @@ export class PartilharOrcamento {
       },
       error: () => {
         this.carregandoMensagem = false;
+        this.integracaoVerificada = true;
         this.cd.markForCheck();
       },
     });
@@ -233,6 +285,10 @@ export class PartilharOrcamento {
       })
       .subscribe({
         next: (res: OrcamentoEnviarResponse) => {
+          if (res?.integracaoNotificacaoAtiva != null) {
+            this.integracaoNotificacaoAtiva = !!res.integracaoNotificacaoAtiva;
+          }
+
           if (res?.integracaoNotificacaoAtiva === false) {
             this.copiarMensagem(canal === 'WHATSAPP' ? 'WhatsApp' : 'e-mail');
             this.finalizarEnvio(canal);
@@ -283,9 +339,11 @@ export class PartilharOrcamento {
               this.erroEnvio = {
                 canal,
                 titulo: canal === 'WHATSAPP' ? 'Não foi possível enviar o WhatsApp' : 'Não foi possível enviar o e-mail',
-                mensagem:
-                  resultado?.mensagemUsuario ||
-                  'Ocorreu um problema ao enviar a mensagem. Tente novamente em alguns minutos.',
+                mensagem: this.labelErroNotificacao(
+                  resultado?.erro,
+                  resultado?.codigoErro,
+                  resultado?.mensagemUsuario
+                ) || 'Ocorreu um problema ao enviar a mensagem. Tente novamente em alguns minutos.',
                 equipeNotificada: !!resultado?.equipeNotificada,
               };
             }
@@ -315,21 +373,14 @@ export class PartilharOrcamento {
     };
   }
 
-  labelStatusNotificacao(status?: string): string {
-    if (!status) {
-      return '—';
-    }
-    const labels: Record<string, string> = {
-      PENDENTE: 'Na fila',
-      PROCESSANDO: 'Processando',
-      ENVIADA: 'Enviada',
-      ENTREGUE: 'Entregue',
-      LIDA: 'Lida',
-      FALHOU: 'Falhou',
-      BLOQUEADA: 'Bloqueada',
-      CANCELADA: 'Cancelada',
-    };
-    return labels[status] ?? status;
+  readonly labelStatusNotificacao = labelStatusNotificacao;
+
+  labelErroNotificacao(erro?: string, codigo?: string, mensagemUsuario?: string): string {
+    return resolverMensagemExibicao(
+      mensagemUsuario ?? erro,
+      codigo ?? erro,
+      'Não foi possível enviar a mensagem.'
+    );
   }
 
   severidadeStatus(status?: string): 'success' | 'warn' | 'danger' | 'info' | 'secondary' {

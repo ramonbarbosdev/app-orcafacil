@@ -16,6 +16,7 @@ import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 import { BaseService } from '../../services/base.service';
+import { resolverMensagemExibicao } from '../../shared/notificacao.labels';
 
 interface NotificacaoAdminConfig {
   idOrganizacaoOrcafacil?: number;
@@ -67,6 +68,10 @@ export class OrganizacaoNotificacaoDialog {
   idOrganizacaoNotificacao?: number;
 
   status: IntegracaoStatus | null = null;
+
+  get statusMensagemLabel(): string {
+    return resolverMensagemExibicao(this.status?.mensagem);
+  }
 
   private baseService = inject(BaseService);
   private messageService = inject(MessageService);

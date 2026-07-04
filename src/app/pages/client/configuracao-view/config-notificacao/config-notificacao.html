@@ -46,14 +46,30 @@
         </div>
 
         @if (whatsapp?.erro) {
-          <p class="text-sm text-red-500 m-0">{{ whatsapp?.erro }}</p>
+          <p class="text-sm text-red-500 m-0">{{ whatsappErroLabel }}</p>
         }
 
         @if (qrImagemSrc) {
-          <div class="flex flex-col items-center gap-2 py-2">
-            <img [src]="qrImagemSrc" alt="QR Code WhatsApp" class="max-w-64 rounded border border-surface-200" />
-            <p class="text-sm text-surface-500 m-0 text-center">
+          <div class="flex flex-col items-center gap-3 py-4">
+            <p class="text-sm text-surface-600 m-0 flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              Escaneie o QR Code no WhatsApp
+            </p>
+            <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+              <img [src]="qrImagemSrc" alt="QR Code WhatsApp" class="w-56 h-56 object-contain" />
+            </div>
+            <p class="text-sm text-surface-500 m-0 text-center max-w-sm">
               Abra o WhatsApp no celular → Aparelhos conectados → Conectar aparelho
+            </p>
+          </div>
+        } @else if (aguardandoQr) {
+          <div class="flex flex-col items-center gap-3 py-6">
+            <p-progressSpinner strokeWidth="4" styleClass="w-10 h-10" />
+            <p class="text-sm text-surface-600 m-0 text-center">
+              Gerando QR Code…
+            </p>
+            <p class="text-xs text-surface-500 m-0 text-center max-w-sm">
+              Aguarde alguns segundos. A imagem aparecerá automaticamente.
             </p>
           </div>
         }
@@ -74,7 +90,7 @@
               [loading]="whatsappCarregando"
               (click)="conectarWhatsapp()"
             ></button>
-            @if (qrImagemSrc) {
+            @if (qrImagemSrc || aguardandoQr) {
               <button
                 pButton
                 type="button"

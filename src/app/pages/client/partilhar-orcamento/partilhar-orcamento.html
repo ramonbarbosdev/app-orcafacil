@@ -15,7 +15,7 @@
             O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
         </p>
 
-        @if (!integracaoNotificacaoAtiva && !carregandoMensagem) {
+        @if (!integracaoNotificacaoAtiva && integracaoVerificada && !carregandoMensagem) {
             <p class="text-sm text-surface-600 m-0 rounded-lg border border-surface-200 bg-surface-50 p-3">
                 A integração automática não está ativa. Use <strong>Copiar mensagem</strong> e envie manualmente pelo WhatsApp ou e-mail.
             </p>
@@ -212,7 +212,7 @@
                                 <span class="font-medium">{{ item.canal }} · {{ item.destinatario }}</span>
                                 <span class="text-xs text-surface-500">{{ formatarData(item.dtCriacao) }}</span>
                                 @if (!item.sucesso && item.erro) {
-                                    <span class="text-xs text-red-500 truncate">{{ item.erro }}</span>
+                                    <span class="text-xs text-red-500 truncate">{{ labelErroNotificacao(item.erro) }}</span>
                                 }
                             </div>
                             <p-tag

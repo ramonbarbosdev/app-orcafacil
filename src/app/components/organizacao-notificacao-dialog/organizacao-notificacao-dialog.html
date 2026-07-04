@@ -39,7 +39,7 @@
       </div>
 
       @if (status?.mensagem) {
-        <p class="text-sm m-0" [class.text-red-500]="!status?.conectada">{{ status?.mensagem }}</p>
+        <p class="text-sm m-0" [class.text-red-500]="!status?.conectada">{{ statusMensagemLabel }}</p>
       }
 
       <div>
