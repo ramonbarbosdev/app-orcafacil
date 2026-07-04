@@ -1,11 +1,62 @@
+$view-bg: #ffffff;
+$view-text: #0f172a;
+$view-muted: #64748b;
+$view-border: #e2e8f0;
+$view-surface-muted: #f8fafc;
+
 .orcamento-view-page {
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--p-primary-color, #3b82f6) 6%, var(--p-surface-50, #f8fafc)) 0%,
-    var(--p-surface-0, #ffffff) 12rem
-  );
+  background: $view-bg;
+  color: $view-text;
   padding: 1.5rem 1rem 3rem;
+
+  ::ng-deep {
+    .p-card {
+      background: $view-bg;
+      color: $view-text;
+      border-color: $view-border;
+    }
+
+    .p-card-body,
+    .p-card-content {
+      background: $view-bg;
+      color: $view-text;
+    }
+
+    .p-accordionpanel {
+      background: $view-bg;
+      border-color: $view-border;
+      color: $view-text;
+    }
+
+    .p-accordionheader {
+      background: $view-bg;
+      color: $view-text;
+      border-color: $view-border;
+    }
+
+    .p-accordionheader:hover {
+      background: $view-surface-muted;
+    }
+
+    .p-accordioncontent,
+    .p-accordioncontent-content {
+      background: $view-bg;
+      color: $view-text;
+      border-color: $view-border;
+    }
+
+    .p-tag {
+      background: $view-surface-muted;
+      color: $view-muted;
+    }
+
+    .p-button.p-button-outlined {
+      background: $view-bg;
+      color: $view-text;
+      border-color: $view-border;
+    }
+  }
 }
 
 .orcamento-view-shell {
@@ -22,12 +73,12 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-erro i {
   font-size: 2rem;
-  color: var(--p-red-500, #ef4444);
+  color: #ef4444;
 }
 
 .orcamento-view-header {
@@ -58,17 +109,12 @@
   object-position: left center;
 }
 
-.orcamento-view-logo--padrao {
-  max-width: 7rem;
-  opacity: 0.9;
-}
-
 .orcamento-view-marca-padrao {
   display: block;
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--p-primary-color, #2563eb);
+  color: #2563eb;
   line-height: 1.1;
   flex-shrink: 0;
 }
@@ -77,20 +123,20 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
   line-height: 1.2;
 }
 
 .orcamento-view-empresa {
   margin: 0.125rem 0 0;
   font-size: 0.875rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-subtitulo {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-acoes {
@@ -123,8 +169,8 @@
 }
 
 .orcamento-view-meta-card {
-  background: var(--p-surface-0, #fff);
-  border: 1px solid var(--p-content-border-color, #e2e8f0);
+  background: $view-bg;
+  border: 1px solid $view-border;
   border-radius: 0.875rem;
   padding: 0.875rem 1rem;
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
@@ -136,27 +182,29 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-meta-card dd {
   margin: 0.25rem 0 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
 }
 
 .orcamento-view-section {
   margin-bottom: 1.25rem;
 
-  :host ::ng-deep .p-card {
+  ::ng-deep .p-card {
     border-radius: 1rem;
-    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    border: 1px solid $view-border;
     box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+    background: $view-bg;
   }
 
-  :host ::ng-deep .p-card-body {
+  ::ng-deep .p-card-body {
     padding: 1.25rem;
+    background: $view-bg;
   }
 }
 
@@ -164,7 +212,7 @@
   margin: 0 0 1rem;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -183,7 +231,7 @@
 .orcamento-view-field label {
   display: block;
   font-size: 0.75rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
   margin-bottom: 0.125rem;
 }
 
@@ -191,7 +239,7 @@
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
   word-break: break-word;
 }
 
@@ -206,13 +254,13 @@
 
 .orcamento-view-item-titulo {
   font-weight: 600;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
 }
 
 .orcamento-view-item-codigo {
   display: block;
   font-size: 0.75rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
   font-weight: 400;
   margin-top: 0.125rem;
 }
@@ -220,7 +268,7 @@
 .orcamento-view-item-valor {
   font-weight: 700;
   white-space: nowrap;
-  color: var(--p-primary-color, #2563eb);
+  color: #2563eb;
 }
 
 .orcamento-view-item-detalhes {
@@ -229,7 +277,7 @@
   gap: 0.75rem;
   margin-bottom: 1rem;
   font-size: 0.8125rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 
   @media (min-width: 640px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -238,34 +286,38 @@
 
 .orcamento-view-item-detalhes strong {
   display: block;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
   font-size: 0.875rem;
 }
 
 .orcamento-view-materiais {
-  border: 1px solid var(--p-content-border-color, #e2e8f0);
+  border: 1px solid $view-border;
   border-radius: 0.75rem;
   overflow: hidden;
+  background: $view-bg;
 }
 
 .orcamento-view-materiais table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8125rem;
+  background: $view-bg;
 }
 
 .orcamento-view-materiais th {
   text-align: left;
   padding: 0.625rem 0.75rem;
-  background: var(--p-surface-50, #f8fafc);
-  color: var(--p-text-muted-color, #64748b);
+  background: $view-surface-muted;
+  color: $view-muted;
   font-weight: 600;
 }
 
 .orcamento-view-materiais td {
   padding: 0.625rem 0.75rem;
-  border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+  border-top: 1px solid $view-border;
   vertical-align: top;
+  color: $view-text;
+  background: $view-bg;
 }
 
 .orcamento-view-materiais td:last-child {
@@ -276,7 +328,7 @@
 .orcamento-view-material-desc {
   display: block;
   font-size: 0.75rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
   margin-top: 0.125rem;
 }
 
@@ -286,11 +338,11 @@
   gap: 1rem;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-resumo-linha strong {
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
 }
 
 .orcamento-view-resumo-total {
@@ -300,22 +352,22 @@
   gap: 1rem;
   margin-top: 0.75rem;
   padding-top: 0.875rem;
-  border-top: 1px dashed var(--p-content-border-color, #e2e8f0);
+  border-top: 1px dashed $view-border;
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
 }
 
 .orcamento-view-resumo-total span:last-child {
   font-size: 1.5rem;
-  color: var(--p-primary-color, #2563eb);
+  color: #2563eb;
 }
 
 .orcamento-view-observacoes {
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--p-text-color, #334155);
+  color: #334155;
   white-space: pre-wrap;
 }
 
@@ -338,7 +390,7 @@
   width: 0.625rem;
   height: 0.625rem;
   border-radius: 50%;
-  background: var(--p-primary-color, #3b82f6);
+  background: #3b82f6;
   margin-top: 0.375rem;
   flex-shrink: 0;
 }
@@ -346,18 +398,18 @@
 .orcamento-view-timeline-texto {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--p-text-color, #0f172a);
+  color: $view-text;
 }
 
 .orcamento-view-timeline-data {
   display: block;
   margin-top: 0.125rem;
   font-size: 0.75rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }
 
 .orcamento-view-vazio {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--p-text-muted-color, #64748b);
+  color: $view-muted;
 }

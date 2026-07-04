@@ -1,17 +1,30 @@
 <p-dialog header="Partilhar" [modal]="true" [(visible)]="visible" [style]="{ width: '42rem' }" (onHide)="hideDialog()"
     (onShow)="showDialog()">
 
-    <div class="flex flex-col gap-6 relative">
+    <div class="flex flex-col gap-6 relative min-h-[18rem]">
+
+        @if (carregandoInicial) {
+            <div class="partilhar-loading-overlay absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 rounded-lg">
+                <p-progressSpinner strokeWidth="4" styleClass="w-10 h-10" />
+                <p class="text-sm font-medium m-0">Preparando compartilhamento...</p>
+                <p class="text-xs text-surface-500 m-0">Carregando mensagem e configurações</p>
+            </div>
+        }
 
         @if (gerandoPdf) {
-            <div class="partilhar-pdf-loading absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg">
+            <div class="partilhar-loading-overlay absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 rounded-lg">
                 <p-progressSpinner strokeWidth="4" styleClass="w-10 h-10" />
                 <p class="text-sm font-medium m-0">Gerando PDF do orçamento...</p>
                 <p class="text-xs text-surface-500 m-0">Isso pode levar alguns segundos</p>
             </div>
         }
 
-        <p class="text-sm">
+        <div
+            class="flex flex-col gap-6 transition-opacity duration-200"
+            [class.opacity-40]="carregandoInicial"
+            [class.pointer-events-none]="carregandoInicial"
+        >
+        <p class="text-sm m-0">
             O orçamento foi gerado com sucesso. Escolha como deseja compartilhá-lo com o cliente.
         </p>
 
@@ -83,15 +96,41 @@
             </div>
         }
 
+        @if (avisoOperacional) {
+            <div class="partilhar-aviso-banner" role="status">
+                <div class="partilhar-aviso-banner__icon">
+                    <i class="pi pi-info-circle"></i>
+                </div>
+                <div class="partilhar-aviso-banner__content">
+                    <p class="partilhar-aviso-banner__titulo">{{ avisoOperacional.titulo }}</p>
+                    <p class="partilhar-aviso-banner__mensagem">{{ avisoOperacional.mensagem }}</p>
+                    @if (avisoOperacional.acaoLabel) {
+                        <button type="button" class="partilhar-aviso-banner__acao" (click)="abrirIntegracoes()">
+                            {{ avisoOperacional.acaoLabel }}
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+
         @if (erroEnvio) {
-            <div class="partilhar-erro-banner" role="alert">
+            <div
+                class="partilhar-erro-banner"
+                [class.partilhar-erro-banner--warn]="erroEnvio.severidade === 'warn'"
+                role="alert"
+            >
                 <div class="partilhar-erro-banner__icon">
                     <i class="pi pi-exclamation-circle"></i>
                 </div>
                 <div class="partilhar-erro-banner__content">
                     <p class="partilhar-erro-banner__titulo">{{ erroEnvio.titulo }}</p>
                     <p class="partilhar-erro-banner__mensagem">{{ erroEnvio.mensagem }}</p>
-                    @if (erroEnvio.equipeNotificada) {
+                    @if (erroEnvio.acaoLabel) {
+                        <button type="button" class="partilhar-aviso-banner__acao" (click)="abrirIntegracoes()">
+                            {{ erroEnvio.acaoLabel }}
+                        </button>
+                    }
+                    @if (erroEnvio.notificarEquipe) {
                         <p class="partilhar-erro-banner__extra">
                             Sua equipe foi avisada por e-mail. Você pode tentar novamente em instantes.
                         </p>
@@ -223,6 +262,8 @@
                     }
                 </div>
             }
+        </div>
+
         </div>
 
     </div>

@@ -7,11 +7,17 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
-import { labelStatusNotificacao, resolverMensagemExibicao } from '../../../shared/notificacao.labels';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  AvisoEnvioNotificacao,
+  labelStatusNotificacao,
+  montarAvisoEnvio,
+  resolverMensagemExibicao,
+} from '../../../shared/notificacao.labels';
 
 type NotificacaoCanal = 'WHATSAPP' | 'EMAIL';
 
@@ -40,11 +46,15 @@ interface SucessoEnvioInfo {
   posicaoFila?: number;
 }
 
-interface ErroEnvioBanner {
+interface ErroEnvioBanner extends AvisoEnvioNotificacao {
   canal: NotificacaoCanal;
-  titulo: string;
-  mensagem: string;
-  equipeNotificada: boolean;
+}
+
+interface WhatsappStatusResumo {
+  conectado?: boolean;
+  status?: string;
+  telefone?: string;
+  erro?: string;
 }
 
 interface OrcamentoEnviarResponse {
@@ -87,6 +97,7 @@ interface IntegracaoTenantConfig {
     DividerModule,
     ProgressSpinnerModule,
     TagModule,
+    RouterModule,
   ],
   templateUrl: './partilhar-orcamento.html',
   styleUrl: './partilhar-orcamento.scss',
@@ -105,6 +116,7 @@ export class PartilharOrcamento implements OnChanges {
   mensagemWhatsApp = '';
   carregandoMensagem = false;
   carregandoHistorico = false;
+  carregandoWhatsapp = false;
   historico: HistoricoNotificacao[] = [];
   readonly placeholdersAjuda =
     'Placeholders: {nomeCliente}, {numeroOrcamento}, {valorTotal}, {dataValidade}, {linkOrcamento}';
@@ -114,9 +126,23 @@ export class PartilharOrcamento implements OnChanges {
   whatsappEnviado = false;
   emailEnviado = false;
   erroEnvio: ErroEnvioBanner | null = null;
+  avisoOperacional: AvisoEnvioNotificacao | null = null;
   sucessoEnvio: SucessoEnvioInfo | null = null;
   integracaoNotificacaoAtiva = false;
   integracaoVerificada = false;
+  whatsappStatus: WhatsappStatusResumo | null = null;
+
+  get carregandoInicial(): boolean {
+    if (!this.visible) {
+      return false;
+    }
+    return (
+      !this.integracaoVerificada ||
+      this.carregandoMensagem ||
+      this.carregandoHistorico ||
+      (this.integracaoNotificacaoAtiva && this.carregandoWhatsapp)
+    );
+  }
 
   public baseService = inject(BaseService);
   router = inject(Router);
@@ -143,7 +169,9 @@ export class PartilharOrcamento implements OnChanges {
     this.whatsappEnviado = false;
     this.emailEnviado = false;
     this.erroEnvio = null;
+    this.avisoOperacional = null;
     this.sucessoEnvio = null;
+    this.whatsappStatus = null;
     this.integracaoNotificacaoAtiva = false;
     this.integracaoVerificada = false;
     this.carregarDadosCompartilhamento();
@@ -153,10 +181,16 @@ export class PartilharOrcamento implements OnChanges {
     this.carregarStatusIntegracao();
 
     if (!this.idOrcamento) {
+      this.carregandoMensagem = true;
+      this.carregandoHistorico = true;
       queueMicrotask(() => {
         if (this.visible && this.idOrcamento) {
           this.carregarMensagemPadrao();
           this.carregarHistorico();
+        } else {
+          this.carregandoMensagem = false;
+          this.carregandoHistorico = false;
+          this.cd.markForCheck();
         }
       });
       return;
@@ -171,6 +205,11 @@ export class PartilharOrcamento implements OnChanges {
       next: (res: IntegracaoTenantConfig) => {
         this.integracaoNotificacaoAtiva = !!res?.habilitada;
         this.integracaoVerificada = true;
+        if (this.integracaoNotificacaoAtiva) {
+          this.carregarWhatsappStatus();
+        } else {
+          this.avisoOperacional = null;
+        }
         this.cd.markForCheck();
       },
       error: () => {
@@ -178,6 +217,48 @@ export class PartilharOrcamento implements OnChanges {
         this.cd.markForCheck();
       },
     });
+  }
+
+  private carregarWhatsappStatus(): void {
+    this.carregandoWhatsapp = true;
+    this.baseService.findAll('integracao-notificacao/whatsapp/status').subscribe({
+      next: (res: WhatsappStatusResumo) => {
+        this.whatsappStatus = res;
+        this.carregandoWhatsapp = false;
+        this.atualizarAvisoOperacional();
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.carregandoWhatsapp = false;
+        this.atualizarAvisoOperacional();
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private atualizarAvisoOperacional(): void {
+    if (!this.integracaoNotificacaoAtiva || this.erroEnvio) {
+      if (!this.erroEnvio) {
+        this.avisoOperacional = null;
+      }
+      return;
+    }
+
+    if (this.whatsappStatus && !this.whatsappStatus.conectado) {
+      this.avisoOperacional = montarAvisoEnvio(
+        'WHATSAPP_NAO_CONECTADO',
+        this.whatsappStatus.erro,
+        null
+      );
+      return;
+    }
+
+    this.avisoOperacional = null;
+  }
+
+  abrirIntegracoes(): void {
+    this.hideDialog();
+    this.router.navigate(['/client/configuracao']);
   }
 
   private carregarMensagemPadrao() {
@@ -194,6 +275,9 @@ export class PartilharOrcamento implements OnChanges {
         this.integracaoVerificada = true;
         if (res?.linkOrcamento) {
           this.linkOrcamento = res.linkOrcamento;
+        }
+        if (this.integracaoNotificacaoAtiva && this.whatsappStatus === null && !this.carregandoWhatsapp) {
+          this.carregarWhatsappStatus();
         }
         this.carregandoMensagem = false;
         this.cd.markForCheck();
@@ -320,45 +404,52 @@ export class PartilharOrcamento implements OnChanges {
               life: 8000,
             });
           } else {
-            const erro = resultado?.erro ?? '';
-            const integracaoNaoConfigurada =
-              erro.toLowerCase().includes('nao configurada') ||
-              erro.toLowerCase().includes('não configurada') ||
-              resultado?.codigoErro === 'API_KEY_INVALIDA' ||
-              resultado?.codigoErro === 'API_KEY_SEM_PERMISSAO';
-
-            if (integracaoNaoConfigurada) {
-              this.erroEnvio = {
-                canal,
-                titulo: 'Integração não liberada',
-                mensagem:
-                  'A integração de notificações não está ativa para esta organização. Copie a mensagem e envie manualmente.',
-                equipeNotificada: false,
-              };
-            } else {
-              this.erroEnvio = {
-                canal,
-                titulo: canal === 'WHATSAPP' ? 'Não foi possível enviar o WhatsApp' : 'Não foi possível enviar o e-mail',
-                mensagem: this.labelErroNotificacao(
-                  resultado?.erro,
-                  resultado?.codigoErro,
-                  resultado?.mensagemUsuario
-                ) || 'Ocorreu um problema ao enviar a mensagem. Tente novamente em alguns minutos.',
-                equipeNotificada: !!resultado?.equipeNotificada,
-              };
-            }
-
+            this.aplicarErroEnvio(canal, resultado);
             this.messageService.add({
-              severity: integracaoNaoConfigurada ? 'warn' : 'error',
-              summary: this.erroEnvio.titulo,
-              detail: this.erroEnvio.mensagem,
+              severity: this.erroEnvio?.severidade === 'warn' ? 'warn' : 'error',
+              summary: this.erroEnvio?.titulo ?? 'Falha no envio',
+              detail: this.erroEnvio?.mensagem ?? 'Ocorreu um problema ao enviar a mensagem.',
               life: 10000,
             });
           }
           this.finalizarEnvio(canal);
         },
-        error: () => this.finalizarEnvio(canal),
+        error: (err: HttpErrorResponse) => {
+          const payload = err.error?.data ?? err.error;
+          this.aplicarErroEnvio(canal, {
+            codigoErro: payload?.codigoErro ?? payload?.erro,
+            erro: payload?.erro ?? payload?.mensagem,
+            mensagemUsuario: payload?.mensagemUsuario ?? payload?.mensagem,
+            equipeNotificada: false,
+          });
+          this.messageService.add({
+            severity: this.erroEnvio?.severidade === 'warn' ? 'warn' : 'error',
+            summary: this.erroEnvio?.titulo ?? 'Falha no envio',
+            detail: this.erroEnvio?.mensagem ?? 'Ocorreu um problema ao enviar a mensagem.',
+            life: 10000,
+          });
+          this.finalizarEnvio(canal);
+        },
       });
+  }
+
+  private aplicarErroEnvio(
+    canal: NotificacaoCanal,
+    resultado?: Pick<ResultadoNotificacao, 'erro' | 'codigoErro' | 'mensagemUsuario' | 'equipeNotificada'>
+  ): void {
+    const aviso = montarAvisoEnvio(
+      resultado?.codigoErro,
+      resultado?.erro,
+      resultado?.mensagemUsuario
+    );
+
+    this.erroEnvio = {
+      canal,
+      ...aviso,
+      notificarEquipe: resultado?.equipeNotificada === true && aviso.notificarEquipe,
+    };
+    this.avisoOperacional = null;
+    this.cd.markForCheck();
   }
 
   private montarSucessoEnvio(canal: NotificacaoCanal, resultado: ResultadoNotificacao): SucessoEnvioInfo {
@@ -428,6 +519,7 @@ export class PartilharOrcamento implements OnChanges {
 
   fecharErroEnvio(): void {
     this.erroEnvio = null;
+    this.atualizarAvisoOperacional();
     this.cd.markForCheck();
   }
 

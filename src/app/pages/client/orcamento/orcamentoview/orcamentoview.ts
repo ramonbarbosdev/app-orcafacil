@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { OrcamentoVisualizacao } from '../../../../models/orcamento-visualizacao';
 import { BaseService } from '../../../../services/base.service';
 import { ActivatedRoute } from '@angular/router';
@@ -23,7 +23,7 @@ import { OrganizacaoLogoService } from '../../../../services/organizacao-logo.se
   templateUrl: './orcamentoview.html',
   styleUrl: './orcamentoview.scss',
 })
-export class Orcamentoview implements OnInit {
+export class Orcamentoview implements OnInit, OnDestroy {
   orcamento?: OrcamentoVisualizacao;
   loading = true;
   erro: string | null = null;
@@ -34,10 +34,12 @@ export class Orcamentoview implements OnInit {
   private route = inject(ActivatedRoute);
   private baseService = inject(BaseService);
   private logoService = inject(OrganizacaoLogoService);
+  private tinhaTemaEscuro = false;
 
   logoPublicaUrl: string | null = null;
 
   ngOnInit(): void {
+    this.forcarTemaClaro();
     this.codigoPublico = this.route.snapshot.paramMap.get('codigo') ?? '';
     if (!this.codigoPublico) {
       this.erro = 'Link do orçamento inválido.';
@@ -58,6 +60,21 @@ export class Orcamentoview implements OnInit {
         this.cd.markForCheck();
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.restaurarTema();
+  }
+
+  private forcarTemaClaro(): void {
+    this.tinhaTemaEscuro = document.documentElement.classList.contains('app-dark');
+    document.documentElement.classList.remove('app-dark');
+  }
+
+  private restaurarTema(): void {
+    if (this.tinhaTemaEscuro) {
+      document.documentElement.classList.add('app-dark');
+    }
   }
 
   labelStatus(status?: string): string {

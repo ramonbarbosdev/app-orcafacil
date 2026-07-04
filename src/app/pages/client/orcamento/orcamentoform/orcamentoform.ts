@@ -47,6 +47,7 @@ export class Orcamentoform {
   private eventService = inject(EventService);
 
   partilharVisible: boolean = false;
+  salvandoPartilha = false;
 
   ngOnInit(): void {
     this.objeto.orcamentoItem = this.objeto.orcamentoItem ?? [];
@@ -157,6 +158,10 @@ export class Orcamentoform {
     const payload = this.toApiPayload();
     const id = this.objeto.idOrcamento;
 
+    if (abrirPartilha) {
+      this.salvandoPartilha = true;
+    }
+
     const request$ = id
       ? this.baseService.post(`${this.endpoint}/${id}/gerar`, payload)
       : this.baseService.post(this.endpoint, payload);
@@ -172,9 +177,13 @@ export class Orcamentoform {
         } else {
           this.onClose();
         }
+        this.salvandoPartilha = false;
         this.cd.markForCheck();
       },
-      error: () => this.cd.markForCheck(),
+      error: () => {
+        this.salvandoPartilha = false;
+        this.cd.markForCheck();
+      },
     });
   }
 

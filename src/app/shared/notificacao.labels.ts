@@ -51,11 +51,13 @@ export const INTEGRACAO_ERRO_LABELS: Record<string, string> = {
   SERVICO_INDISPONIVEL: 'Serviço de notificações temporariamente indisponível',
   ERRO_INTERNO_NOTIFICACAO: 'Erro interno ao processar a notificação',
   ERRO_ENVIO: 'Não foi possível enviar a mensagem',
+  WHATSAPP_NAO_CONECTADO: 'WhatsApp não conectado',
+  WHATSAPP_SESSAO_PAUSADA: 'Sessão WhatsApp pausada',
+  WHATSAPP_SESSAO_RISCO: 'Sessão WhatsApp em risco de bloqueio',
+  MENSAGEM_DUPLICADA: 'Mensagem duplicada',
   TIMEOUT: 'O serviço demorou para responder',
   SERVICO_OFFLINE: 'Serviço de notificações offline',
   REDE: 'Falha de conexão com o serviço de notificações',
-  WHATSAPP_SESSAO_PAUSADA: 'Sessão WhatsApp pausada',
-  WHATSAPP_SESSAO_RISCO: 'Sessão WhatsApp em risco de bloqueio',
   FILA_FALHA_DEFINITIVA: 'Falha definitiva no envio',
   FILA_BLOQUEADA_PROTECAO: 'Envio bloqueado por proteção',
 };
@@ -98,6 +100,128 @@ export function resolverMensagemExibicao(
     return labelCodigoErro(msg);
   }
   return fallback;
+}
+
+export type AvisoEnvioSeveridade = 'warn' | 'error';
+
+export interface AvisoEnvioNotificacao {
+  titulo: string;
+  mensagem: string;
+  severidade: AvisoEnvioSeveridade;
+  notificarEquipe: boolean;
+  acaoLabel?: string;
+}
+
+const CODIGOS_SEM_ALERTA_EQUIPE = new Set([
+  'WHATSAPP_NAO_CONECTADO',
+  'WHATSAPP_SESSAO_PAUSADA',
+  'WHATSAPP_SESSAO_RISCO',
+  'API_KEY_INVALIDA',
+  'API_KEY_SEM_PERMISSAO',
+  'LIMITE_EXCEDIDO',
+  'MENSAGEM_DUPLICADA',
+  'ERRO_ENVIO',
+]);
+
+export function deveNotificarEquipe(codigo?: string | null): boolean {
+  if (!codigo?.trim()) {
+    return false;
+  }
+  return !CODIGOS_SEM_ALERTA_EQUIPE.has(codigo.trim().toUpperCase());
+}
+
+export function montarAvisoEnvio(
+  codigo?: string | null,
+  mensagemTecnica?: string | null,
+  mensagemUsuario?: string | null
+): AvisoEnvioNotificacao {
+  const cod = codigo?.trim().toUpperCase() ?? '';
+  const msgUsuario = mensagemUsuario?.trim();
+  const msgTecnica = mensagemTecnica?.trim() ?? '';
+
+  if (cod === 'WHATSAPP_NAO_CONECTADO' || ehWhatsappNaoConectado(msgTecnica) || ehWhatsappNaoConectado(msgUsuario)) {
+    return {
+      titulo: 'WhatsApp não conectado',
+      mensagem:
+        msgUsuario ||
+        'Conecte o WhatsApp em Configurações → Integrações antes de enviar mensagens ao cliente.',
+      severidade: 'warn',
+      notificarEquipe: false,
+      acaoLabel: 'Ir para Integrações',
+    };
+  }
+
+  if (cod === 'WHATSAPP_SESSAO_PAUSADA' || msgTecnica.toLowerCase().includes('pausada automaticamente')) {
+    return {
+      titulo: 'Envios pausados',
+      mensagem:
+        msgUsuario ||
+        'A proteção pausou os envios WhatsApp. Aguarde ou reative a sessão em Integrações.',
+      severidade: 'warn',
+      notificarEquipe: false,
+      acaoLabel: 'Ir para Integrações',
+    };
+  }
+
+  if (cod === 'WHATSAPP_SESSAO_RISCO' || msgTecnica.toLowerCase().includes('risco operacional')) {
+    return {
+      titulo: 'Sessão em risco operacional',
+      mensagem:
+        msgUsuario ||
+        'Os envios WhatsApp estão bloqueados por proteção. Corrija a causa e reative em Integrações.',
+      severidade: 'warn',
+      notificarEquipe: false,
+      acaoLabel: 'Ir para Integrações',
+    };
+  }
+
+  if (cod === 'API_KEY_INVALIDA' || cod === 'API_KEY_SEM_PERMISSAO') {
+    return {
+      titulo: 'Integração não configurada',
+      mensagem:
+        msgUsuario ||
+        'A integração de notificações precisa ser revisada pelo administrador. Enquanto isso, copie a mensagem e envie manualmente.',
+      severidade: 'warn',
+      notificarEquipe: false,
+    };
+  }
+
+  if (cod === 'LIMITE_EXCEDIDO') {
+    return {
+      titulo: 'Limite de envios',
+      mensagem: msgUsuario || 'Muitas mensagens em pouco tempo. Aguarde alguns minutos e tente novamente.',
+      severidade: 'warn',
+      notificarEquipe: false,
+    };
+  }
+
+  if (cod === 'MENSAGEM_DUPLICADA') {
+    return {
+      titulo: 'Mensagem duplicada',
+      mensagem: msgUsuario || 'Esta mensagem já foi enviada recentemente. Aguarde antes de tentar de novo.',
+      severidade: 'warn',
+      notificarEquipe: false,
+    };
+  }
+
+  const mensagem =
+    msgUsuario ||
+    resolverMensagemExibicao(msgTecnica, cod || null, 'Não foi possível enviar a mensagem. Tente novamente.');
+
+  return {
+    titulo: cod ? labelCodigoErro(cod) : 'Não foi possível enviar',
+    mensagem,
+    severidade: 'error',
+    notificarEquipe: deveNotificarEquipe(cod),
+  };
+}
+
+function ehWhatsappNaoConectado(texto?: string | null): boolean {
+  if (!texto?.trim()) {
+    return false;
+  }
+  const valor = texto.toLowerCase();
+  return valor.includes('whatsapp') && (valor.includes('nao conectado') || valor.includes('não conectado'));
 }
 
 function ehCodigoTecnico(texto: string): boolean {
