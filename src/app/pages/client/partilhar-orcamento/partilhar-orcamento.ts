@@ -117,7 +117,11 @@ export class PartilharOrcamento {
     this.cd.markForCheck();
 
     this.baseService
-      .post(`orcamentos/${this.idOrcamento}/enviar`, { canais: [canal] })
+      .post(`orcamentos/${this.idOrcamento}/enviar`, {
+        canais: [canal],
+        nuTelefone: canal === 'WHATSAPP' ? destinatario?.trim() : undefined,
+        dsEmail: canal === 'EMAIL' ? destinatario?.trim() : undefined,
+      })
       .subscribe({
         next: (res: OrcamentoEnviarResponse) => {
           const notificacoes = res?.notificacoes ?? [];

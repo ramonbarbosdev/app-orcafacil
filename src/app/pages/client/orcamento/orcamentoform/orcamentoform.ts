@@ -144,62 +144,34 @@ export class Orcamentoform {
   }
 
   onSaveRascunho() {
-    this.onSave('rascunho');
+    this.onSave(false);
   }
 
   onSaveGerado() {
-    this.onSave('gerar');
+    this.onSave(true);
   }
 
-  onSave(mode?: string) {
+  onSave(abrirPartilha = false) {
     if (!this.validarItens()) return;
 
     const payload = this.toApiPayload();
+    const id = this.objeto.idOrcamento;
 
-    if (mode === 'rascunho') {
-      this.baseService.post(`${this.endpoint}/rascunho`, payload).subscribe({
-        next: () => {
-          this.cd.markForCheck();
-          this.onClose();
-        },
-        error: () => this.cd.markForCheck(),
-      });
-      return;
-    }
+    const request$ = id
+      ? this.baseService.post(`${this.endpoint}/${id}/gerar`, payload)
+      : this.baseService.post(this.endpoint, payload);
 
-    if (mode === 'gerar') {
-      const id = this.objeto.idOrcamento;
-      if (!id) {
-        this.baseService.post(`${this.endpoint}/rascunho`, payload).subscribe({
-          next: (res: any) => {
-            const newId = res.idOrcamento ?? res;
-            this.gerarOrcamento(newId, payload);
-          },
-          error: () => this.cd.markForCheck(),
-        });
-      } else {
-        this.gerarOrcamento(id, payload);
-      }
-      return;
-    }
-
-    this.baseService.save(this.endpoint, payload, this.objeto.idOrcamento).subscribe({
-      next: () => {
-        this.cd.markForCheck();
-        this.onClose();
-      },
-      error: () => this.cd.markForCheck(),
-    });
-  }
-
-  private gerarOrcamento(id: number, payload: unknown) {
-    this.baseService.post(`${this.endpoint}/${id}/gerar`, payload).subscribe({
+    request$.subscribe({
       next: (res: any) => {
         if (res?.idOrcamento) {
           this.objeto.idOrcamento = res.idOrcamento;
         }
-        this.objeto.cdPublico = res?.cdPublico ?? res;
-        this.partilharVisible = true;
+        this.objeto.cdPublico = res?.cdPublico ?? this.objeto.cdPublico;
+        if (abrirPartilha) {
+          this.partilharVisible = true;
+        } else {
+          this.onClose();
+        }
         this.cd.markForCheck();
       },
       error: () => this.cd.markForCheck(),
