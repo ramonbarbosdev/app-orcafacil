@@ -44,5 +44,11 @@
     </div>
 </p-card>
 
-<app-partilhar-orcamento [visible]="partilharVisible" (cancel)="hideDialog()"
-    [cdPublico]="objeto.cdPublico"></app-partilhar-orcamento>
+<app-partilhar-orcamento
+    [visible]="partilharVisible"
+    (cancel)="hideDialog()"
+    [idOrcamento]="objeto.idOrcamento"
+    [cdPublico]="objeto.cdPublico"
+    [nuTelefone]="objeto.cliente?.nuTelefone"
+    [dsEmail]="objeto.cliente?.dsEmail"
+></app-partilhar-orcamento>

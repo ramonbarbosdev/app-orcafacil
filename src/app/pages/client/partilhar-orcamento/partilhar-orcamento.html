@@ -18,7 +18,14 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
             <!-- WhatsApp -->
-            <p-button variant="text" type="button" severity="secondary" (click)="enviarWhatsApp()">
+            <p-button
+                variant="text"
+                type="button"
+                severity="secondary"
+                [loading]="enviandoWhatsApp"
+                [disabled]="enviandoWhatsApp || whatsappEnviado"
+                (click)="enviarWhatsApp()"
+            >
                 <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
                     <div class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
                         <i class="pi pi-whatsapp text-white text-2xl"></i>
@@ -27,7 +34,14 @@
                 </div>
             </p-button>
 
-            <p-button variant="text" type="button" severity="secondary" (click)="enviarEmail()">
+            <p-button
+                variant="text"
+                type="button"
+                severity="secondary"
+                [loading]="enviandoEmail"
+                [disabled]="enviandoEmail || emailEnviado"
+                (click)="enviarEmail()"
+            >
                 <div class="flex flex-col items-center gap-2 p-3 rounded-xl transition">
                     <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center">
                         <i class="pi pi-envelope text-white text-2xl"></i>

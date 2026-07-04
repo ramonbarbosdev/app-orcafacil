@@ -195,7 +195,10 @@ export class Orcamentoform {
   private gerarOrcamento(id: number, payload: unknown) {
     this.baseService.post(`${this.endpoint}/${id}/gerar`, payload).subscribe({
       next: (res: any) => {
-        this.objeto.cdPublico = res.cdPublico ?? res;
+        if (res?.idOrcamento) {
+          this.objeto.idOrcamento = res.idOrcamento;
+        }
+        this.objeto.cdPublico = res?.cdPublico ?? res;
         this.partilharVisible = true;
         this.cd.markForCheck();
       },
@@ -243,14 +246,26 @@ export class Orcamentoform {
   }
 
   consultarPreviewValorFinal() {
-    if ((this.objeto.orcamentoItem?.length ?? 0) > 0) {
-      this.baseService.post(`${this.endpoint}/preview-precificacao`, this.toApiPayload()).subscribe({
-        next: (res: any) => {
-          this.objeto.vlPrecoBase = res.valorTotal ?? res;
-          this.cd.markForCheck();
-        },
-        error: () => this.cd.markForCheck(),
-      });
+    const itens = (this.objeto.orcamentoItem ?? []).filter(
+      (item) => item?.idCatalogo != null && Number(item.idCatalogo) > 0
+    );
+
+    if (itens.length === 0) {
+      return;
     }
+
+    const payload = {
+      idOrcamento: this.objeto.idOrcamento,
+      idEmpresaMetodoPrecificacao: this.objeto.idEmpresaMetodoPrecificacao,
+      itens,
+    };
+
+    this.baseService.post(`${this.endpoint}/preview-precificacao`, payload).subscribe({
+      next: (res: any) => {
+        this.objeto.vlPrecoBase = res.valorTotal ?? res;
+        this.cd.markForCheck();
+      },
+      error: () => this.cd.markForCheck(),
+    });
   }
 }
